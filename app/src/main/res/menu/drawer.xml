@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_home"
+        android:title="الرئيسية"
+        android:icon="@drawable/home2"
+        android:iconTint="@drawable/gradientcolor"/>
+    <item android:id="@+id/nav_fav"
+        android:title="المفضلة"
+        android:icon="@drawable/fav2"
+        android:iconTint="@drawable/gradientcolor"/>
+    <item android:id="@+id/nav_setting"
+        android:title="الإعدادات"
+        android:icon="@drawable/setting"
+        android:iconTint="@drawable/gradientcolor"/>
+    <item android:id="@+id/nav_contact_us"
+        android:title="تواصل معنا"
+        android:icon="@drawable/contactus"
+        android:iconTint="@drawable/gradientcolor"/>
+    <item android:id="@+id/nav_logout"
+        android:title="تسجيل خروج"
+        android:icon="@drawable/logout2"
+        android:iconTint="@drawable/gradientcolor"/>
+
+</menu>

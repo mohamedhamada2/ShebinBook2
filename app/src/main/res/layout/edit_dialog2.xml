@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="@color/purple_500"
+    app:cardCornerRadius="@dimen/_10sdp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <EditText
+            android:id="@+id/et_whats_app"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:background="@drawable/et_login"
+            android:textSize="@dimen/_13ssp"
+            android:fontFamily="@font/tajawal_regular"
+            android:textColor="@color/purple_500"
+            android:textColorHint="@color/text_color"
+            android:hint="رقم الواتس"
+            android:paddingRight="@dimen/_5sdp"
+            android:paddingLeft="@dimen/_5sdp"
+            android:layout_marginRight="@dimen/_4sdp"
+            android:layout_margin="@dimen/_10sdp"/>
+        <LinearLayout
+            android:id="@+id/linear_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardview"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:weightSum="1"
+            android:gravity="right">
+            <EditText
+                android:id="@+id/et_facebook"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_weight="1"
+                android:background="@drawable/et_login"
+                android:textSize="@dimen/_13ssp"
+                android:fontFamily="@font/tajawal_regular"
+                android:textColor="@color/purple_500"
+                android:textColorHint="@color/text_color"
+                android:hint="لينك الفيس"
+                android:paddingRight="@dimen/_5sdp"
+                android:paddingLeft="@dimen/_5sdp" />
+        </LinearLayout>
+        <EditText
+            android:id="@+id/et_instagram"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_80sdp"
+            android:background="@drawable/et_login"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:hint="لينك الانستجرام"
+            android:textColorHint="#AAAAAA"
+            android:textSize="@dimen/_13ssp"
+            android:textColor="@color/purple_500"
+            android:fontFamily="@font/tajawal_medium"
+            android:padding="@dimen/_5sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginRight="@dimen/_10sdp"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_edit"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:background="@drawable/btn_bg"
+            android:layout_margin="@dimen/_10sdp"
+            android:textSize="@dimen/_15ssp"
+            android:textColor="@color/purple_500"
+            android:text="إستكمال"
+            android:fontFamily="@font/tajawal_bold"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

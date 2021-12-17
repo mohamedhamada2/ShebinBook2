@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="loginviewmodel"
+            type="com.alatheer.shebinbook.authentication.login.LoginViewModel" />
+
+    </data>
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/purple_500">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".authentication.login.LoginActivity"
+            >
+            <ImageView
+                android:id="@+id/logo_img"
+                android:layout_width="@dimen/_110sdp"
+                android:layout_height="@dimen/_110sdp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="@dimen/_55sdp"
+                android:src="@drawable/logoo"/>
+            <ImageView
+                android:id="@+id/shebinbook_img"
+                android:layout_width="@dimen/_110sdp"
+                android:layout_height="wrap_content"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/shebinbook"
+                android:layout_marginTop="@dimen/_160sdp"/>
+            <EditText
+                android:id="@+id/et_phone"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:background="@drawable/et_login"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/shebinbook_img"
+                android:layout_marginTop="@dimen/_60sdp"
+                android:layout_marginRight="@dimen/_30sdp"
+                android:layout_marginLeft="@dimen/_30sdp"
+                android:textSize="@dimen/_14ssp"
+                android:fontFamily="@font/tajawal_regular"
+                android:textColor="@color/purple_500"
+                android:textColorHint="@color/text_color"
+                android:hint="رقم الهاتف"
+                android:paddingLeft="@dimen/_5sdp"
+                android:paddingRight="@dimen/_5sdp" />
+            <EditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:background="@drawable/et_login"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_phone"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginRight="@dimen/_30sdp"
+                android:layout_marginLeft="@dimen/_30sdp"
+                android:textSize="@dimen/_14ssp"
+                android:fontFamily="@font/tajawal_regular"
+                android:textColor="@color/purple_500"
+                android:textColorHint="@color/text_color"
+                android:hint="الرقم السري"
+                android:paddingLeft="@dimen/_5sdp"
+                android:paddingRight="@dimen/_5sdp" />
+            <TextView
+                android:id="@+id/txt_forget_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginRight="@dimen/_30sdp"
+                android:layout_marginLeft="@dimen/_30sdp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_password"
+                android:text="نسيت الرقم السري؟"
+                android:textSize="@dimen/_14ssp"
+                android:fontFamily="@font/tajawal_regular"
+                android:textColor="@color/white"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_login"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_40sdp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_forget_password"
+                android:background="@drawable/btn_bg"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginRight="@dimen/_30sdp"
+                android:layout_marginLeft="@dimen/_30sdp"
+                android:paddingRight="@dimen/_12sdp"
+                android:paddingLeft="@dimen/_12sdp"
+                android:fontFamily="@font/tajawal_bold"
+                android:textColor="@color/purple_500"
+                android:textSize="@dimen/_15ssp"
+                android:text="تسجيل دخول" />
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_login"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/txt_not"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_14ssp"
+                    android:text="ليس لديك حساب؟"
+                    android:fontFamily="@font/tajawal_regular"
+                    android:layout_alignParentRight="true"/>
+
+                <TextView
+                    android:id="@+id/txt_sign_up"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#25C3E9"
+                    android:textSize="@dimen/_14ssp"
+                    android:text="انشاء حساب"
+                    android:fontFamily="@font/tajawal_regular"
+                    android:layout_toLeftOf="@+id/txt_not"
+                    android:layout_marginRight="@dimen/_10sdp" />
+            </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>
+
