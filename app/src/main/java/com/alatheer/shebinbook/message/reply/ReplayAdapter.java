@@ -76,11 +76,16 @@ public class ReplayAdapter  extends RecyclerView.Adapter<ReplayAdapter.MessageHo
             final Date from_dt = new Date((long) (dt1 * 1000));
             final DateFormat f = new SimpleDateFormat("yyyy/MM/dd ", Locale.ENGLISH);
             txt_date.setText(f.format(from_dt));
-            if (trader_id.equals(datum.getTraderIdFk())){
-                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+loginModel.getData().getUser().getUserImg()).into(user_img);
-            }else {
+            try {
+                if (trader_id.equals(datum.getTraderIdFk())){
+                    Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+loginModel.getData().getUser().getUserImg()).into(user_img);
+                }else {
+                    Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
+                }
+            }catch (Exception e){
                 Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
             }
+
 
         }
     }

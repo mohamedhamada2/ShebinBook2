@@ -10,6 +10,7 @@ import com.alatheer.shebinbook.api.MySharedPreference;
 import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.comments.CommentModel;
+import com.alatheer.shebinbook.message.MessageModel;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.stores.StoreModel;
 
@@ -97,4 +98,51 @@ public class FavoriteViewModel {
             });
         }
     }
+    public void getMessages(Integer trader_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<MessageModel> call = getDataService.get_messages(trader_id+"");
+            call.enqueue(new Callback<MessageModel>() {
+                @Override
+                public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            //Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                            favoriteActivity.init_messages_recycler(response.body().getData().getData());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MessageModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void getUserMessages(String user_id) {
+        //Toast.makeText(context, user_id, Toast.LENGTH_SHORT).show();
+        if (Utilities.isNetworkAvailable(context)) {
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<MessageModel> call = getDataService.get_user_messages(user_id);
+            call.enqueue(new Callback<MessageModel>() {
+                @Override
+                public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body().getStatus()) {
+                            //Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                            favoriteActivity.init_messages_recycler(response.body().getData().getData());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MessageModel> call, Throwable t) {
+                    Log.e("error36", t.getMessage());
+                }
+            });
+        }
+    }
+
 }

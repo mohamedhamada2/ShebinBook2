@@ -231,4 +231,25 @@ public class HomeViewModel {
             });
         }
     }
+
+    public void delete_post(Integer id,String user_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<CommentModel> call = getDataService.delete_post(id);
+            call.enqueue(new Callback<CommentModel>() {
+                @Override
+                public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
+                    if (response.isSuccessful()){
+                        Toast.makeText(homeActivity, "تم حذف المنشور بنجاح", Toast.LENGTH_SHORT).show();
+                        getposts(1,user_id);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<CommentModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
 }

@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/gradient_ask_user"
                 android:textSize="@dimen/_10ssp"
-                android:fontFamily="@font/roboto_medium"
+                android:fontFamily="@font/tajawal_medium"
                 android:text="Mohamed hamada"
                 android:layout_toLeftOf="@+id/store_logo"
                 android:layout_centerVertical="true"

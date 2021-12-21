@@ -15,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,7 +28,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -37,7 +40,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +54,10 @@ import com.alatheer.shebinbook.authentication.signup.SignupActivity;
 import com.alatheer.shebinbook.databinding.ActivityPostsBinding;
 import com.alatheer.shebinbook.home.AskModel;
 import com.alatheer.shebinbook.home.MenuAdapter;
+import com.alatheer.shebinbook.message.Datum;
+import com.alatheer.shebinbook.message.MessageAdapter2;
+import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.stores.Store;
 import com.google.android.material.navigation.NavigationView;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
@@ -80,6 +89,10 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
     private int pastvisibleitem,visibleitemcount,totalitemcount,previous_total=0;
     int view_threshold = 10;
     int page =1 ;
+    Integer trader_id2;
+    RecyclerView search_recycler,message_recycler;
+    SearchStoresAdapter storesAdapter;
+    MessageAdapter2 messageAdapter2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,6 +124,18 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
                 Check_ReadPermission(IMG);
             }
         });
+        activityPostsBinding.imgSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               Create_Alert_Dialog();
+            }
+        });
+        activityPostsBinding.imgSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Create_message_Dialog();
+            }
+        });
         activityPostsBinding.askRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -140,6 +165,7 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
         user_id = loginModel.getData().getUser().getId()+"";
+        trader_id2 = loginModel.getData().getUser().getTraderId();
         gender_user = loginModel.getData().getUser().getGender()+"";
         user_img = loginModel.getData().getUser().getUserImg();
         user_name = loginModel.getData().getUser().getName();
@@ -336,5 +362,119 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
 
     public void delete_post_from_fav(Integer id) {
         postViewModel.delete_fav(id,user_id);
+    }
+
+    public void delete_post(Post post) {
+        CreateDeleteDialog(post.getId());
+    }
+    private void CreateDeleteDialog(Integer id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.delete_dialog, null);
+        Button btn_delete = view.findViewById(R.id.btn_delete);
+        Button btn_skip = view.findViewById(R.id.btn_skip);
+        TextView txt = view.findViewById(R.id.txt);
+        txt.setText("هل تريد حذف المنشور؟");
+        builder.setView(view);
+        Dialog dialog4 = builder.create();
+        dialog4.show();
+        Window window = dialog4.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        btn_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                postViewModel.delete_post(id,user_id);
+                dialog4.dismiss();
+                //CreateBasketDialog(product);
+            }
+        });
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog4.dismiss();
+                //CreateDeleteDialog(product);
+            }
+        });
+    }
+    private void Create_Alert_Dialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.search_item, null);
+        EditText et_search = view.findViewById(R.id.et_search);
+        search_recycler = view.findViewById(R.id.search_recycler);
+        et_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                postViewModel.getSearch_stores(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    private void Create_message_Dialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.message_dialog_item, null);
+        RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
+        ImageView cancel_img = view.findViewById(R.id.cancel_img);
+        message_recycler = view.findViewById(R.id.message_recycler);
+
+        if (user_type == 4){
+            postViewModel.getMessages(trader_id2);
+        }else {
+            postViewModel.getUserMessages(user_id);
+        }
+        cancel_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        //layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
+        //message_type_recycler.setAdapter(messageAdapter);
+        //message_type_recycler.setLayoutManager(layoutManager);
+        //message_type_recycler.setHasFixedSize(true);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    public void init_search_recycler(List<Store> data) {
+        storesAdapter = new SearchStoresAdapter(this,data);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true);
+        search_recycler.setHasFixedSize(true);
+        search_recycler.setLayoutManager(layoutManager2);
+        search_recycler.setAdapter(storesAdapter);
+    }
+
+    public void init_messages_recycler(List<Datum> data) {
+        messageAdapter2 = new MessageAdapter2(data,this);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        message_recycler.setHasFixedSize(true);
+        message_recycler.setLayoutManager(layoutManager2);
+        message_recycler.setAdapter(messageAdapter2);
     }
 }

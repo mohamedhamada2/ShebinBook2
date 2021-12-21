@@ -88,7 +88,7 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
         getDataIntent();
         getSharedPreferenceData();
         init_navigation_menu();
-        get_messages_types();
+        //get_messages_types();
         storesViewModel = new StoresViewModel(this,subcategory_id+"");
         activityStoresBinding.setStoresviewmodel(storesViewModel);
         viewPager2 = activityStoresBinding.viewpager2;
@@ -344,7 +344,7 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
 
     public void init_messages_recycler(List<com.alatheer.shebinbook.message.Datum> data) {
         messageAdapter2 = new MessageAdapter2(data,this);
-        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);
         message_recycler.setAdapter(messageAdapter2);
@@ -353,7 +353,7 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
     public void init_search_recycler(List<Store> data) {
         //Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
         searchstoresAdapter = new SearchStoresAdapter(this,data);
-        layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
+        layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         search_recycler.setHasFixedSize(true);
         search_recycler.setLayoutManager(layoutManager2);
         search_recycler.setAdapter(searchstoresAdapter);

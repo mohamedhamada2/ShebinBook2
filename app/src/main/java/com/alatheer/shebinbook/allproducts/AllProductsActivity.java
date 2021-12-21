@@ -18,7 +18,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +38,10 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityAllProductsBinding;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.home.slider.MenuItem;
+import com.alatheer.shebinbook.message.Datum;
+import com.alatheer.shebinbook.message.MessageAdapter2;
+import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.trader.addproduct.AddProductActivity;
 import com.alatheer.shebinbook.trader.images.Image;
 import com.alatheer.shebinbook.trader.updateproduct.UpdateProductActivity;
@@ -51,7 +57,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
     ProductViewModel productViewModel;
     Integer gallery_id;
     ProductAdapter2 productAdapter2;
-    RecyclerView.LayoutManager productlayoutManager;
+    RecyclerView.LayoutManager productlayoutManager,layoutManager2;
     Dialog dialog,dialog2,dialog3,dialog4;
     String post;
     MySharedPreference mySharedPreference;
@@ -63,8 +69,10 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
     RecyclerView menu_recycler;
     Integer user_role,trader_id,trader_id2,store_id;
     Integer user_type;
-    String store_img;
-
+    String store_img,store_name;
+    RecyclerView message_recycler,search_recycler;
+    MessageAdapter2 messageAdapter2;
+    SearchStoresAdapter storesAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +84,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         getDataIntent();
         getSharedPreferenceData();
         init_navigation_menu();
+        productViewModel.getStore(trader_id2+"",user_id);
         productViewModel.getproducts(gallery_id+"");
         activityAllProductsBinding.addToAlboumImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +96,81 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
                 startActivity(intent);
             }
         });
+        activityAllProductsBinding.imgSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Create_Alert_Dialog();
+            }
+        });
+        activityAllProductsBinding.imgSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Create_message_Dialog();
+            }
+        });
+    }
+
+    private void Create_Alert_Dialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.search_item, null);
+        EditText et_search = view.findViewById(R.id.et_search);
+        search_recycler = view.findViewById(R.id.search_recycler);
+        et_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                productViewModel.getSearch_stores(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    private void Create_message_Dialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.message_dialog_item, null);
+        RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
+        ImageView cancel_img = view.findViewById(R.id.cancel_img);
+        message_recycler = view.findViewById(R.id.message_recycler);
+        if (user_role == 4){
+            productViewModel.getMessages(trader_id);
+        }else {
+            productViewModel.getUserMessages(user_id);
+        }
+        cancel_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        //layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
+        //message_type_recycler.setAdapter(messageAdapter);
+        //message_type_recycler.setLayoutManager(layoutManager);
+        //message_type_recycler.setHasFixedSize(true);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
     private void getSharedPreferenceData() {
@@ -119,7 +203,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         gallery_id = getIntent().getIntExtra("gallery_id",0);
         trader_id2 = getIntent().getIntExtra("trader_id",0);
         store_id = getIntent().getIntExtra("store_id",0);
-        store_img = getIntent().getStringExtra("store_logo");
+        //store_img = getIntent().getStringExtra("store_logo");
         //Toast.makeText(this, trader_id2+"", Toast.LENGTH_SHORT).show();
     }
 
@@ -142,12 +226,14 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         TextView product_price = view.findViewById(R.id.product_price);
         TextView product_price_offer = view.findViewById(R.id.product_price_offer);
         TextView product_decription = view.findViewById(R.id.product_decription);
+        TextView txt_store_name = view.findViewById(R.id.store_name);
         ImageView msg_img = view.findViewById(R.id.msg_img);
-        ImageView user_img2 = view.findViewById(R.id.store_logo);
+        ImageView store_img2 = view.findViewById(R.id.store_logo);
         builder.setView(view);
         dialog = builder.create();
         dialog.show();
         product_name.setText(product.getTitle());
+        txt_store_name.setText(store_name);
         if (product.getPrice() != null){
             product_price_offer.setText(product.getPrice()+"");
         }else {
@@ -160,7 +246,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         }
         product_price.setVisibility(View.GONE);
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(product_img);
-        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+store_id).into(user_img2);
+        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+store_img).into(store_img2);
         Window window = dialog.getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -181,12 +267,16 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         ImageView product_img = view.findViewById(R.id.product_img);
         EditText et_post = view.findViewById(R.id.et_post);
         ImageView user_img2 = view.findViewById(R.id.user_img);
+        ImageView store_img2 = view.findViewById(R.id.store_logo);
+        TextView txt_store_name = view.findViewById(R.id.store_name);
         AppCompatButton btn_add = view.findViewById(R.id.btn_add);
         builder.setView(view);
         dialog2 = builder.create();
         dialog2.show();
+        txt_store_name.setText(store_name);
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(product_img);
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(user_img2);
+        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+store_img).into(store_img2);
         Window window = dialog2.getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -205,18 +295,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
     public void dismiss_dialog() {
         dialog2.dismiss();
     }
-    private void getSharedPreferanceData() {
-        mySharedPreference = MySharedPreference.getInstance();
-        loginModel = mySharedPreference.Get_UserData(this);
-        //user_id = loginModel.getData().getUser().getId()+"";
-        user_img = loginModel.getData().getUser().getUserImg();
-        user_name = loginModel.getData().getUser().getName();
-        user_phone = loginModel.getData().getUser().getPhone();
-        if (user_img != null){
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityAllProductsBinding.userImg);
-        }
-        activityAllProductsBinding.userName.setText(user_name);
-    }
+
     public void showmenu(View view) {
         //activityFavoriteBinding.navView.setNavigationItemSelectedListener(this);
         openDrawer();
@@ -264,11 +343,14 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         TextView product_price_offer = view.findViewById(R.id.product_price_offer);
         ImageView bin_img = view.findViewById(R.id.bin_img);
         ImageView edit_img = view.findViewById(R.id.edit_img);
+        TextView txt_store_name = view.findViewById(R.id.store_name);
+        ImageView store_img2 = view.findViewById(R.id.store_logo);
         product_price.setVisibility(View.GONE);
         builder.setView(view);
         dialog3 = builder.create();
         dialog3.show();
         product_name.setText(product.getTitle());
+        txt_store_name.setText(store_name);
         if (product.getPrice() != null){
             product_price_offer.setText(product.getPrice()+"");
         }else {
@@ -280,6 +362,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
             product_price.setText("--------");
         }
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(product_img);
+        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+store_img).into(store_img2);
         Window window = dialog3.getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -381,5 +464,26 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
                 activityAllProductsBinding.swiperefresh.setRefreshing(false);
             }
         }, 2000);
+    }
+
+    public void addstore(Store store) {
+        store_img = store.getLogo();
+        store_name = store.getStoreName();
+    }
+
+    public void init_messages_recycler(List<Datum> data) {
+        messageAdapter2 = new MessageAdapter2(data,this);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        message_recycler.setHasFixedSize(true);
+        message_recycler.setLayoutManager(layoutManager2);
+        message_recycler.setAdapter(messageAdapter2);
+    }
+
+    public void init_search_recycler(List<Store> data) {
+        storesAdapter = new SearchStoresAdapter(this,data);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        search_recycler.setHasFixedSize(true);
+        search_recycler.setLayoutManager(layoutManager2);
+        search_recycler.setAdapter(storesAdapter);
     }
 }

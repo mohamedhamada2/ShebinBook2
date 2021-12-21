@@ -418,5 +418,9 @@ public interface GetDataService{
     @POST("api/member/delete_gallery")
     Call<CommentModel> delete_from_gallery(@Field("row_id")Integer row_id);
 
+    @FormUrlEncoded
+    @POST("api/member/delete_posts")
+    Call<CommentModel> delete_post(@Field("row_id")Integer row_id);
+
 }
 

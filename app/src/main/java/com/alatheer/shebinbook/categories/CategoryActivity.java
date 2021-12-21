@@ -296,7 +296,7 @@ public class CategoryActivity extends AppCompatActivity implements NavigationVie
 
     public void init_messages_recycler(List<Datum> data) {
         messageAdapter2 = new MessageAdapter2(data,this);
-        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);
         message_recycler.setAdapter(messageAdapter2);
@@ -304,7 +304,7 @@ public class CategoryActivity extends AppCompatActivity implements NavigationVie
 
     public void init_search_recycler(List<Store> data) {
         storesAdapter = new SearchStoresAdapter(this,data);
-        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         search_recycler.setHasFixedSize(true);
         search_recycler.setLayoutManager(layoutManager2);
         search_recycler.setAdapter(storesAdapter);

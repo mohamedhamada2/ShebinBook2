@@ -79,11 +79,16 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (trader_id.equals(productList.get(position).getTraderIdFk())){
-                    createTraderDialog(productList.get(position));
-                }else {
+                try {
+                    if (trader_id.equals(productList.get(position).getTraderIdFk())){
+                        createTraderDialog(productList.get(position));
+                    }else {
+                        createAlertDialog(productList.get(position));
+                    }
+                }catch (Exception e){
                     createAlertDialog(productList.get(position));
                 }
+
             }
         });
     }
@@ -291,6 +296,9 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
     }
 
     private void CreateBasketDialog(Product product) {
+        MySharedPreference mySharedPreference = MySharedPreference.getInstance();
+        LoginModel loginModel = mySharedPreference.Get_UserData(context);
+        String userimg = loginModel.getData().getUser().getUserImg();
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.basket_dialog, null);
@@ -305,6 +313,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
         dialog2.show();
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(product_img);
         Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+store_img).into(image_store_img);
+        Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+userimg).into(user_img);
         txt_store_name.setText(store_name);
         Window window = dialog2.getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

@@ -1,12 +1,15 @@
 package com.alatheer.shebinbook.allproducts;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.alatheer.shebinbook.Utilities.Utilities;
 import com.alatheer.shebinbook.api.GetDataService;
 import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.comments.CommentModel;
+import com.alatheer.shebinbook.message.MessageModel;
+import com.alatheer.shebinbook.stores.StoreModel;
 
 import java.util.List;
 
@@ -86,6 +89,95 @@ public class ProductViewModel {
                 @Override
                 public void onFailure(Call<CommentModel> call, Throwable t) {
 
+                }
+            });
+        }
+    }
+
+    public void getStore(String trader_id,String user_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<StoreModel> call = getDataService.get_trader_store_by_user(trader_id,user_id);
+            call.enqueue(new Callback<StoreModel>() {
+                @Override
+                public void onResponse(Call<StoreModel> call, Response<StoreModel> response) {
+                    if (response.isSuccessful()){
+                        allProductsActivity.addstore(response.body().getData().get(0));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<StoreModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void getMessages(Integer trader_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<MessageModel> call = getDataService.get_messages(trader_id+"");
+            call.enqueue(new Callback<MessageModel>() {
+                @Override
+                public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            //Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                            allProductsActivity.init_messages_recycler(response.body().getData().getData());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MessageModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void getUserMessages(String user_id) {
+        //Toast.makeText(context, user_id, Toast.LENGTH_SHORT).show();
+        if (Utilities.isNetworkAvailable(context)) {
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<MessageModel> call = getDataService.get_user_messages(user_id);
+            call.enqueue(new Callback<MessageModel>() {
+                @Override
+                public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body().getStatus()) {
+                            //Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                            allProductsActivity.init_messages_recycler(response.body().getData().getData());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MessageModel> call, Throwable t) {
+                    Log.e("error36", t.getMessage());
+                }
+            });
+        }
+    }
+
+    public void getSearch_stores(String toString) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<StoreModel> call = getDataService.search_store(toString);
+            call.enqueue(new Callback<StoreModel>() {
+                @Override
+                public void onResponse(Call<StoreModel> call, Response<StoreModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            allProductsActivity.init_search_recycler(response.body().getData());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<StoreModel> call, Throwable t) {
+                    Log.e("searcherror",t.getMessage());
                 }
             });
         }

@@ -49,4 +49,8 @@ public class GalleryFragment extends Fragment {
         fragmentGalleryBinding.productsRecycler.setLayoutManager(layoutManager);
         fragmentGalleryBinding.productsRecycler.setHasFixedSize(true);
     }
+
+    public void Visibility() {
+        fragmentGalleryBinding.productsRecycler.setVisibility(View.GONE);
+    }
 }

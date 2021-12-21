@@ -65,7 +65,7 @@ public class SubCategoryViewModel {
                 public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
-                            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
                             subCategoryActivity.init_messages_recycler(response.body().getData().getData());
                         }
                     }
@@ -80,9 +80,10 @@ public class SubCategoryViewModel {
     }
 
     public void getUserMessages(String user_id) {
+        //Toast.makeText(context, user_id, Toast.LENGTH_SHORT).show();
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<MessageModel> call = getDataService.get_messages(user_id);
+            Call<MessageModel> call = getDataService.get_user_messages(user_id);
             call.enqueue(new Callback<MessageModel>() {
                 @Override
                 public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
@@ -96,7 +97,7 @@ public class SubCategoryViewModel {
 
                 @Override
                 public void onFailure(Call<MessageModel> call, Throwable t) {
-
+                    Log.e("error36",t.getMessage());
                 }
             });
         }

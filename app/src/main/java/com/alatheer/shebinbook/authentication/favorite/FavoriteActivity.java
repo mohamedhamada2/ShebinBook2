@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -30,6 +31,8 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityFavoriteBinding;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.home.slider.MenuItem;
+import com.alatheer.shebinbook.message.Datum;
+import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.stores.StoresAdapter;
@@ -54,9 +57,12 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
     Dialog dialog;
-    RecyclerView search_recycler;
+    RecyclerView search_recycler,message_recycler;
     SearchStoresAdapter storesAdapter;
     RecyclerView.LayoutManager layoutManager2;
+    MessageAdapter2 messageAdapter2;
+    Integer user_role,trader_id;
+    String user_id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,11 +81,48 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
                 Create_Alert_Dialog();
             }
         });
+        activityFavoriteBinding.imgSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Create_message_Dialog();
+            }
+        });
         /*favoriteList = new ArrayList<>();
         favoriteList.add(new Favorite("...لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج"));
         favoriteList.add(new Favorite("...لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج"));
         favoriteList.add(new Favorite("...لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج"));
         favoriteList.add(new Favorite("...لوريم ايبسوم دولار سيت أميت ,كونسيكتيتور أدايبا يسكينج"));*/
+    }
+
+    private void Create_message_Dialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.message_dialog_item, null);
+        RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
+        ImageView cancel_img = view.findViewById(R.id.cancel_img);
+        message_recycler = view.findViewById(R.id.message_recycler);
+        if (user_role == 4){
+            favoriteViewModel.getMessages(trader_id);
+        }else {
+            favoriteViewModel.getUserMessages(user_id);
+        }
+        cancel_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        //layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
+        //message_type_recycler.setAdapter(messageAdapter);
+        //message_type_recycler.setLayoutManager(layoutManager);
+        //message_type_recycler.setHasFixedSize(true);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
     private void Create_Alert_Dialog() {
@@ -117,10 +160,12 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
     private void getSharedPreferanceData() {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
-        //user_id = loginModel.getData().getUser().getId()+"";
+        user_id = loginModel.getData().getUser().getId()+"";
+        trader_id = loginModel.getData().getUser().getTraderId();
         user_img = loginModel.getData().getUser().getUserImg();
         user_name = loginModel.getData().getUser().getName();
         user_phone = loginModel.getData().getUser().getPhone();
+        user_role = loginModel.getData().getUser().getRoleIdFk();
         if (user_img != null){
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityFavoriteBinding.userImg);
         }
@@ -189,5 +234,13 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
         search_recycler.setHasFixedSize(true);
         search_recycler.setLayoutManager(layoutManager2);
         search_recycler.setAdapter(storesAdapter);
+    }
+
+    public void init_messages_recycler(List<Datum> data) {
+        messageAdapter2 = new MessageAdapter2(data,this);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        message_recycler.setHasFixedSize(true);
+        message_recycler.setLayoutManager(layoutManager2);
+        message_recycler.setAdapter(messageAdapter2);
     }
 }

@@ -29,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -398,5 +399,41 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void init_categories2(List<Category> data) {
+    }
+
+    public void delete_post(Post post) {
+        CreateDeleteDialog(post.getId());
+    }
+
+    private void CreateDeleteDialog(Integer id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.delete_dialog, null);
+        Button btn_delete = view.findViewById(R.id.btn_delete);
+        Button btn_skip = view.findViewById(R.id.btn_skip);
+        TextView txt = view.findViewById(R.id.txt);
+        txt.setText("هل تريد حذف المنشور؟");
+        builder.setView(view);
+        Dialog dialog4 = builder.create();
+        dialog4.show();
+        Window window = dialog4.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        btn_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                homeViewModel.delete_post(id,user_id);
+                dialog4.dismiss();
+                //CreateBasketDialog(product);
+            }
+        });
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog4.dismiss();
+                //CreateDeleteDialog(product);
+            }
+        });
     }
 }

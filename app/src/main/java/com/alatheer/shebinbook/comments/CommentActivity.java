@@ -25,13 +25,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -42,9 +45,13 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityCommentBinding;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.home.slider.MenuItem;
+import com.alatheer.shebinbook.message.Datum;
+import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.posts.GenderAdapter;
 import com.alatheer.shebinbook.posts.Post;
 import com.alatheer.shebinbook.posts.PostsActivity;
+import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.stores.Store;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
 
@@ -71,6 +78,11 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
     Dialog dialog;
     String reply;
     Integer user_type,comments_num;
+    RecyclerView search_recycler,message_recycler;
+    Integer trader_id2;
+    SearchStoresAdapter storesAdapter;
+    MessageAdapter2 messageAdapter2;
+    RecyclerView.LayoutManager layoutManager2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,12 +107,24 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
                 Check_ReadPermission(IMG);
             }
         });
-
+        activityCommentBinding.imgSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Create_Alert_Dialog();
+            }
+        });
+        activityCommentBinding.imgSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Create_message_Dialog();
+            }
+        });
     }
     private void getSharedPreferenceData() {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
         user_id = loginModel.getData().getUser().getId()+"";
+        trader_id2 = loginModel.getData().getUser().getTraderId();
         user_img = loginModel.getData().getUser().getUserImg();
         user_name = loginModel.getData().getUser().getName();
         user_phone = loginModel.getData().getUser().getPhone();
@@ -288,5 +312,84 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
                 activityCommentBinding.swiperefresh.setRefreshing(false);
             }
         }, 2000);
+    }
+    private void Create_Alert_Dialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.search_item, null);
+        EditText et_search = view.findViewById(R.id.et_search);
+        search_recycler = view.findViewById(R.id.search_recycler);
+        et_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                commentViewModel.getSearch_stores(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    private void Create_message_Dialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.message_dialog_item, null);
+        RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
+        ImageView cancel_img = view.findViewById(R.id.cancel_img);
+        message_recycler = view.findViewById(R.id.message_recycler);
+
+        if (user_type == 4){
+            commentViewModel.getMessages(trader_id2);
+        }else {
+            commentViewModel.getUserMessages(user_id);
+        }
+        cancel_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        //layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
+        //message_type_recycler.setAdapter(messageAdapter);
+        //message_type_recycler.setLayoutManager(layoutManager);
+        //message_type_recycler.setHasFixedSize(true);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
+    public void init_search_recycler(List<Store> data) {
+        storesAdapter = new SearchStoresAdapter(this,data);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true);
+        search_recycler.setHasFixedSize(true);
+        search_recycler.setLayoutManager(layoutManager2);
+        search_recycler.setAdapter(storesAdapter);
+    }
+
+    public void init_messages_recycler(List<Datum> data) {
+        messageAdapter2 = new MessageAdapter2(data,this);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        message_recycler.setHasFixedSize(true);
+        message_recycler.setLayoutManager(layoutManager2);
+        message_recycler.setAdapter(messageAdapter2);
     }
 }

@@ -15,6 +15,7 @@ import com.alatheer.shebinbook.allproducts.AllProductsActivity;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -67,23 +68,29 @@ public class GalleryAdapter extends RecyclerView.Adapter <GalleryAdapter.Product
         Button btn_shebin;
         TextView txt_see_all;
         RecyclerView recyclerView;
+        CardView category_card;
         public ProductsHolder(@NonNull View itemView) {
             super(itemView);
             btn_shebin = itemView.findViewById(R.id.btn_shebin);
             txt_see_all = itemView.findViewById(R.id.txt_see_all);
             recyclerView = itemView.findViewById(R.id.products_recycler);
+            category_card = itemView.findViewById(R.id.category_card);
         }
         public void setData(Gallery gallery) {
            // Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+category.getImg()).into(category_img);
             //category_txt.setText(category.getName());
             btn_shebin.setText(gallery.getTitle());
             recyclerView.setHasFixedSize(true);
-            ProductsAdapter productsAdapter = new ProductsAdapter(gallery.getProducts(),context,store_name,store_image);
-            LinearLayoutManager layoutManager = new GridLayoutManager(context,2,GridLayoutManager.VERTICAL,true);
-            layoutManager.setReverseLayout(true);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(productsAdapter);
-            recyclerView.setLayoutManager(layoutManager);
+            if (!gallery.getProducts().isEmpty()){
+                ProductsAdapter productsAdapter = new ProductsAdapter(gallery.getProducts(),context,store_name,store_image);
+                LinearLayoutManager layoutManager = new GridLayoutManager(context,2,GridLayoutManager.VERTICAL,true);
+                layoutManager.setReverseLayout(true);
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setAdapter(productsAdapter);
+                recyclerView.setLayoutManager(layoutManager);
+            }else {
+                category_card.setVisibility(View.GONE);
+            }
 
         }
     }

@@ -9,6 +9,8 @@ import com.alatheer.shebinbook.Utilities.Utilities;
 import com.alatheer.shebinbook.api.GetDataService;
 import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.comments.CommentModel;
+import com.alatheer.shebinbook.message.MessageModel;
+import com.alatheer.shebinbook.stores.StoreModel;
 
 import java.util.List;
 
@@ -175,6 +177,95 @@ public class PostViewModel {
                 @Override
                 public void onFailure(Call<CommentModel> call, Throwable t) {
 
+                }
+            });
+        }
+    }
+
+    public void delete_post(Integer id, String user_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<CommentModel> call = getDataService.delete_post(id);
+            call.enqueue(new Callback<CommentModel>() {
+                @Override
+                public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
+                    if (response.isSuccessful()){
+                        Toast.makeText(postsActivity, "تم حذف المنشور بنجاح", Toast.LENGTH_SHORT).show();
+                        getPosts(gender_id,1,user_id);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<CommentModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void getSearch_stores(String toString) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<StoreModel> call = getDataService.search_store(toString);
+            call.enqueue(new Callback<StoreModel>() {
+                @Override
+                public void onResponse(Call<StoreModel> call, Response<StoreModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            postsActivity.init_search_recycler(response.body().getData());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<StoreModel> call, Throwable t) {
+                    Log.e("searcherror",t.getMessage());
+                }
+            });
+        }
+    }
+    public void getMessages(Integer trader_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<MessageModel> call = getDataService.get_messages(trader_id+"");
+            call.enqueue(new Callback<MessageModel>() {
+                @Override
+                public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            //Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                            postsActivity.init_messages_recycler(response.body().getData().getData());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MessageModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void getUserMessages(String user_id) {
+        //Toast.makeText(context, user_id, Toast.LENGTH_SHORT).show();
+        if (Utilities.isNetworkAvailable(context)) {
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<MessageModel> call = getDataService.get_user_messages(user_id);
+            call.enqueue(new Callback<MessageModel>() {
+                @Override
+                public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body().getStatus()) {
+                            //Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
+                            postsActivity.init_messages_recycler(response.body().getData().getData());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MessageModel> call, Throwable t) {
+                    Log.e("error36", t.getMessage());
                 }
             });
         }

@@ -63,7 +63,7 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
     ActivitySubCategoryBinding activitySubCategoryBinding;
     SubCategoryViewModel subCategoryViewModel;
     GridLayoutManager layoutManager;
-    RecyclerView.LayoutManager layoutManager2;
+    RecyclerView.LayoutManager layoutManager2,layoutManager3;
     SubCategoryAdapter subCategoryAdapter;
     AutoScrollViewPager viewPager2;
     MenuAdapter menuAdapter;
@@ -91,17 +91,12 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
         activitySubCategoryBinding = DataBindingUtil.setContentView(this,R.layout.activity_sub_category);
         subCategoryViewModel = new SubCategoryViewModel(this);
         activitySubCategoryBinding.setSubcategoryviewmodel(subCategoryViewModel);
-        try {
-            getData();
-            subCategoryViewModel.getAds();
-            getSharedPreferanceData();
-            activitySubCategoryBinding.categoryName.setText(category.getName());
-            initSubCategories(category.getSubCates());
-        }catch (Exception e){
-
-        }
+        getData();
+        subCategoryViewModel.getAds();
+        getSharedPreferanceData();
+        activitySubCategoryBinding.categoryName.setText(category.getName());
+        initSubCategories(category.getSubCates());
         activitySubCategoryBinding.swiperefresh.setOnRefreshListener(this);
-
         init_navigation_menu();
 
         activitySubCategoryBinding.imgSend.setOnClickListener(new View.OnClickListener() {
@@ -169,9 +164,9 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
                 dialog.dismiss();
             }
         });
-        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
+        layoutManager3 = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
         message_type_recycler.setAdapter(messageAdapter);
-        message_type_recycler.setLayoutManager(layoutManager2);
+        message_type_recycler.setLayoutManager(layoutManager3);
         message_type_recycler.setHasFixedSize(true);
         builder.setView(view);
         dialog = builder.create();
@@ -197,6 +192,7 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
         user_name = loginModel.getData().getUser().getName();
         user_phone = loginModel.getData().getUser().getPhone();
         user_type = loginModel.getData().getUser().getRoleIdFk();
+       // Toast.makeText(this, user_type+"", Toast.LENGTH_SHORT).show();
         user_id = loginModel.getData().getUser().getId()+"";
         if (user_type == 4){
             trader_id =loginModel.getData().getUser().getTraderId()+"";
@@ -282,8 +278,9 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
     }
 
     public void init_messages_recycler(List<Datum> data) {
+        //Toast.makeText(this, "data", Toast.LENGTH_SHORT).show();
         messageAdapter2 = new MessageAdapter2(data,this);
-        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);
         message_recycler.setAdapter(messageAdapter2);
@@ -291,7 +288,7 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
 
     public void init_search_recycler(List<Store> data) {
         storesAdapter = new SearchStoresAdapter(this,data);
-        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         search_recycler.setHasFixedSize(true);
         search_recycler.setLayoutManager(layoutManager2);
         search_recycler.setAdapter(storesAdapter);
