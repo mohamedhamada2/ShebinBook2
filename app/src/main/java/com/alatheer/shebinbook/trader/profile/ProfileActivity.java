@@ -154,6 +154,12 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
                 Create_Alert_Dialog();
             }
         });
+        activityProfileBinding.storeLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CreateImageDialog(store_image);
+            }
+        });
 
     }
 
@@ -564,6 +570,20 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.setGravity(Gravity.CENTER_HORIZONTAL);
         window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+    private void CreateImageDialog(String product_img) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.image_item, null);
+        ImageView img = view.findViewById(R.id.img);
+        Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+product_img).into(img);
+        builder.setView(view);
+        Dialog dialog = builder.create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     }
     private void Create_message_Dialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

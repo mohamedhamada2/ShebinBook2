@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,18 +77,23 @@ public class DetailsFragment extends Fragment {
         instagram_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri uri = Uri.parse("http://instagram.com/_u/noamany_fitness_center_/");
-                Intent likeIng = new Intent(Intent.ACTION_VIEW, uri);
+                if (!store_instagram.equals("")||store_instagram != null){
+                    Uri uri = Uri.parse("http://instagram.com/_u/"+store_instagram+"/");
+                    Log.e("store_inst",store_instagram);
+                    Intent likeIng = new Intent(Intent.ACTION_VIEW, uri);
 
-                likeIng.setPackage("com.instagram.android");
+                    likeIng.setPackage("com.instagram.android");
 
-                try {
-                    getActivity().startActivity(likeIng);
-                } catch (ActivityNotFoundException e) {
-                    getActivity().startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("http://instagram.com/noamany_fitness_center_")));
+                    try {
+                        getActivity().startActivity(likeIng);
+                    } catch (ActivityNotFoundException e) {
+                        /*getActivity().startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("http://instagram.com/noamany_fitness_center_")));*/
+                        Toast.makeText(getActivity(), "عفوا لا يوجد صفحة اتستجرام لدينا", Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    Toast.makeText(getActivity(), "عفوا لا يوجد صفحة اتستجرام لدينا", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
         return view;

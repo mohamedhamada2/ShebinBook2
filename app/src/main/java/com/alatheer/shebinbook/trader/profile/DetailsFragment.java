@@ -120,14 +120,15 @@ public class DetailsFragment extends Fragment {
                 if (!store_instagram.equals("")){
                     Uri uri = Uri.parse("http://instagram.com/_u/"+store_instagram+"/");
                     Intent likeIng = new Intent(Intent.ACTION_VIEW, uri);
-
+                    //Log.e("store_inst",store_instagram);
                     likeIng.setPackage("com.instagram.android");
 
                     try {
                         getActivity().startActivity(likeIng);
                     } catch (ActivityNotFoundException e) {
-                        getActivity().startActivity(new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("http://instagram.com/noamany_fitness_center_")));
+                        /*getActivity().startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("http://instagram.com/noamany_fitness_center_")));*/
+                        Toast.makeText(getActivity(), "عفوا لا يوجد صفحة اتستجرام لدينا", Toast.LENGTH_SHORT).show();
                     }
                 }else {
                     Toast.makeText(getActivity(), "عفوا لا يوجد صفحة اتستجرام لدينا", Toast.LENGTH_SHORT).show();
