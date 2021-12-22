@@ -101,7 +101,7 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
     List<StoreDetails> messages_types_list;
     MessageAdapter messageAdapter;
     RecyclerView search_recycler;
-    RecyclerView.LayoutManager layoutManager,layoutManager2;
+    LinearLayoutManager layoutManager,layoutManager2;
     SearchStoresAdapter storesAdapter;
     Slider slider;
     Integer flag;
@@ -111,7 +111,10 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
     ImageView store_img;
     LinearLayout linearLayout;
     public static Activity fa;
-
+    private boolean isloading2;
+    private int pastvisibleitem2,visibleitemcount2,totalitemcount2,previous_total2=0;
+    int view_threshold2 = 10;
+    Integer page2 = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -569,13 +572,40 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
         RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
         message_recycler = view.findViewById(R.id.message_recycler);
-        profileViewModel.getMessages(trader_id);
+        profileViewModel.getMessages(trader_id,page2);
         cancel_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
             }
         });
+        message_recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull  RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleitemcount2 = layoutManager2.getChildCount();
+                totalitemcount2 = layoutManager2.getItemCount();
+                pastvisibleitem2 = layoutManager2.findFirstVisibleItemPosition();
+                if(dy>0){
+                    if(isloading2){
+                        if(totalitemcount2>previous_total2){
+                            isloading2 = false;
+                            previous_total2 = totalitemcount2;
+
+                        }
+                    }
+                    if(!isloading2 &&(totalitemcount2-visibleitemcount2)<= pastvisibleitem2+view_threshold2){
+                        page2++;
+                        if (user_type == 4){
+                            profileViewModel.TraderPagination(trader_id,page2);
+                        }
+                        isloading2 = true;
+                    }
+
+                }
+            }
+        });
+
         layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
         message_type_recycler.setAdapter(messageAdapter);
         message_type_recycler.setLayoutManager(layoutManager);
@@ -589,9 +619,8 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
         window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
 
     }
-    public void init_messages_recycler(List<Datum> data) {
-        messageAdapter2 = new MessageAdapter2(data,this);
-        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true);
+    public void init_messages_recycler(MessageAdapter2 messageAdapter2) {
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);
         message_recycler.setAdapter(messageAdapter2);
@@ -599,7 +628,7 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
 
     public void init_search_recycler(List<Store> data) {
         storesAdapter = new SearchStoresAdapter(ProfileActivity.this,data);
-        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true);
+        layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         search_recycler.setHasFixedSize(true);
         search_recycler.setLayoutManager(layoutManager2);
         search_recycler.setAdapter(storesAdapter);

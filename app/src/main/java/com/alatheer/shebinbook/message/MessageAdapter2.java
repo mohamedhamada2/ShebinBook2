@@ -12,6 +12,7 @@ import com.alatheer.shebinbook.R;
 import com.alatheer.shebinbook.api.MySharedPreference;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.comments.CommentActivity;
+import com.alatheer.shebinbook.stores.Store;
 import com.squareup.picasso.Picasso;
 
 import java.net.ContentHandler;
@@ -83,8 +84,8 @@ public class MessageAdapter2 extends RecyclerView.Adapter<MessageAdapter2.Messag
                 txt_name.setText(datum.getName());
                 Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
             }else {
-                txt_name.setText(datum.getTraderName());
-                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getTraderImg()).into(user_img);
+                txt_name.setText(datum.getStoreName());
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getLogo()).into(user_img);
             }
             long dt1 = Long.parseLong(datum.getDate());
             final Date from_dt = new Date((long) (dt1 * 1000));
@@ -92,5 +93,11 @@ public class MessageAdapter2 extends RecyclerView.Adapter<MessageAdapter2.Messag
             txt_date.setText(f.format(from_dt));
             //Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+datum.getImg()).into(user_img);
         }
+    }
+    public void add_message(List<Datum> messagelist){
+        for (Datum msg: messagelist){
+            datumList.add(msg);
+        }
+        notifyDataSetChanged();
     }
 }

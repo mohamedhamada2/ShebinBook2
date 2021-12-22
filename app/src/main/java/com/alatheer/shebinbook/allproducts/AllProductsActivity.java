@@ -1,5 +1,6 @@
 package com.alatheer.shebinbook.allproducts;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
@@ -57,7 +58,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
     ProductViewModel productViewModel;
     Integer gallery_id;
     ProductAdapter2 productAdapter2;
-    RecyclerView.LayoutManager productlayoutManager,layoutManager2;
+    LinearLayoutManager productlayoutManager,layoutManager2;
     Dialog dialog,dialog2,dialog3,dialog4;
     String post;
     MySharedPreference mySharedPreference;
@@ -73,6 +74,10 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
     RecyclerView message_recycler,search_recycler;
     MessageAdapter2 messageAdapter2;
     SearchStoresAdapter storesAdapter;
+    private int pastvisibleitem2,visibleitemcount2,totalitemcount2,previous_total2=0;
+    int view_threshold2 = 10;
+    Integer page2 = 1;
+    boolean isloading2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,14 +155,42 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
         message_recycler = view.findViewById(R.id.message_recycler);
         if (user_role == 4){
-            productViewModel.getMessages(trader_id);
+            productViewModel.getMessages(trader_id,page2);
         }else {
-            productViewModel.getUserMessages(user_id);
+            productViewModel.getUserMessages(user_id,page2);
         }
         cancel_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+            }
+        });
+        message_recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull  RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleitemcount2 = layoutManager2.getChildCount();
+                totalitemcount2 = layoutManager2.getItemCount();
+                pastvisibleitem2 = layoutManager2.findFirstVisibleItemPosition();
+                if(dy>0){
+                    if(isloading2){
+                        if(totalitemcount2>previous_total2){
+                            isloading2 = false;
+                            previous_total2 = totalitemcount2;
+
+                        }
+                    }
+                    if(!isloading2 &&(totalitemcount2-visibleitemcount2)<= pastvisibleitem2+view_threshold2){
+                        page2++;
+                        if (user_type == 4){
+                            productViewModel.TraderPagination(trader_id+"",page2);
+                        }else {
+                            productViewModel.UserPagination(user_id,page2);
+                        }
+                        isloading2 = true;
+                    }
+
+                }
             }
         });
         //layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
@@ -471,8 +504,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         store_name = store.getStoreName();
     }
 
-    public void init_messages_recycler(List<Datum> data) {
-        messageAdapter2 = new MessageAdapter2(data,this);
+    public void init_messages_recycler(MessageAdapter2 messageAdapter2) {
         layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);

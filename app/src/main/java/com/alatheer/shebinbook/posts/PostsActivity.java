@@ -55,6 +55,7 @@ import com.alatheer.shebinbook.databinding.ActivityPostsBinding;
 import com.alatheer.shebinbook.home.AskModel;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.message.Datum;
+import com.alatheer.shebinbook.message.MessageAdapter;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
 import com.alatheer.shebinbook.stores.Store;
@@ -93,6 +94,10 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
     RecyclerView search_recycler,message_recycler;
     SearchStoresAdapter storesAdapter;
     MessageAdapter2 messageAdapter2;
+    private boolean isloading2;
+    private int pastvisibleitem2,visibleitemcount2,totalitemcount2,previous_total2=0;
+    int view_threshold2 = 10;
+    Integer page2 = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -439,14 +444,42 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
         message_recycler = view.findViewById(R.id.message_recycler);
 
         if (user_type == 4){
-            postViewModel.getMessages(trader_id2);
+            postViewModel.getMessages(trader_id2,page2);
         }else {
-            postViewModel.getUserMessages(user_id);
+            postViewModel.getUserMessages(user_id,page2);
         }
         cancel_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+            }
+        });
+        message_recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull  RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleitemcount2 = layoutManager2.getChildCount();
+                totalitemcount2 = layoutManager2.getItemCount();
+                pastvisibleitem2 = layoutManager2.findFirstVisibleItemPosition();
+                if(dy>0){
+                    if(isloading2){
+                        if(totalitemcount2>previous_total2){
+                            isloading2 = false;
+                            previous_total2 = totalitemcount2;
+
+                        }
+                    }
+                    if(!isloading2 &&(totalitemcount2-visibleitemcount2)<= pastvisibleitem2+view_threshold2){
+                        page2++;
+                        if (user_type == 4){
+                            postViewModel.TraderPagination(trader_id2+"",page);
+                        }else {
+                            postViewModel.UserPagination(user_id,page);
+                        }
+                        isloading2 = true;
+                    }
+
+                }
             }
         });
         //layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
@@ -470,8 +503,7 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
         search_recycler.setAdapter(storesAdapter);
     }
 
-    public void init_messages_recycler(List<Datum> data) {
-        messageAdapter2 = new MessageAdapter2(data,this);
+    public void init_messages_recycler(MessageAdapter2 messageAdapter2) {
         layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);

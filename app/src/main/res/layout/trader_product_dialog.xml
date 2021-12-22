@@ -129,7 +129,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/product_details"
                 android:gravity="center_horizontal">
                 <TextView
-                    android:id="@+id/product_price"
+                    android:id="@+id/product_price_offer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/product_name"
@@ -141,7 +141,7 @@
                     android:fontFamily="@font/tajawal_medium"
                     android:layout_marginTop="@dimen/_10sdp" />
                 <TextView
-                    android:id="@+id/product_price_offer"
+                    android:id="@+id/product_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/product_name"

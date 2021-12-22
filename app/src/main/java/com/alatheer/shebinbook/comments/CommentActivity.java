@@ -1,5 +1,6 @@
 package com.alatheer.shebinbook.comments;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -82,7 +83,11 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
     Integer trader_id2;
     SearchStoresAdapter storesAdapter;
     MessageAdapter2 messageAdapter2;
-    RecyclerView.LayoutManager layoutManager2;
+    LinearLayoutManager layoutManager2;
+    private int pastvisibleitem2,visibleitemcount2,totalitemcount2,previous_total2=0;
+    int view_threshold2 = 10;
+    int page2 =1 ;
+    boolean isloading2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -354,14 +359,42 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
         message_recycler = view.findViewById(R.id.message_recycler);
 
         if (user_type == 4){
-            commentViewModel.getMessages(trader_id2);
+            commentViewModel.getMessages(trader_id2,page2);
         }else {
-            commentViewModel.getUserMessages(user_id);
+            commentViewModel.getUserMessages(user_id,page2);
         }
         cancel_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+            }
+        });
+        message_recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleitemcount2 = layoutManager2.getChildCount();
+                totalitemcount2 = layoutManager2.getItemCount();
+                pastvisibleitem2 = layoutManager2.findFirstVisibleItemPosition();
+                if(dy>0){
+                    if(isloading2){
+                        if(totalitemcount2>previous_total2){
+                            isloading2 = false;
+                            previous_total2 = totalitemcount2;
+
+                        }
+                    }
+                    if(!isloading2 &&(totalitemcount2-visibleitemcount2)<= pastvisibleitem2+view_threshold2){
+                        page2++;
+                        if (user_type == 4){
+                            commentViewModel.TraderPagination(trader_id2+"",page2);
+                        }else {
+                            commentViewModel.UserPagination(user_id,page2);
+                        }
+                        isloading2 = true;
+                    }
+
+                }
             }
         });
         //layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
@@ -385,8 +418,7 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
         search_recycler.setAdapter(storesAdapter);
     }
 
-    public void init_messages_recycler(List<Datum> data) {
-        messageAdapter2 = new MessageAdapter2(data,this);
+    public void init_messages_recycler(MessageAdapter2 messageAdapter2) {
         layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);

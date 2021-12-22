@@ -63,7 +63,7 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
     ActivitySubCategoryBinding activitySubCategoryBinding;
     SubCategoryViewModel subCategoryViewModel;
     GridLayoutManager layoutManager;
-    RecyclerView.LayoutManager layoutManager2,layoutManager3;
+    LinearLayoutManager layoutManager2,layoutManager3;
     SubCategoryAdapter subCategoryAdapter;
     AutoScrollViewPager viewPager2;
     MenuAdapter menuAdapter;
@@ -83,6 +83,9 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
     MessageAdapter2 messageAdapter2;
     RecyclerView search_recycler;
     SearchStoresAdapter storesAdapter;
+    private boolean isloading;
+    private int pastvisibleitem,visibleitemcount,totalitemcount,previous_total=0;
+    int view_threshold = 10, page = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,9 +157,9 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
         message_recycler = view.findViewById(R.id.message_recycler);
 
         if (user_type == 4){
-            subCategoryViewModel.getMessages(trader_id);
+            subCategoryViewModel.getMessages(trader_id,page);
         }else {
-            subCategoryViewModel.getUserMessages(user_id);
+            subCategoryViewModel.getUserMessages(user_id,page);
         }
         cancel_img.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,10 +167,38 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
                 dialog.dismiss();
             }
         });
-        layoutManager3 = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
-        message_type_recycler.setAdapter(messageAdapter);
-        message_type_recycler.setLayoutManager(layoutManager3);
-        message_type_recycler.setHasFixedSize(true);
+        message_recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull  RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleitemcount = layoutManager2.getChildCount();
+                totalitemcount = layoutManager2.getItemCount();
+                pastvisibleitem = layoutManager2.findFirstVisibleItemPosition();
+                if(dy>0){
+                    if(isloading){
+                        if(totalitemcount>previous_total){
+                            isloading = false;
+                            previous_total = totalitemcount;
+
+                        }
+                    }
+                    if(!isloading &&(totalitemcount-visibleitemcount)<= pastvisibleitem+view_threshold){
+                        page++;
+                        if (user_type == 4){
+                            subCategoryViewModel.TraderPagination(trader_id+"",page);
+                        }else {
+                            subCategoryViewModel.UserPagination(user_id,page);
+                        }
+                        isloading = true;
+                    }
+
+                }
+            }
+        });
+        //layoutManager3 = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
+        //message_type_recycler.setAdapter(messageAdapter);
+        //message_type_recycler.setLayoutManager(layoutManager3);
+        //message_type_recycler.setHasFixedSize(true);
         builder.setView(view);
         dialog = builder.create();
         dialog.show();
@@ -192,7 +223,6 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
         user_name = loginModel.getData().getUser().getName();
         user_phone = loginModel.getData().getUser().getPhone();
         user_type = loginModel.getData().getUser().getRoleIdFk();
-       // Toast.makeText(this, user_type+"", Toast.LENGTH_SHORT).show();
         user_id = loginModel.getData().getUser().getId()+"";
         if (user_type == 4){
             trader_id =loginModel.getData().getUser().getTraderId()+"";
@@ -277,9 +307,8 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
         return false;
     }
 
-    public void init_messages_recycler(List<Datum> data) {
+    public void init_messages_recycler(MessageAdapter2 messageAdapter2) {
         //Toast.makeText(this, "data", Toast.LENGTH_SHORT).show();
-        messageAdapter2 = new MessageAdapter2(data,this);
         layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);

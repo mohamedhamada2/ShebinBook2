@@ -71,19 +71,19 @@ public class ReplayAdapter  extends RecyclerView.Adapter<ReplayAdapter.MessageHo
             loginModel = mySharedPreference.Get_UserData(context);
             trader_id = loginModel.getData().getUser().getTraderId();
             txt_comment.setText(datum.getReplay());
-            txt_name.setText(datum.getTraderName());
+            txt_name.setText(datum.getStoreName());
             long dt1 = Long.parseLong(datum.getDate());
             final Date from_dt = new Date((long) (dt1 * 1000));
             final DateFormat f = new SimpleDateFormat("yyyy/MM/dd ", Locale.ENGLISH);
             txt_date.setText(f.format(from_dt));
             try {
                 if (trader_id.equals(datum.getTraderIdFk())){
-                    Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+loginModel.getData().getUser().getUserImg()).into(user_img);
+                    Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getLogo()).into(user_img);
                 }else {
                     Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
                 }
             }catch (Exception e){
-                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getLogo()).into(user_img);
             }
 
 

@@ -1,6 +1,7 @@
 package com.alatheer.shebinbook.message;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.alatheer.shebinbook.Utilities.Utilities;
@@ -10,6 +11,10 @@ import com.alatheer.shebinbook.comments.CommentModel;
 import com.alatheer.shebinbook.comments.ReplyModel;
 import com.alatheer.shebinbook.message.reply.ReplayModel;
 import com.alatheer.shebinbook.message.reply.Reply;
+import com.alatheer.shebinbook.stores.StoreModel;
+import com.alatheer.shebinbook.stores.StoresAdapter;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -18,6 +23,8 @@ import retrofit2.Response;
 public class MessageViewModel {
     Context context;
     MessageActivity messageActivity;
+    List<Datum> messagelist;
+    MessageAdapter2 messageAdapter2;
 
     public MessageViewModel(Context context) {
         this.context = context;
@@ -70,5 +77,121 @@ public class MessageViewModel {
                 }
             });
         }
+    }
+
+    public void getSearch_stores(String toString) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<StoreModel> call = getDataService.search_store(toString);
+            call.enqueue(new Callback<StoreModel>() {
+                @Override
+                public void onResponse(Call<StoreModel> call, Response<StoreModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            messageActivity.init_search_recycler(response.body().getData());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<StoreModel> call, Throwable t) {
+                    Log.e("searcherror",t.getMessage());
+                }
+            });
+        }
+    }
+    public void getMessages(String trader_id,Integer page) {
+        //Toast.makeText(context, trader_id, Toast.LENGTH_SHORT).show();
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<MessageModel> call = getDataService.get_messages(trader_id,page);
+            call.enqueue(new Callback<MessageModel>() {
+                @Override
+                public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            messagelist = response.body().getData().getData();
+                            messageAdapter2 = new MessageAdapter2(messagelist,context);
+                            messageActivity.init_messages_recycler(messageAdapter2);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MessageModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void getUserMessages(String user_id,Integer page) {
+        if (Utilities.isNetworkAvailable(context)) {
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<MessageModel> call = getDataService.get_user_messages(user_id,page);
+            call.enqueue(new Callback<MessageModel>() {
+                @Override
+                public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                    if (response.isSuccessful()) {
+                        if (response.body().getStatus()) {
+                            messagelist = response.body().getData().getData();
+                            messageAdapter2 = new MessageAdapter2(messagelist,context);
+                            messageActivity.init_messages_recycler(messageAdapter2);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MessageModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void TraderPagination(String s, Integer page) {
+        GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<MessageModel> call = getDataService.get_messages(s,page);
+        call.enqueue(new Callback<MessageModel>() {
+            @Override
+            public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()){
+                        if (!response.body().getData().getData().isEmpty()){
+                            messagelist = response.body().getData().getData();
+                            messageAdapter2.add_message(messagelist);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MessageModel> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void UserPagination(String user_id, Integer page) {
+        GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<MessageModel> call = getDataService.get_messages(user_id,page);
+        call.enqueue(new Callback<MessageModel>() {
+            @Override
+            public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()){
+                        if (!response.body().getData().getData().isEmpty()){
+                            messagelist = response.body().getData().getData();
+                            messageAdapter2.add_message(messagelist);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MessageModel> call, Throwable t) {
+
+            }
+        });
     }
 }

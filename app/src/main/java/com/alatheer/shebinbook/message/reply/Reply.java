@@ -37,6 +37,9 @@ public class Reply {
     @SerializedName("user_img")
     @Expose
     private String userImg;
+    @SerializedName("trader_img")
+    @Expose
+    private String traderImg;
     @SerializedName("trader_name")
     @Expose
     private String traderName;
@@ -46,6 +49,12 @@ public class Reply {
     @SerializedName("img")
     @Expose
     private String img;
+    @SerializedName("logo")
+    @Expose
+    private String logo;
+    @SerializedName("store_name")
+    @Expose
+    private String storeName;
 
     public Integer getId() {
         return id;
@@ -135,6 +144,14 @@ public class Reply {
         this.userImg = userImg;
     }
 
+    public String getTraderImg() {
+        return traderImg;
+    }
+
+    public void setTraderImg(String traderImg) {
+        this.traderImg = traderImg;
+    }
+
     public String getTraderName() {
         return traderName;
     }
@@ -157,5 +174,21 @@ public class Reply {
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 }

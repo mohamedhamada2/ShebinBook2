@@ -84,8 +84,16 @@ public class SliderAdapter extends PagerAdapter {
         Dialog dialog3 = builder.create();
         dialog3.show();
         product_name.setText(slider.getTitle());
-        product_price.setText(slider.getPriceBeforeOffer()+"LE");
-        product_price_offer.setText(slider.getPriceAfterOffer()+"LE");
+        if (slider.getPriceBeforeOffer()!= null){
+            product_price.setText(slider.getPriceBeforeOffer()+"LE");
+        }else {
+            product_price.setText("أدخل السعر");
+        }
+        if (slider.getPriceAfterOffer() != null){
+            product_price_offer.setText(slider.getPriceAfterOffer()+"LE");
+        }else {
+            product_price_offer.setText("أدخل الخصم");
+        }
         product_details.setText(slider.getDescription());
         txt_store_name.setText(store_name);
         Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+store_logo).into(store_img);

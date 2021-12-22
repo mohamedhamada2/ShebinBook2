@@ -189,24 +189,13 @@ public class AddOfferActivity extends AppCompatActivity implements NavigationVie
         price_after_offer = activityAddOfferBinding.etOfferPrice.getText().toString();
         title = activityAddOfferBinding.etProductName.getText().toString();
         offer_des = activityAddOfferBinding.etDetails.getText().toString();
-        if (!TextUtils.isEmpty(price_after_offer)&&!TextUtils.isEmpty(price_before_offer)&&!TextUtils.isEmpty(title)
-        &&!TextUtils.isEmpty(to_date)&&!TextUtils.isEmpty(from_date)&&filepath != null&&!TextUtils.isEmpty(offer_des)){
+        if (!TextUtils.isEmpty(title)&&filepath != null&&!TextUtils.isEmpty(offer_des)){
             addOfferViewModel.add_offer(trader_id,title,gender_id,from_date,to_date,price_before_offer,price_after_offer,offer_des,filepath);
         }else {
             if(TextUtils.isEmpty(title)){
                 activityAddOfferBinding.etProductName.setError("ادخل اسم المنتج");
             }else {
                 activityAddOfferBinding.etProductName.setError(null);
-            }
-            if(TextUtils.isEmpty(price_before_offer)){
-                activityAddOfferBinding.etProductPrice.setError("ادخل السعر قبل الخصم");
-            }else {
-                activityAddOfferBinding.etProductPrice.setError(null);
-            }
-            if(TextUtils.isEmpty(price_after_offer)){
-                activityAddOfferBinding.etOfferPrice.setError("ادخل السعر بعد الخصم");
-            }else {
-                activityAddOfferBinding.etOfferPrice.setError(null);
             }
             if(TextUtils.isEmpty(from_date)){
                 activityAddOfferBinding.etFromDate.setError("ادخل تاريخ بداية الخصم");

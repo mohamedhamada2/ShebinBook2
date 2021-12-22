@@ -79,9 +79,13 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (role_id == 4 && trader_id == sliderList.get(position).getTraderIdFk()){
-                    creatTraderOfferDialog(sliderList.get(position));
-                }else {
+                try {
+                    if (trader_id.equals(sliderList.get(position).getTraderIdFk())){
+                        creatTraderOfferDialog(sliderList.get(position));
+                    }else {
+                        creatrOfferDialog(sliderList.get(position));
+                    }
+                }catch (Exception e){
                     creatrOfferDialog(sliderList.get(position));
                 }
             }
@@ -104,8 +108,16 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
         Dialog dialog = builder.create();
         dialog.show();
         product_name.setText(slider.getTitle());
-        product_price.setText(slider.getPriceBeforeOffer()+"");
-        product_price_offer.setText(slider.getPriceAfterOffer());
+        if (slider.getPriceBeforeOffer() != null){
+            product_price.setText(slider.getPriceBeforeOffer()+"LE");
+        }else {
+            product_price.setText("السعر");
+        }
+        if (slider.getPriceAfterOffer() != null){
+            product_price_offer.setText(slider.getPriceAfterOffer()+"LE");
+        }else {
+            product_price_offer.setText("الخصم");
+        }
         product_details.setText(slider.getDescription());
         Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+store_logo).into(store_img);
         txtstore_name.setText(store_name);
@@ -196,8 +208,16 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
         }
 
         public void setData(Slider slider) {
-            txt_product_price.setText(slider.getPriceBeforeOffer()+"LE");
-            txt_offer_price.setText(slider.getPriceAfterOffer()+"LE");
+            if (slider.getPriceBeforeOffer()!= null){
+                txt_product_price.setText(slider.getPriceBeforeOffer()+"LE");
+            }else {
+                txt_product_price.setText("السعر");
+            }
+            if (slider.getPriceAfterOffer()!=null){
+                txt_offer_price.setText(slider.getPriceAfterOffer()+"LE");
+            }else {
+                txt_offer_price.setText("العرض");
+            }
             txt_product_name.setText(slider.getTitle());
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/advertisement/"+slider.getImg()).into(slider_img);
         }
@@ -220,8 +240,16 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
         dialog3.show();
         product_details.setText(slider.getDescription());
         product_name.setText(slider.getTitle());
-        product_price.setText(slider.getPriceBeforeOffer()+"LE");
-        product_price_offer.setText(slider.getPriceAfterOffer()+"LE");
+        if (slider.getPriceBeforeOffer() != null){
+            product_price.setText(slider.getPriceBeforeOffer()+"LE");
+        }else {
+            product_price.setText("السعر");
+        }
+        if (slider.getPriceAfterOffer() != null){
+            product_price_offer.setText(slider.getPriceAfterOffer()+"LE");
+        }else {
+            product_price_offer.setText("الخصم");
+        }
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/advertisement/"+slider.getImg()).into(product_img);
         Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+store_logo).into(store_img);
         txtstore_name.setText(store_name);

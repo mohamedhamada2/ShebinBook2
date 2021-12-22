@@ -83,6 +83,10 @@ public class CategoryActivity extends AppCompatActivity implements NavigationVie
     private int pastvisibleitem,visibleitemcount,totalitemcount,previous_total=0;
     int view_threshold = 10;
     int page =1 ;
+    private int pastvisibleitem2,visibleitemcount2,totalitemcount2,previous_total2=0;
+    int view_threshold2 = 10;
+    int page2 =1 ;
+    boolean isloading2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,14 +177,42 @@ public class CategoryActivity extends AppCompatActivity implements NavigationVie
         message_recycler = view.findViewById(R.id.message_recycler);
 
         if (user_type == 4){
-            categoryViewModel.getMessages(trader_id2);
+            categoryViewModel.getMessages(trader_id2,page2);
         }else {
-            categoryViewModel.getUserMessages(user_id);
+            categoryViewModel.getUserMessages(user_id,page2);
         }
         cancel_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+            }
+        });
+        message_recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull  RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleitemcount2 = layoutManager2.getChildCount();
+                totalitemcount2 = layoutManager2.getItemCount();
+                pastvisibleitem2 = layoutManager2.findFirstVisibleItemPosition();
+                if(dy>0){
+                    if(isloading2){
+                        if(totalitemcount2>previous_total2){
+                            isloading2 = false;
+                            previous_total2 = totalitemcount2;
+
+                        }
+                    }
+                    if(!isloading2 &&(totalitemcount2-visibleitemcount2)<= pastvisibleitem2+view_threshold2){
+                        page2++;
+                        if (user_type == 4){
+                            categoryViewModel.TraderPagination(trader_id2,page);
+                        }else {
+                            categoryViewModel.UserPagination(user_id,page);
+                        }
+                        isloading2 = true;
+                    }
+
+                }
             }
         });
         layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
@@ -294,8 +326,8 @@ public class CategoryActivity extends AppCompatActivity implements NavigationVie
     }
 
 
-    public void init_messages_recycler(List<Datum> data) {
-        messageAdapter2 = new MessageAdapter2(data,this);
+    public void init_messages_recycler(MessageAdapter2 messageAdapter2) {
+
         layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);

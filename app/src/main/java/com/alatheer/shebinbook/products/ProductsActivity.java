@@ -90,8 +90,12 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
     List<StoreDetails> messages_types_list;
     MessageAdapter messageAdapter;
     RecyclerView search_recycler;
-    RecyclerView.LayoutManager layoutManager,layoutManager2;
+    LinearLayoutManager layoutManager,layoutManager2;
     SearchStoresAdapter storesAdapter;
+    private int pastvisibleitem2,visibleitemcount2,totalitemcount2,previous_total2=0;
+    int view_threshold2 = 10;
+    Integer page2 = 1;
+    boolean isloading2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,14 +181,42 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
         message_recycler = view.findViewById(R.id.message_recycler);
         if (user_type == 4){
-            productViewModel.getMessages(trader_id);
+            productViewModel.getMessages(trader_id,page2);
         }else {
-            productViewModel.getUserMessages(user_id);
+            productViewModel.getUserMessages(user_id,page2);
         }
         cancel_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+            }
+        });
+        message_recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleitemcount2 = layoutManager2.getChildCount();
+                totalitemcount2 = layoutManager2.getItemCount();
+                pastvisibleitem2 = layoutManager2.findFirstVisibleItemPosition();
+                if(dy>0){
+                    if(isloading2){
+                        if(totalitemcount2>previous_total2){
+                            isloading2 = false;
+                            previous_total2 = totalitemcount2;
+
+                        }
+                    }
+                    if(!isloading2 &&(totalitemcount2-visibleitemcount2)<= pastvisibleitem2+view_threshold2){
+                        page2++;
+                        if (user_type == 4){
+                            productViewModel.TraderPagination(trader_id+"",page2);
+                        }else {
+                            productViewModel.UserPagination(user_id,page2);
+                        }
+                        isloading2 = true;
+                    }
+
+                }
             }
         });
         layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
@@ -200,8 +232,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
 
     }
-    public void init_messages_recycler(List<Datum> data) {
-        messageAdapter2 = new MessageAdapter2(data,this);
+    public void init_messages_recycler(MessageAdapter2 messageAdapter2) {
         layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);
@@ -306,12 +337,12 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         if (slider.getPriceBeforeOffer() != null){
             product_price.setText(slider.getPriceBeforeOffer()+"LE");
         }else {
-            product_price.setText("أطلب السعر");
+            product_price.setText("أدخل السعر");
         }
         if (slider.getPriceAfterOffer()!= null){
             product_price_offer.setText(slider.getPriceAfterOffer()+"LE");
         }else {
-            product_price_offer.setText("أطلب السعر");
+            product_price_offer.setText("أدخل العرض");
         }
         if (product_details != null){
             product_details.setText(slider.getDescription());
@@ -399,7 +430,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         if (slider.getPriceAfterOffer() != null){
             product_price_offer.setText(slider.getPriceAfterOffer());
         }else {
-            product_price_offer.setText("أطلب السعر");
+            product_price_offer.setText("أطلب العرض");
         }
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/advertisement/"+slider.getImg()).into(product_img);
         Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+store_img).into(image_store_img);

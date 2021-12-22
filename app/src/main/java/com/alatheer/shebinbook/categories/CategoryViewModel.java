@@ -11,8 +11,12 @@ import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.home.category.CategoryModel;
 import com.alatheer.shebinbook.home.slider.SliderModel;
+import com.alatheer.shebinbook.message.Datum;
+import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.message.MessageModel;
 import com.alatheer.shebinbook.stores.StoreModel;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,6 +28,8 @@ public class CategoryViewModel {
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
     int user_gender;
+    List<Datum> messagelist;
+    MessageAdapter2 messageAdapter2;
 
     public CategoryViewModel(Context context) {
         this.context = context;
@@ -81,17 +87,19 @@ public class CategoryViewModel {
         }
     }
 
-    public void getMessages(String trader_id2) {
+    public void getMessages(String trader_id2,Integer page) {
         //Toast.makeText(context, trader_id, Toast.LENGTH_SHORT).show();
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<MessageModel> call = getDataService.get_messages(trader_id2);
+            Call<MessageModel> call = getDataService.get_messages(trader_id2,page);
             call.enqueue(new Callback<MessageModel>() {
                 @Override
                 public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
-                            categoryActivity.init_messages_recycler(response.body().getData().getData());
+                            messagelist = response.body().getData().getData();
+                            messageAdapter2 = new MessageAdapter2(messagelist,context);
+                            categoryActivity.init_messages_recycler(messageAdapter2);
                         }
                     }
                 }
@@ -104,16 +112,18 @@ public class CategoryViewModel {
         }
     }
 
-    public void getUserMessages(String user_id) {
+    public void getUserMessages(String user_id,Integer page) {
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<MessageModel> call = getDataService.get_user_messages(user_id);
+            Call<MessageModel> call = getDataService.get_user_messages(user_id,page);
             call.enqueue(new Callback<MessageModel>() {
                 @Override
                 public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
-                            categoryActivity.init_messages_recycler(response.body().getData().getData());
+                            messagelist = response.body().getData().getData();
+                            messageAdapter2 = new MessageAdapter2(messagelist,context);
+                            categoryActivity.init_messages_recycler(messageAdapter2);
                         }
                     }
                 }
@@ -149,5 +159,51 @@ public class CategoryViewModel {
     }
 
     public void PerformPagination(int page) {
+    }
+
+    public void TraderPagination(String s, Integer page) {
+        GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<MessageModel> call = getDataService.get_messages(s,page);
+        call.enqueue(new Callback<MessageModel>() {
+            @Override
+            public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()){
+                        if (!response.body().getData().getData().isEmpty()){
+                            messagelist = response.body().getData().getData();
+                            messageAdapter2.add_message(messagelist);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MessageModel> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void UserPagination(String user_id, Integer page) {
+        GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<MessageModel> call = getDataService.get_messages(user_id,page);
+        call.enqueue(new Callback<MessageModel>() {
+            @Override
+            public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()){
+                        if (!response.body().getData().getData().isEmpty()){
+                            messagelist = response.body().getData().getData();
+                            messageAdapter2.add_message(messagelist);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MessageModel> call, Throwable t) {
+
+            }
+        });
     }
 }

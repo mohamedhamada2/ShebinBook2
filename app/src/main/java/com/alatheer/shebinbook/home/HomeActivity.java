@@ -66,7 +66,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     ActivityHomeBinding activityHomeBinding;
     HomeViewModel homeViewModel;
     CategoryAdapter categoryAdapter;
-    RecyclerView.LayoutManager layoutManager, layoutManager2,menulayoutmanager;
+    LinearLayoutManager layoutManager, layoutManager2,menulayoutmanager;
     List<AskModel> askModelList;
     List<com.alatheer.shebinbook.home.slider.MenuItem> menuItemList;
     AskAdapter askAdapter;
@@ -84,8 +84,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     MessageAdapter messageAdapter;
     RecyclerView search_recycler;
     SearchStoresAdapter storesAdapter;
-    Integer page = 1;
+    Integer page = 1 ,page2 =1;
     PostAdapter postAdapter;
+    private boolean isloading;
+    private int pastvisibleitem,visibleitemcount,totalitemcount,previous_total=0;
+    int view_threshold = 10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,14 +177,42 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         message_recycler = view.findViewById(R.id.message_recycler);
 
         if (user_type == 4){
-            homeViewModel.getMessages(trader_id);
+            homeViewModel.getMessages(trader_id,page2);
         }else {
-            homeViewModel.getUserMessages(user_id);
+            homeViewModel.getUserMessages(user_id,page2);
         }
         cancel_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+            }
+        });
+        message_recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull  RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleitemcount = layoutManager2.getChildCount();
+                totalitemcount = layoutManager2.getItemCount();
+                pastvisibleitem = layoutManager2.findFirstVisibleItemPosition();
+                if(dy>0){
+                    if(isloading){
+                        if(totalitemcount>previous_total){
+                            isloading = false;
+                            previous_total = totalitemcount;
+
+                        }
+                    }
+                    if(!isloading &&(totalitemcount-visibleitemcount)<= pastvisibleitem+view_threshold){
+                        page++;
+                        if (user_type == 4){
+                            homeViewModel.TraderPagination(trader_id+"",page);
+                        }else {
+                            homeViewModel.UserPagination(user_id,page);
+                        }
+                        isloading = true;
+                    }
+
+                }
             }
         });
         layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
@@ -340,8 +371,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void init_messages_recycler(List<Datum> data) {
-        messageAdapter2 = new MessageAdapter2(data,this);
+    public void init_messages_recycler(MessageAdapter2 messageAdapter2) {
+
         layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);

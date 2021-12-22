@@ -41,7 +41,7 @@ public class Datum implements Serializable {
     private String userImg;
     @SerializedName("trader_img")
     @Expose
-    private Object traderImg;
+    private String traderImg;
     @SerializedName("trader_name")
     @Expose
     private String traderName;
@@ -51,6 +51,12 @@ public class Datum implements Serializable {
     @SerializedName("img")
     @Expose
     private String img;
+    @SerializedName("logo")
+    @Expose
+    private String logo;
+    @SerializedName("store_name")
+    @Expose
+    private String storeName;
 
     public Integer getId() {
         return id;
@@ -140,11 +146,11 @@ public class Datum implements Serializable {
         this.userImg = userImg;
     }
 
-    public Object getTraderImg() {
+    public String getTraderImg() {
         return traderImg;
     }
 
-    public void setTraderImg(Object traderImg) {
+    public void setTraderImg(String traderImg) {
         this.traderImg = traderImg;
     }
 
@@ -170,6 +176,22 @@ public class Datum implements Serializable {
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 
 }

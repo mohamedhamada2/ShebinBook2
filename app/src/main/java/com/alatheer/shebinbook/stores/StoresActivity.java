@@ -69,7 +69,7 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
     Dialog dialog;
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
-    Integer user_type,page = 1;
+    Integer user_type,page = 1,page2=1;
     String user_id,store_name,store_id,store_img,address,user_img,user_name,user_phone,trader_id,trader_id2;
     List<StoreDetails> messages_types_list;
     RecyclerView.LayoutManager storeDetailsManager;
@@ -80,6 +80,9 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
     private boolean isloading;
     private int pastvisibleitem,visibleitemcount,totalitemcount,previous_total=0;
     int view_threshold = 10;
+    private boolean isloading2;
+    private int pastvisibleitem2,visibleitemcount2,totalitemcount2,previous_total2=0;
+    int view_threshold2 = 10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,14 +159,42 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
          message_recycler = view.findViewById(R.id.message_recycler);
         if (user_type == 4){
-            storesViewModel.getMessages(trader_id2);
+            storesViewModel.getMessages(trader_id2,page2);
         }else {
-            storesViewModel.getuserMessages(user_id);
+            storesViewModel.getuserMessages(user_id,page2);
         }
         cancel_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
+            }
+        });
+        message_recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull  RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleitemcount2 = layoutManager2.getChildCount();
+                totalitemcount2 = layoutManager2.getItemCount();
+                pastvisibleitem2 = layoutManager2.findFirstVisibleItemPosition();
+                if(dy>0){
+                    if(isloading2){
+                        if(totalitemcount2>previous_total2){
+                            isloading2 = false;
+                            previous_total2 = totalitemcount2;
+
+                        }
+                    }
+                    if(!isloading2 &&(totalitemcount2-visibleitemcount2)<= pastvisibleitem2+view_threshold2){
+                        page2++;
+                        if (user_type == 4){
+                            storesViewModel.TraderPagination(trader_id+"",page);
+                        }else {
+                            storesViewModel.UserPagination(user_id,page);
+                        }
+                        isloading2 = true;
+                    }
+
+                }
             }
         });
         layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
@@ -342,8 +373,7 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
         startActivity(intent);
     }
 
-    public void init_messages_recycler(List<com.alatheer.shebinbook.message.Datum> data) {
-        messageAdapter2 = new MessageAdapter2(data,this);
+    public void init_messages_recycler(MessageAdapter2 messageAdapter2) {
         layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);

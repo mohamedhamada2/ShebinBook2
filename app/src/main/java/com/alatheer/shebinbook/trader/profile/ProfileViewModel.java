@@ -13,8 +13,12 @@ import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.comments.CommentModel;
 import com.alatheer.shebinbook.home.slider.SliderModel;
+import com.alatheer.shebinbook.message.Datum;
+import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.message.MessageModel;
 import com.alatheer.shebinbook.stores.StoreModel;
+
+import java.util.List;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -28,6 +32,8 @@ public class ProfileViewModel {
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
     Integer user_gender;
+    List<Datum> messagelist;
+    MessageAdapter2 messageAdapter2;
 
     public ProfileViewModel(Context context) {
         this.context = context;
@@ -106,17 +112,19 @@ public class ProfileViewModel {
             });
         }
     }
-    public void getMessages(String trader_id) {
+    public void getMessages(String trader_id,Integer page) {
         //Toast.makeText(context, trader_id, Toast.LENGTH_SHORT).show();
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<MessageModel> call = getDataService.get_messages(trader_id);
+            Call<MessageModel> call = getDataService.get_messages(trader_id,page);
             call.enqueue(new Callback<MessageModel>() {
                 @Override
                 public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
-                            profileActivity.init_messages_recycler(response.body().getData().getData());
+                            messagelist = response.body().getData().getData();
+                            messageAdapter2 = new MessageAdapter2(messagelist,context);
+                            profileActivity.init_messages_recycler(messageAdapter2);
                         }
                     }
                 }
@@ -229,5 +237,28 @@ public class ProfileViewModel {
                 });
             }
         }
+    }
+
+    public void TraderPagination(String trader_id, Integer page2) {
+        GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<MessageModel> call = getDataService.get_messages(trader_id,page2);
+        call.enqueue(new Callback<MessageModel>() {
+            @Override
+            public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()){
+                        if (!response.body().getData().getData().isEmpty()){
+                            messagelist = response.body().getData().getData();
+                            messageAdapter2.add_message(messagelist);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MessageModel> call, Throwable t) {
+
+            }
+        });
     }
 }

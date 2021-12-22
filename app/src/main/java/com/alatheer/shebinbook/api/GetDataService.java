@@ -317,11 +317,13 @@ public interface GetDataService{
     /*38*/                             @Field("offer_id_fk")String offer_id_fk);
     @FormUrlEncoded
     @POST("api/member/get_user_message")
-    Call<MessageModel> get_messages(@Field("trader_id_fk")String trader_id_fk);
+    Call<MessageModel> get_messages(@Field("trader_id_fk")String trader_id_fk,
+                                    @Field("page")Integer page);
     //39
     @FormUrlEncoded
     @POST("api/member/get_user_message")
-    Call<MessageModel> get_user_messages(@Field("user_id_fk")String user_id_fk);
+    Call<MessageModel> get_user_messages(@Field("user_id_fk")String user_id_fk,
+                                         @Field("page")Integer page);
     //40
     @FormUrlEncoded
     @POST("api/member/send_replay_to_message")

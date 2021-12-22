@@ -1,5 +1,6 @@
 package com.alatheer.shebinbook.authentication.favorite;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -59,10 +60,14 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
     Dialog dialog;
     RecyclerView search_recycler,message_recycler;
     SearchStoresAdapter storesAdapter;
-    RecyclerView.LayoutManager layoutManager2;
+    LinearLayoutManager layoutManager2;
     MessageAdapter2 messageAdapter2;
     Integer user_role,trader_id;
     String user_id;
+    private int pastvisibleitem2,visibleitemcount2,totalitemcount2,previous_total2=0;
+    int view_threshold2 = 10;
+    Integer page2 = 1;
+    boolean isloading2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,9 +107,9 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
         message_recycler = view.findViewById(R.id.message_recycler);
         if (user_role == 4){
-            favoriteViewModel.getMessages(trader_id);
+            favoriteViewModel.getMessages(trader_id,page2);
         }else {
-            favoriteViewModel.getUserMessages(user_id);
+            favoriteViewModel.getUserMessages(user_id,page2);
         }
         cancel_img.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,6 +121,34 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
         //message_type_recycler.setAdapter(messageAdapter);
         //message_type_recycler.setLayoutManager(layoutManager);
         //message_type_recycler.setHasFixedSize(true);
+        message_recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleitemcount2 = layoutManager2.getChildCount();
+                totalitemcount2 = layoutManager2.getItemCount();
+                pastvisibleitem2 = layoutManager2.findFirstVisibleItemPosition();
+                if(dy>0){
+                    if(isloading2){
+                        if(totalitemcount2>previous_total2){
+                            isloading2 = false;
+                            previous_total2 = totalitemcount2;
+
+                        }
+                    }
+                    if(!isloading2 &&(totalitemcount2-visibleitemcount2)<= pastvisibleitem2+view_threshold2){
+                        page2++;
+                        if (user_role == 4){
+                            favoriteViewModel.TraderPagination(trader_id+"",page2);
+                        }else {
+                            favoriteViewModel.UserPagination(user_id,page2);
+                        }
+                        isloading2 = true;
+                    }
+
+                }
+            }
+        });
         builder.setView(view);
         dialog = builder.create();
         dialog.show();
@@ -236,8 +269,7 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
         search_recycler.setAdapter(storesAdapter);
     }
 
-    public void init_messages_recycler(List<Datum> data) {
-        messageAdapter2 = new MessageAdapter2(data,this);
+    public void init_messages_recycler(MessageAdapter2 messageAdapter2) {
         layoutManager2 = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);
