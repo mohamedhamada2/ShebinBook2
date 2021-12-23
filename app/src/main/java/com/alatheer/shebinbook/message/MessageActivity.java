@@ -67,6 +67,7 @@ public class MessageActivity extends AppCompatActivity {
     private int pastvisibleitem,visibleitemcount,totalitemcount,previous_total=0;
     int view_threshold = 10;
     Integer page =1;
+    Integer type;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -198,19 +199,24 @@ public class MessageActivity extends AppCompatActivity {
                 validation();
             }
         });
+        if (user_type == 4){
+            type = 1;
+        }else {
+            type = 0;
+        }
         //gender_user = loginModel.getData().getUser().getGender()+"";
     }
     private void validation() {
         message = activityMessageBinding.etPost.getText().toString();
         if(!TextUtils.isEmpty(message)){
-            messageViewModel.addreply(datum.getUserIdFk(),message,datum.getStoreIdFk(),datum.getProductIdFk(),trader_id,datum.getId());
+            messageViewModel.addreply(datum.getUserIdFk(),message,datum.getStoreIdFk(),datum.getProductIdFk(),trader_id,datum.getId(),type);
         }else {
             activityMessageBinding.etPost.setError("برجاء كتابة التعليق الذي تريد نشره");
         }
     }
     private void getDataIntent() {
         datum = (Datum) getIntent().getSerializableExtra("message");
-        activityMessageBinding.txtName.setText(datum.getName());
+        activityMessageBinding.txtName.setText(datum.getName()+datum.getLastName());
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(activityMessageBinding.userimg);
         activityMessageBinding.messageTxt.setText(datum.getMessage());
         if (datum.getImg() == null){

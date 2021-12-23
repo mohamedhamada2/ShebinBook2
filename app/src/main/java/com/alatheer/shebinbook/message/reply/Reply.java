@@ -56,6 +56,18 @@ public class Reply {
     @Expose
     private String storeName;
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    @SerializedName("type")
+    @Expose
+    private Integer type;
+
     public Integer getId() {
         return id;
     }

@@ -107,8 +107,8 @@
                             android:layout_margin="@dimen/_5sdp">
                             <com.makeramen.roundedimageview.RoundedImageView
                                 android:id="@+id/userimg"
-                                android:layout_width="@dimen/_32sdp"
-                                android:layout_height="@dimen/_32sdp"
+                                android:layout_width="@dimen/_36sdp"
+                                android:layout_height="@dimen/_36sdp"
                                 app:riv_corner_radius="@dimen/_10sdp"
                                 android:background="@drawable/user2"
                                 android:layout_alignParentRight="true"
@@ -120,8 +120,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/gradient_ask_user"
-                                android:textSize="@dimen/_9ssp"
-                                android:fontFamily="@font/roboto_medium"
+                                android:textSize="@dimen/_11ssp"
+                                android:fontFamily="@font/tajawal_medium"
                                 android:text="Mohamed hamada"
                                 android:layout_toLeftOf="@+id/userimg"
                                 android:layout_centerVertical="true"
@@ -185,8 +185,8 @@
                             android:layout_marginTop="@dimen/_7sdp">
                             <com.makeramen.roundedimageview.RoundedImageView
                                 android:id="@+id/user_img"
-                                android:layout_width="@dimen/_32sdp"
-                                android:layout_height="@dimen/_32sdp"
+                                android:layout_width="@dimen/_36sdp"
+                                android:layout_height="@dimen/_36sdp"
                                 android:layout_alignParentRight="true"
                                 android:background="@drawable/user2"
                                 app:riv_corner_radius="@dimen/_7sdp"/>
@@ -195,7 +195,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_toLeftOf="@+id/user_img"
-                                android:hint="الرد علي الرسائل"
+                                android:hint="إضافة رد"
                                 android:textColorHint="#4D779C"
                                 android:fontFamily="@font/tajawal_regular"
                                 android:textSize="@dimen/_12ssp"

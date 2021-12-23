@@ -33,11 +33,11 @@ public class MessageViewModel {
 
 
 
-    public void addreply(Integer userIdFk, String message, Integer storeIdFk, Integer productIdFk, Integer trader_id, Integer msg_id) {
+    public void addreply(Integer userIdFk, String message, Integer storeIdFk, Integer productIdFk, Integer trader_id, Integer msg_id,Integer type) {
         //Toast.makeText(context, "success", Toast.LENGTH_SHORT).show();
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<CommentModel> call = getDataService.send_replay_to_message(userIdFk,message,storeIdFk,productIdFk,trader_id,msg_id);
+            Call<CommentModel> call = getDataService.send_replay_to_message(userIdFk,message,storeIdFk,productIdFk,trader_id,msg_id,type);
             call.enqueue(new Callback<CommentModel>() {
                 @Override
                 public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {

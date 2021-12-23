@@ -71,21 +71,29 @@ public class ReplayAdapter  extends RecyclerView.Adapter<ReplayAdapter.MessageHo
             loginModel = mySharedPreference.Get_UserData(context);
             trader_id = loginModel.getData().getUser().getTraderId();
             txt_comment.setText(datum.getReplay());
-            txt_name.setText(datum.getStoreName());
             long dt1 = Long.parseLong(datum.getDate());
             final Date from_dt = new Date((long) (dt1 * 1000));
             final DateFormat f = new SimpleDateFormat("yyyy/MM/dd ", Locale.ENGLISH);
             txt_date.setText(f.format(from_dt));
-            try {
+            /*try {
                 if (trader_id.equals(datum.getTraderIdFk())){
                     Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getLogo()).into(user_img);
+                    txt_name.setText(datum.getStoreName());
                 }else {
                     Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
+                    txt_name.setText(datum.getName()+datum.getLastName());
                 }
             }catch (Exception e){
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
+                txt_name.setText(datum.getName()+datum.getLastName());
+            }*/
+            if (datum.getType()==1){
                 Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getLogo()).into(user_img);
+                txt_name.setText(datum.getStoreName());
+            }else {
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
+                txt_name.setText(datum.getName()+datum.getLastName());
             }
-
 
         }
     }

@@ -332,7 +332,8 @@ public interface GetDataService{
                                  @Field("store_id_fk")Integer store_id_fk,
                                  @Field("product_id_fk")Integer product_id_fk,
                                  @Field("trader_id_fk")Integer trader_id_fk,
-                                 @Field("message_id_fk")Integer message_id_fk);
+                                 @Field("message_id_fk")Integer message_id_fk,
+                                              @Field("type")Integer type);
     //41
     @FormUrlEncoded
     @POST("api/member/get_replay_message")
