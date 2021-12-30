@@ -5,6 +5,7 @@ import androidx.databinding.DataBindingUtil;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.alatheer.shebinbook.R;
@@ -42,6 +43,19 @@ public class LoginActivity extends AppCompatActivity {
     private void validation() {
         phone = activityLoginBinding.etPhone.getText().toString();
         password = activityLoginBinding.etPassword.getText().toString();
-        loginViewModel.login_user(phone,password);
+        if (!TextUtils.isEmpty(phone)&&!TextUtils.isEmpty(password)){
+            loginViewModel.login_user(phone,password);
+        }else {
+            if (TextUtils.isEmpty(phone)){
+                activityLoginBinding.etPhone.setError("برجاء إدخال رقم الهاتف");
+            }else {
+                activityLoginBinding.etPhone.setError(null);
+            }
+            if (TextUtils.isEmpty(password)){
+                activityLoginBinding.etPassword.setError("برجاء إدخال الرقم السري");
+            }else {
+                activityLoginBinding.etPassword.setError(null);
+            }
+        }
     }
 }

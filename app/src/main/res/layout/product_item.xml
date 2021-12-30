@@ -21,7 +21,7 @@
                     android:id="@+id/product_img"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/clothes1"
+                    android:background="@drawable/loading_img"
                     android:scaleType="fitXY"/>
                 <TextView
                     android:id="@+id/product_price"
@@ -59,6 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintRight_toLeftOf="@+id/msg_img"
+                app:layout_constraintLeft_toRightOf="@+id/img"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginRight="@dimen/_5sdp"
@@ -66,6 +67,13 @@
                 android:textSize="@dimen/_10ssp"
                 android:fontFamily="@font/tajawal_medium"
                 android:text="ماك برو"/>
+            <ImageView
+                android:id="@+id/img"
+                android:layout_width="@dimen/_10sdp"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

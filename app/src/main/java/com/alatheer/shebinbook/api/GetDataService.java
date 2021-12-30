@@ -198,7 +198,7 @@ public interface GetDataService{
                                     @Field("message")String message);
 
     @FormUrlEncoded
-    @POST("api/member/send_message_offer")
+    @POST("api/member/send_message_to_store")
     Call<CommentModel> send_offer_message(@Field("user_id_fk")String user_id_fk,
                                           @Field("offer_id_fk")String offer_id_fk,
                                           @Field("trader_id_fk")String trader_id_fk,

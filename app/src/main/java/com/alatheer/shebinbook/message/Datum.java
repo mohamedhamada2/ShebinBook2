@@ -9,6 +9,9 @@ public class Datum implements Serializable {
     @SerializedName("id")
     @Expose
     private Integer id;
+    @SerializedName("type")
+    @Expose
+    private String type;
     @SerializedName("user_id_fk")
     @Expose
     private Integer userIdFk;
@@ -30,6 +33,12 @@ public class Datum implements Serializable {
     @SerializedName("date")
     @Expose
     private String date;
+    @SerializedName("offer_img")
+    @Expose
+    private String offerImg;
+    @SerializedName("offer_title")
+    @Expose
+    private String offerTitle;
     @SerializedName("name")
     @Expose
     private String name;
@@ -64,6 +73,14 @@ public class Datum implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Integer getUserIdFk() {
@@ -120,6 +137,22 @@ public class Datum implements Serializable {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getOfferImg() {
+        return offerImg;
+    }
+
+    public void setOfferImg(String offerImg) {
+        this.offerImg = offerImg;
+    }
+
+    public String getOfferTitle() {
+        return offerTitle;
+    }
+
+    public void setOfferTitle(String offerTitle) {
+        this.offerTitle = offerTitle;
     }
 
     public String getName() {

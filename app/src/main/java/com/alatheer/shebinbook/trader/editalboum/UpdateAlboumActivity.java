@@ -19,6 +19,7 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityUpdateAlboumBinding;
 import com.alatheer.shebinbook.home.AskAdapter;
 import com.alatheer.shebinbook.home.MenuAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.google.android.material.navigation.NavigationView;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
@@ -32,7 +33,7 @@ public class UpdateAlboumActivity extends AppCompatActivity implements Navigatio
     Integer store_id,trader_id,alboum_id;
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
-    String alboum_name,user_img,user_name,user_phone;;
+    String alboum_name,user_img,user_name,user_phone,user_id;;
     List<com.alatheer.shebinbook.home.slider.MenuItem> menuItemList;
     AskAdapter askAdapter;
     RecyclerView menu_recycler;
@@ -48,7 +49,7 @@ public class UpdateAlboumActivity extends AppCompatActivity implements Navigatio
         activityUpdateAlboumBinding.setUpdatealboumviewmodel(updateAlboumViewModel);
         getDataFromIntent();
         getSharedPreferanceData();
-        init_navigation_menu();
+        updateAlboumViewModel.getData(user_id);
         activityUpdateAlboumBinding.etAlboumName.setText(alboum_name);
         activityUpdateAlboumBinding.btnAddAlboum.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +68,7 @@ public class UpdateAlboumActivity extends AppCompatActivity implements Navigatio
     private void getSharedPreferanceData() {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
+        user_id = loginModel.getData().getUser().getId()+"";
         trader_id = loginModel.getData().getUser().getTraderId();
         user_img = loginModel.getData().getUser().getUserImg();
         user_name = loginModel.getData().getUser().getName();
@@ -126,5 +128,17 @@ public class UpdateAlboumActivity extends AppCompatActivity implements Navigatio
     @Override
     public boolean onNavigationItemSelected(@NonNull  MenuItem item) {
         return false;
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityUpdateAlboumBinding.userImg);
+        }
+        activityUpdateAlboumBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

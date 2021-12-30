@@ -100,14 +100,14 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.StoresHold
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.image_item, null);
         ImageView img = view.findViewById(R.id.img);
-        Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+product_img).into(img);
+        Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+product_img).resize(600,600).into(img);
         builder.setView(view);
         Dialog dialog = builder.create();
         dialog.show();
         Window window = dialog.getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.setGravity(Gravity.CENTER_HORIZONTAL);
-        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        window.setLayout(600, 600);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class StoresAdapter extends RecyclerView.Adapter<StoresAdapter.StoresHold
         public void setData(Store store) {
             txt_comment.setText(store.getMini_description());
             txt.setText(store.getStoreName());
-            Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+store.getLogo()).into(img);
+            Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+store.getLogo()).resize(800,600).into(img);
             //img.setImageResource();
             if (store.getFavourite() == 1){
                 fav_img_btn.setBackground(storesActivity.getResources().getDrawable(R.drawable.fav3));

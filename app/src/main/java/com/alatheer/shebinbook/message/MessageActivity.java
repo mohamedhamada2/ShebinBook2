@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +38,7 @@ import com.alatheer.shebinbook.posts.Post;
 import com.alatheer.shebinbook.products.ProductsActivity;
 import com.alatheer.shebinbook.products.StoreDetails;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
@@ -75,10 +77,10 @@ public class MessageActivity extends AppCompatActivity {
         activityMessageBinding = DataBindingUtil.setContentView(this,R.layout.activity_message);
         messageViewModel = new MessageViewModel(this);
         getSharedPreferenceData();
+        messageViewModel.getData(user_id);
         getDataIntent();
         messageViewModel.getreplies(datum.getId());
         //get_messages_types();
-        init_navigation_menu();
         activityMessageBinding.imgSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,7 +93,34 @@ public class MessageActivity extends AppCompatActivity {
                 Create_message_Dialog();
             }
         });
+        activityMessageBinding.messageImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CreateImageDialog(datum);
+            }
+        });
     }
+
+    private void CreateImageDialog(Datum datum) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MessageActivity.this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.image_item2, null);
+        ImageView img = view.findViewById(R.id.img);
+        if (datum.getType().equals("2")){
+            //Log.e("offer_img","https://mymissing.online/shebin_book/public/uploads/advertisement/"+datum.getOfferImg());
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/advertisement/"+datum.getOfferImg()).into(img);
+        }else if (datum.getType().equals("1")){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+datum.getImg()).into(img);
+        }
+        builder.setView(view);
+        Dialog dialog = builder.create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
     private void Create_Alert_Dialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -184,9 +213,6 @@ public class MessageActivity extends AppCompatActivity {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
         user_id = loginModel.getData().getUser().getId()+"";
-        user_img = loginModel.getData().getUser().getUserImg();
-        user_name = loginModel.getData().getUser().getName();
-        user_phone = loginModel.getData().getUser().getPhone();
         user_type = loginModel.getData().getUser().getRoleIdFk();
         trader_id = loginModel.getData().getUser().getTraderId();
         if (user_img != null){
@@ -219,9 +245,10 @@ public class MessageActivity extends AppCompatActivity {
         activityMessageBinding.txtName.setText(datum.getName()+datum.getLastName());
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(activityMessageBinding.userimg);
         activityMessageBinding.messageTxt.setText(datum.getMessage());
-        if (datum.getImg() == null){
-            activityMessageBinding.messageImg.setVisibility(View.GONE);
-        }else{
+        if (datum.getType().equals("2")){
+            //Log.e("offer_img","https://mymissing.online/shebin_book/public/uploads/advertisement/"+datum.getOfferImg());
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/advertisement/"+datum.getOfferImg()).into(activityMessageBinding.messageImg);
+        }else if (datum.getType().equals("1")){
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+datum.getImg()).into(activityMessageBinding.messageImg);
         }
     }
@@ -288,6 +315,20 @@ public class MessageActivity extends AppCompatActivity {
         message_recycler.setLayoutManager(layoutManager2);
         message_recycler.setAdapter(messageAdapter2);
     }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityMessageBinding.userImg2);
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityMessageBinding.userImg);
+        }
+        activityMessageBinding.userName.setText(user_name);
+        init_navigation_menu();
+    }
+
     /*private void get_messages_types() {
         messages_types_list = new ArrayList<>();
         messages_types_list.add(new StoreDetails(1,"الرسائل الواردة"));

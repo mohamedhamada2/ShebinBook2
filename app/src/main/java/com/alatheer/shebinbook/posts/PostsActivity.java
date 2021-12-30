@@ -58,6 +58,7 @@ import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.google.android.material.navigation.NavigationView;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -108,7 +109,7 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
         activityPostsBinding.swiperefresh.setOnRefreshListener(this);
         gender_id = "3";
         getSharedPreferenceData();
-        init_navigation_menu();
+        postViewModel.getData(user_id);
         getGenders();
         postViewModel.getPosts(gender_user,page,user_id);
         activityPostsBinding.groupImg.setOnClickListener(new View.OnClickListener() {
@@ -508,5 +509,18 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);
         message_recycler.setAdapter(messageAdapter2);
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityPostsBinding.userImg2);
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityPostsBinding.userImg);
+        }
+        activityPostsBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

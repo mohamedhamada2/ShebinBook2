@@ -68,9 +68,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageHolder>
     private void CreateImageDialog(String product_img) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.image_item, null);
+        final View view = inflater.inflate(R.layout.image_item2, null);
         ImageView img = view.findViewById(R.id.img);
-        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product_img).into(img);
+        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product_img).resize(1000,1000).into(img);
         builder.setView(view);
         Dialog dialog = builder.create();
         dialog.show();
@@ -104,7 +104,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageHolder>
             }catch (Exception e){
 
             }
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+image.getImg()).into(img);
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+image.getImg()).resize(1000,800).into(img);
         }
     }
 }

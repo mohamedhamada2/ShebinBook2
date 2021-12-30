@@ -49,6 +49,7 @@ import com.alatheer.shebinbook.message.MessageAdapter;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.products.StoreDetails;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.stores.StoresAdapter;
 import com.google.android.material.navigation.NavigationView;
@@ -97,6 +98,7 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
         getData();
         subCategoryViewModel.getAds();
         getSharedPreferanceData();
+        subCategoryViewModel.getData(user_id);
         activitySubCategoryBinding.categoryName.setText(category.getName());
         initSubCategories(category.getSubCates());
         activitySubCategoryBinding.swiperefresh.setOnRefreshListener(this);
@@ -334,5 +336,17 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
                 activitySubCategoryBinding.swiperefresh.setRefreshing(false);
             }
         }, 2000);
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activitySubCategoryBinding.userImg2);
+        }
+        activitySubCategoryBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

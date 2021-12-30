@@ -57,7 +57,7 @@ public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingHold
     }
 
     class RatingHolder extends RecyclerView.ViewHolder{
-        TextView txt_user_name;
+        TextView txt_user_name,txt_desc;
         ImageView user_img,bin_img;
         RatingBar ratingBar;
         public RatingHolder(@NonNull  View itemView) {
@@ -66,6 +66,7 @@ public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingHold
             user_img = itemView.findViewById(R.id.userimg);
             ratingBar = itemView.findViewById(R.id.rating_bar);
             bin_img = itemView.findViewById(R.id.bin_img);
+            txt_desc = itemView.findViewById(R.id.txt_desc);
         }
 
         public void setData(Rating rating) {
@@ -80,6 +81,7 @@ public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingHold
 
             }
             txt_user_name.setText(rating.getName());
+            txt_desc.setText(rating.getDescription());
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+rating.getUserImg()).into(user_img);
             ratingBar.setRating(Float.parseFloat(rating.getRate()));
         }

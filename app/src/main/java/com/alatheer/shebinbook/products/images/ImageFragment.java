@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,10 +40,14 @@ public class ImageFragment extends Fragment {
     }
 
     public void init_recycler(List<Image> data) {
-        imageAdapter = new com.alatheer.shebinbook.products.images.ImageAdapter(data,getActivity(),this);
-        gridLayoutManager = new GridLayoutManager(getActivity(),2);
-        fragmentImageBinding.imagesRecycler.setHasFixedSize(true);
-        fragmentImageBinding.imagesRecycler.setAdapter(imageAdapter);
-        fragmentImageBinding.imagesRecycler.setLayoutManager(gridLayoutManager);
+        try{
+            imageAdapter = new com.alatheer.shebinbook.products.images.ImageAdapter(data,getActivity(),this);
+            gridLayoutManager = new GridLayoutManager(getActivity(),2);
+            fragmentImageBinding.imagesRecycler.setHasFixedSize(true);
+            fragmentImageBinding.imagesRecycler.setAdapter(imageAdapter);
+            fragmentImageBinding.imagesRecycler.setLayoutManager(gridLayoutManager);
+        }catch (Exception e){
+            Log.e("error_msg",e.getMessage());
+        }
     }
 }

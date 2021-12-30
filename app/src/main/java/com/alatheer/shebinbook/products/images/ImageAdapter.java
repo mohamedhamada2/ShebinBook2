@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ImageAdapter  extends RecyclerView.Adapter<ImageAdapter.ImageHolder> {
@@ -59,7 +61,7 @@ public class ImageAdapter  extends RecyclerView.Adapter<ImageAdapter.ImageHolder
     private void CreateImageDialog(String product_img) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.image_item, null);
+        final View view = inflater.inflate(R.layout.image_item2, null);
         ImageView img = view.findViewById(R.id.img);
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product_img).into(img);
         builder.setView(view);
@@ -94,7 +96,13 @@ public class ImageAdapter  extends RecyclerView.Adapter<ImageAdapter.ImageHolder
                 }
             }catch (Exception e){
             }
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+image.getImg()).into(img);
+            try {
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+image.getImg()).resize(1000, 1000).into(img);
+            }catch (Exception e){
+                Log.e("error_mag",e.getMessage());
+                img.setImageResource(R.drawable.clothes1);
+            }
+
         }
     }
 }

@@ -110,7 +110,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
         }
 
         public void setData(Product product) {
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(category_img);
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).resize(600,200).into(category_img);
             category_txt.setText(product.getTitle());
         }
     }
@@ -268,6 +268,9 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
         TextView product_price_offer = view.findViewById(R.id.product_price_offer);
         TextView txt_product_decription = view.findViewById(R.id.product_decription);
         ImageView msg_img = view.findViewById(R.id.msg_img);
+        if (user_role == 4){
+            msg_img.setVisibility(View.GONE);
+        }
         builder.setView(view);
         Dialog dialog = builder.create();
         dialog.show();
@@ -326,6 +329,8 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
                 if (!TextUtils.isEmpty(post)){
                     add_message(loginMode.getData().getUser().getId(),product.getId()+"",product.getTraderIdFk()+"",product.getStoreIdFk()+"",post);
                     dialog2.dismiss();
+                }else {
+                    et_post.setError("أكتب رسالتك");
                 }
             }
         });

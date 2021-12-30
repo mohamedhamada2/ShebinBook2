@@ -33,7 +33,7 @@ public class Profile {
     private String phone;
     @SerializedName("user_img")
     @Expose
-    private Object userImg;
+    private String userImg;
     @SerializedName("role_id_fk")
     @Expose
     private Integer roleIdFk;
@@ -134,11 +134,11 @@ public class Profile {
         this.phone = phone;
     }
 
-    public Object getUserImg() {
+    public String getUserImg() {
         return userImg;
     }
 
-    public void setUserImg(Object userImg) {
+    public void setUserImg(String userImg) {
         this.userImg = userImg;
     }
 

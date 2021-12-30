@@ -42,6 +42,7 @@ import com.alatheer.shebinbook.home.slider.MenuItem;
 import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.trader.addproduct.AddProductActivity;
 import com.alatheer.shebinbook.trader.images.Image;
@@ -88,7 +89,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         activityAllProductsBinding.swiperefresh.setOnRefreshListener(this);
         getDataIntent();
         getSharedPreferenceData();
-        init_navigation_menu();
+        productViewModel.getData(user_id);
         productViewModel.getStore(trader_id2+"",user_id);
         productViewModel.getproducts(gallery_id+"");
         activityAllProductsBinding.addToAlboumImg.setOnClickListener(new View.OnClickListener() {
@@ -262,6 +263,9 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         TextView txt_store_name = view.findViewById(R.id.store_name);
         ImageView msg_img = view.findViewById(R.id.msg_img);
         ImageView store_img2 = view.findViewById(R.id.store_logo);
+        if (user_role == 4){
+            msg_img.setVisibility(View.GONE);
+        }
         builder.setView(view);
         dialog = builder.create();
         dialog.show();
@@ -320,6 +324,8 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
                 post = et_post.getText().toString();
                 if (!TextUtils.isEmpty(post)){
                     productViewModel.add_message(user_id,product.getId()+"",product.getTraderIdFk()+"",product.getStoreIdFk()+"",post);
+                }else {
+                    et_post.setError("أكتب رسالتك");
                 }
             }
         });
@@ -517,5 +523,19 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         search_recycler.setHasFixedSize(true);
         search_recycler.setLayoutManager(layoutManager2);
         search_recycler.setAdapter(storesAdapter);
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+        user_type = loginModel.getData().getUser().getRoleIdFk();
+
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityAllProductsBinding.userImg);
+        }
+        activityAllProductsBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

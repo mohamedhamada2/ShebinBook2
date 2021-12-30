@@ -19,6 +19,7 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityAddAlboumBinding;
 import com.alatheer.shebinbook.home.AskAdapter;
 import com.alatheer.shebinbook.home.MenuAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.google.android.material.navigation.NavigationView;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
@@ -29,7 +30,7 @@ import java.util.List;
 public class AddAlboumActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     ActivityAddAlboumBinding activityAddAlboumBinding;
     AddAlboumViewModel addAlboumViewModel;
-    String alboum_name,store_id,user_img,user_name,user_phone;
+    String alboum_name, store_id, user_img, user_name, user_phone;
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
     Integer trader_id;
@@ -39,16 +40,18 @@ public class AddAlboumActivity extends AppCompatActivity implements NavigationVi
     MenuAdapter menuAdapter;
     RecyclerView.LayoutManager menulayoutmanager;
     Integer user_type;
+    String user_id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_alboum);
-        activityAddAlboumBinding = DataBindingUtil.setContentView(this,R.layout.activity_add_alboum);
+        activityAddAlboumBinding = DataBindingUtil.setContentView(this, R.layout.activity_add_alboum);
         addAlboumViewModel = new AddAlboumViewModel(this);
         activityAddAlboumBinding.setAddalboumviewmodel(addAlboumViewModel);
         getDatafromIntent();
         getShardpreferanceData();
-        init_navigation_menu();
+        addAlboumViewModel.getData(user_id);
         activityAddAlboumBinding.btnAddAlboum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,32 +63,34 @@ public class AddAlboumActivity extends AppCompatActivity implements NavigationVi
     private void getShardpreferanceData() {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
+        user_id = loginModel.getData().getUser().getId()+"";
         trader_id = loginModel.getData().getUser().getTraderId();
         user_img = loginModel.getData().getUser().getUserImg();
         user_name = loginModel.getData().getUser().getName();
         user_phone = loginModel.getData().getUser().getPhone();
         user_type = loginModel.getData().getUser().getRoleIdFk();
-        if (user_img != null){
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityAddAlboumBinding.userImg);
+        if (user_img != null) {
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/" + user_img).into(activityAddAlboumBinding.userImg);
         }
         activityAddAlboumBinding.userName.setText(user_name);
     }
+
     private void init_navigation_menu() {
         menuItemList = new ArrayList<>();
-        menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("الرئيسية",R.drawable.home2));
-        menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("المفضلة",R.drawable.fav2));
-        menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("الإعدادات",R.drawable.setting));
-        menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("تواصل معنا",R.drawable.contactus));
-        menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("تسجيل خروج",R.drawable.logout2));
-        if (user_type == 4){
-            menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("متجري",R.drawable.store));
+        menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("الرئيسية", R.drawable.home2));
+        menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("المفضلة", R.drawable.fav2));
+        menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("الإعدادات", R.drawable.setting));
+        menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("تواصل معنا", R.drawable.contactus));
+        menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("تسجيل خروج", R.drawable.logout2));
+        if (user_type == 4) {
+            menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("متجري", R.drawable.store));
         }
-        menuAdapter = new MenuAdapter(menuItemList,this);
-        menulayoutmanager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        menuAdapter = new MenuAdapter(menuItemList, this);
+        menulayoutmanager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         View headerLayout = activityAddAlboumBinding.navView.getHeaderView(0);
         RoundedImageView img = headerLayout.findViewById(R.id.user_img);
-        if (user_img != null){
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(img);
+        if (user_img != null) {
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/" + user_img).into(img);
         }
         TextView txt_name = headerLayout.findViewById(R.id.txt_user_name);
         TextView txt_phone = headerLayout.findViewById(R.id.txt_phone);
@@ -103,9 +108,9 @@ public class AddAlboumActivity extends AppCompatActivity implements NavigationVi
 
     private void validation() {
         alboum_name = activityAddAlboumBinding.etAlboumName.getText().toString();
-        if (!TextUtils.isEmpty(alboum_name)){
-            addAlboumViewModel.add_alboum(trader_id+"",store_id,alboum_name);
-        }else {
+        if (!TextUtils.isEmpty(alboum_name)) {
+            addAlboumViewModel.add_alboum(trader_id + "", store_id, alboum_name);
+        } else {
             activityAddAlboumBinding.etAlboumName.setError("أدخل إسم الألبوم");
         }
     }
@@ -121,7 +126,19 @@ public class AddAlboumActivity extends AppCompatActivity implements NavigationVi
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull  MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return false;
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null) {
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/" + user_img).into(activityAddAlboumBinding.userImg);
+        }
+        activityAddAlboumBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

@@ -112,7 +112,6 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     public void setData(ProfileData loginModel) {
-        Toast.makeText(this, "jjjjj", Toast.LENGTH_SHORT).show();
         activitySettingBinding.etFirstName.setText(loginModel.getData().getName());
         activitySettingBinding.etLastName.setText(loginModel.getData().getLastName());
         city_id = loginModel.getData().getCityId()+"";

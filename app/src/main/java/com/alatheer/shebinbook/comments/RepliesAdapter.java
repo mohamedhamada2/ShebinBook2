@@ -48,18 +48,14 @@ public class RepliesAdapter extends RecyclerView.Adapter<RepliesAdapter.RepliesH
             super(itemView);
             txt_name = itemView.findViewById(R.id.txt_name2);
             txt_reply = itemView.findViewById(R.id.txt_replay);
-            fav_img2 = itemView.findViewById(R.id.fav_img2);
             comment_img2 = itemView.findViewById(R.id.comment_img2);
-            fav_num2 = itemView.findViewById(R.id.fav_num2);
             msg_num2 = itemView.findViewById(R.id.msg_num2);
         }
 
         public void setData(RepliesData replyData) {
             txt_reply.setText(replyData.getReplayMessage());
             txt_name.setText(replyData.getName()+replyData.getLastName());
-            fav_img2.setVisibility(View.GONE);
             comment_img2.setVisibility(View.GONE);
-            fav_num2.setVisibility(View.GONE);
             msg_num2.setVisibility(View.GONE);
         }
     }

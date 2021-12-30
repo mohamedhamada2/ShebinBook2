@@ -49,6 +49,7 @@ import com.alatheer.shebinbook.databinding.ActivityUpdateOfferBinding;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.home.slider.MenuItem;
 import com.alatheer.shebinbook.home.slider.Slider;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.trader.addoffer.AddOfferActivity;
 import com.alatheer.shebinbook.trader.profile.ProfileActivity;
 import com.google.android.material.navigation.NavigationView;
@@ -77,7 +78,7 @@ public class UpdateOfferActivity extends AppCompatActivity implements Navigation
     DatePickerDialog.OnDateSetListener date_picker_dialog,date_picker_dialog2;
     String to_date,from_date,gender_id;
     List<Gender> genderList;
-    String price_before_offer,price_after_offer,title,offer_des,user_name,user_phone,user_img;
+    String price_before_offer,price_after_offer,title,offer_des,user_name,user_phone,user_img,user_id;
     Dialog dialog3;
     RecyclerView menu_recycler;
     MenuAdapter menuAdapter;
@@ -94,7 +95,8 @@ public class UpdateOfferActivity extends AppCompatActivity implements Navigation
         updateOfferViewModel.getgender();
         getDataFromIntent();
         getSharedPreferenceData();
-        init_navigation_menu();
+        updateOfferViewModel.getData(user_id);
+        //init_navigation_menu();
         myCalendar = Calendar.getInstance();
         myCalendar2 = Calendar.getInstance();
         activityUpdateOfferBinding.spinnerGender.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -210,6 +212,7 @@ public class UpdateOfferActivity extends AppCompatActivity implements Navigation
     private void getSharedPreferenceData() {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
+        user_id = loginModel.getData().getUser().getId()+"";
         trader_id = loginModel.getData().getUser().getTraderId();
         user_img = loginModel.getData().getUser().getUserImg();
         user_name = loginModel.getData().getUser().getName();
@@ -307,8 +310,16 @@ public class UpdateOfferActivity extends AppCompatActivity implements Navigation
         slider = (Slider) getIntent().getSerializableExtra("slider");
         offer_id = slider.getId();
         activityUpdateOfferBinding.etProductName.setText(slider.getTitle());
-        activityUpdateOfferBinding.etProductPrice.setText(slider.getPriceBeforeOffer()+"");
-        activityUpdateOfferBinding.etOfferPrice.setText(slider.getPriceAfterOffer()+"");
+        if (slider.getPriceBeforeOffer() != null){
+            activityUpdateOfferBinding.etProductPrice.setText(slider.getPriceBeforeOffer()+"");
+        }else {
+            activityUpdateOfferBinding.etProductPrice.setText("");
+        }
+        if (slider.getPriceAfterOffer() != null){
+            activityUpdateOfferBinding.etOfferPrice.setText(slider.getPriceAfterOffer()+"");
+        }else {
+            activityUpdateOfferBinding.etOfferPrice.setText("");
+        }
         activityUpdateOfferBinding.etDetails.setText(slider.getDescription());
         gender_id = slider.getGender()+"";
         if (gender_id.equals("1")){
@@ -391,5 +402,16 @@ public class UpdateOfferActivity extends AppCompatActivity implements Navigation
     @Override
     public boolean onNavigationItemSelected(@NonNull  android.view.MenuItem item) {
         return false;
+    }
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityUpdateOfferBinding.userImg);
+        }
+        activityUpdateOfferBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

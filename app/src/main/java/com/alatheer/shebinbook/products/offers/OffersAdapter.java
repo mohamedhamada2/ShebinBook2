@@ -76,7 +76,7 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
         trader_id = loginModel.getData().getUser().getTraderId();
         user_id =loginModel.getData().getUser().getId()+"";
         holder.setData(sliderList.get(position));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.message_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
@@ -107,6 +107,9 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
         builder.setView(view);
         Dialog dialog = builder.create();
         dialog.show();
+        if (role_id == 4){
+            msg_img.setVisibility(View.GONE);
+        }
         product_name.setText(slider.getTitle());
         if (slider.getPriceBeforeOffer() != null){
             product_price.setText(slider.getPriceBeforeOffer()+"LE");
@@ -141,16 +144,16 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
         final View view = inflater.inflate(R.layout.basket_dialog, null);
         ImageView product_img = view.findViewById(R.id.product_img);
         EditText et_post = view.findViewById(R.id.et_post);
-        ImageView user_img = view.findViewById(R.id.user_img);
+        ImageView user_img2 = view.findViewById(R.id.user_img);
         AppCompatButton btn_add = view.findViewById(R.id.btn_add);
         TextView txt_store_name = view.findViewById(R.id.store_name);
         ImageView image_store_img = view.findViewById(R.id.store_logo);
         builder.setView(view);
         Dialog dialog2 = builder.create();
         dialog2.show();
-        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/advertisement/"+slider.getImg()).into(product_img);
+        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/advertisement/"+slider.getImg()).resize(600,200).into(product_img);
         Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+store_logo).into(image_store_img);
-
+        //Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+user_img).into(user_img2);
         txt_store_name.setText(store_name);
         Window window = dialog2.getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -163,6 +166,8 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
                 if (!TextUtils.isEmpty(post)){
                     add_message(user_id,slider.getId()+"",slider.getTraderIdFk()+"",store_id,post);
                     dialog2.dismiss();
+                }else {
+                    et_post.setError("أكتب رسالتك");
                 }
             }
         });
@@ -178,7 +183,6 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
                             Toast.makeText(context, "تم إرسال رسالتك بنجاح", Toast.LENGTH_SHORT).show();
-
                         }
                     }
                 }
@@ -198,13 +202,15 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
 
     class OffersHolder extends RecyclerView.ViewHolder{
         TextView txt_product_name,txt_offer_price,txt_product_price;
-        ImageView slider_img;
+        ImageView slider_img,message_img;
         public OffersHolder(@NonNull  View itemView) {
             super(itemView);
             txt_product_name = itemView.findViewById(R.id.product_name);
             txt_offer_price = itemView.findViewById(R.id.product_price_offer);
             txt_product_price = itemView.findViewById(R.id.product_price);
             slider_img = itemView.findViewById(R.id.offer_img);
+            message_img = itemView.findViewById(R.id.message_img);
+
         }
 
         public void setData(Slider slider) {

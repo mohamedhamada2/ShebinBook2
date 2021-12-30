@@ -52,6 +52,7 @@ import com.alatheer.shebinbook.posts.Post;
 import com.alatheer.shebinbook.posts.PostsActivity;
 import com.alatheer.shebinbook.products.StoreDetails;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.stores.StoresAdapter;
 import com.google.android.material.navigation.NavigationView;
@@ -100,11 +101,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         viewPager2 = activityHomeBinding.viewpager2;
         menu_recycler = findViewById(R.id.recycler_view);
         getSharedPreferanceData();
+        homeViewModel.getData(user_id);
         homeViewModel.getAdvertisment();
         homeViewModel.getposts(page,user_id);
         homeViewModel.getCategories();
         init_ask();
-        init_navigation_menu();
+
         activityHomeBinding.linearShowAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -233,9 +235,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
         user_id = loginModel.getData().getUser().getId()+"";
-        user_img = loginModel.getData().getUser().getUserImg();
-        user_name = loginModel.getData().getUser().getName();
-        user_phone = loginModel.getData().getUser().getPhone();
         user_type = loginModel.getData().getUser().getRoleIdFk();
         if (user_type == 4){
             trader_id = loginModel.getData().getUser().getTraderId()+"";
@@ -392,6 +391,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                homeViewModel.getData(user_id);
                 homeViewModel.getAdvertisment();
                 homeViewModel.getposts(page,user_id);
                 homeViewModel.getCategories();
@@ -466,5 +466,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 //CreateDeleteDialog(product);
             }
         });
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+        user_type = loginModel.getData().getUser().getRoleIdFk();
+        if (user_type == 4){
+            trader_id = loginModel.getData().getUser().getTraderId()+"";
+        }
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityHomeBinding.userImg);
+        }
+        activityHomeBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

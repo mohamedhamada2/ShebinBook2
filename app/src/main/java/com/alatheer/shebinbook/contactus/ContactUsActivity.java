@@ -43,6 +43,7 @@ import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.message.MessageModel;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.stores.StoreModel;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -81,7 +82,7 @@ public class ContactUsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_contact_us);
         activityContactUsBinding = DataBindingUtil.setContentView(this,R.layout.activity_contact_us);
         getSharedPreferanceData();
-        init_navigation_menu();
+        getData(user_id);
         activityContactUsBinding.facebookTxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -115,6 +116,29 @@ public class ContactUsActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void getData(String user_id) {
+        if (Utilities.isNetworkAvailable(ContactUsActivity.this)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<ProfileData> call = getDataService.get_user_data(user_id);
+            call.enqueue(new Callback<ProfileData>() {
+                @Override
+                public void onResponse(Call<ProfileData> call, Response<ProfileData> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            setData(response.body());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ProfileData> call, Throwable t) {
+                    Log.e("getdata",t.getMessage());
+                }
+            });
+        }
+    }
+
     private void Create_message_Dialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -389,5 +413,17 @@ public class ContactUsActivity extends AppCompatActivity {
 
             }
         });
+    }
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+        user_type = loginModel.getData().getUser().getRoleIdFk();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityContactUsBinding.userImg);
+        }
+        activityContactUsBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

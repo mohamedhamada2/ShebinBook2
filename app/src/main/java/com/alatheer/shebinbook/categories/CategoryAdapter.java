@@ -63,7 +63,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         }
 
         public void setData(Category category) {
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+category.getImg()).into(category_img);
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+category.getImg()).resize(600,200).into(category_img);
             category_txt.setText(category.getName());
         }
     }

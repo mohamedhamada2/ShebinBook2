@@ -1,5 +1,6 @@
 package com.alatheer.shebinbook.home;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,6 +17,7 @@ import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.message.MessageModel;
 import com.alatheer.shebinbook.posts.PostData;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.StoreModel;
 
 import java.util.List;
@@ -306,5 +308,28 @@ public class HomeViewModel {
 
             }
         });
+    }
+
+    public void getData(String user_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<ProfileData> call = getDataService.get_user_data(user_id);
+            call.enqueue(new Callback<ProfileData>() {
+                @Override
+                public void onResponse(Call<ProfileData> call, Response<ProfileData> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            homeActivity.setData(response.body());
+
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ProfileData> call, Throwable t) {
+                    Log.e("getdata",t.getMessage());
+                }
+            });
+        }
     }
 }

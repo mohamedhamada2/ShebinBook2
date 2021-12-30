@@ -2,11 +2,13 @@ package com.alatheer.shebinbook.trader.updateproduct;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import com.alatheer.shebinbook.Utilities.Utilities;
 import com.alatheer.shebinbook.api.GetDataService;
 import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.comments.CommentModel;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.trader.editalboum.UpdateAlboumActivity;
 
 import okhttp3.MultipartBody;
@@ -71,6 +73,29 @@ public class UpdateProductViewModel {
                 @Override
                 public void onFailure(Call<CommentModel> call, Throwable t) {
 
+                }
+            });
+        }
+    }
+
+    public void getData(String user_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<ProfileData> call = getDataService.get_user_data(user_id);
+            call.enqueue(new Callback<ProfileData>() {
+                @Override
+                public void onResponse(Call<ProfileData> call, Response<ProfileData> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            updateProductActivity.setData(response.body());
+
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ProfileData> call, Throwable t) {
+                    Log.e("getdata",t.getMessage());
                 }
             });
         }

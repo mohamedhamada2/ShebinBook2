@@ -52,6 +52,7 @@ import com.alatheer.shebinbook.posts.GenderAdapter;
 import com.alatheer.shebinbook.posts.Post;
 import com.alatheer.shebinbook.posts.PostsActivity;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
@@ -97,8 +98,8 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
         activityCommentBinding.setCommentviewmodel(commentViewModel);
         activityCommentBinding.swiperefresh.setOnRefreshListener(this);
         getSharedPreferenceData();
+        commentViewModel.getData(user_id);
         getDataIntent();
-        init_navigation_menu();
         commentViewModel.getComments(post.getId()+"");
         activityCommentBinding.btnAddPost.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -224,6 +225,8 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
         }else{
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+post.getImg()).into(activityCommentBinding.postImg);
         }
+        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+post.getUserImg()).into(activityCommentBinding.userimg);
+        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityCommentBinding.userImg);
     }
     public void showmenu(View view) {
         //activityPostsBinding.navView.setNavigationItemSelectedListener(this);
@@ -286,6 +289,8 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
         final View view = inflater.inflate(R.layout.add_reply_item, null);
         EditText et_reply = view.findViewById(R.id.et_post);
         Button btn_add = view.findViewById(R.id.btn_add_post);
+        ImageView user_img3 = view.findViewById(R.id.user_img3);
+        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(user_img3);
         builder.setView(view);
         dialog = builder.create();
         dialog.show();
@@ -313,6 +318,7 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
             @Override
             public void run() {
                 getDataIntent();
+                commentViewModel.getData(user_id);
                 commentViewModel.getComments(post.getId()+"");
                 activityCommentBinding.swiperefresh.setRefreshing(false);
             }
@@ -423,5 +429,17 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);
         message_recycler.setAdapter(messageAdapter2);
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+        user_type = loginModel.getData().getUser().getRoleIdFk();
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityCommentBinding.userImg2);
+        }
+        activityCommentBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

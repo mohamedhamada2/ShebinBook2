@@ -1,6 +1,7 @@
 package com.alatheer.shebinbook.products.images;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.alatheer.shebinbook.Utilities.Utilities;
 import com.alatheer.shebinbook.api.GetDataService;
@@ -28,7 +29,11 @@ public class ImageViewModel {
                 @Override
                 public void onResponse(Call<ImagesData> call, Response<ImagesData> response) {
                     if (response.isSuccessful()){
-                        imageFragment.init_recycler(response.body().getData());
+                        try {
+                            imageFragment.init_recycler(response.body().getData());
+                        }catch (Exception e){
+                            Log.e("error_msg",e.getMessage());
+                        }
                     }
                 }
 

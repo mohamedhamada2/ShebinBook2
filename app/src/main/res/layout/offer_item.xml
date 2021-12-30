@@ -64,6 +64,7 @@
                 android:foreground="@drawable/line_bg" />
         </LinearLayout>
         <ImageView
+            android:id="@+id/message_img"
             android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_60sdp"
             android:background="@drawable/msg"

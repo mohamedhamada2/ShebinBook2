@@ -65,7 +65,7 @@
         </androidx.cardview.widget.CardView>
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_img"
@@ -92,16 +92,23 @@
                 android:fontFamily="@font/tajawal_medium"/>
             <TextView
                 android:id="@+id/product_decription"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/product_name"
                 app:layout_constraintRight_toLeftOf="@+id/msg_img"
+                app:layout_constraintLeft_toRightOf="@+id/space"
                 android:layout_marginRight="@dimen/_10sdp"
-                android:text="..لوريم ايبسوم دولار سيت أميت"
+                android:text=" مممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممممم..لوريم ايبسوم دولار سيت أميت"
                 android:textColor="#002A50"
                 android:textSize="@dimen/_12ssp"
                 android:fontFamily="@font/tajawal_medium"
-                android:layout_marginTop="@dimen/_10sdp"/>
+                android:layout_marginTop="@dimen/_10sdp" />
+            <TextView
+                android:id="@+id/space"
+                android:layout_width="@dimen/_10sdp"
+                android:layout_height="@dimen/_50sdp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/product_name"/>
             <TextView
                 android:id="@+id/product_price_offer"
                 android:layout_width="wrap_content"

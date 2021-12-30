@@ -49,6 +49,7 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityAddOfferBinding;
 import com.alatheer.shebinbook.home.AskAdapter;
 import com.alatheer.shebinbook.home.MenuAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.trader.addproduct.AddProductActivity;
 import com.alatheer.shebinbook.trader.profile.ProfileActivity;
 import com.google.android.material.navigation.NavigationView;
@@ -66,7 +67,7 @@ public class AddOfferActivity extends AppCompatActivity implements NavigationVie
     ActivityAddOfferBinding activityAddOfferBinding;
     AddOfferViewModel addOfferViewModel;
     List<Gender> genderList;
-    String gender_id,from_date,to_date,title,price_before_offer,price_after_offer,offer_des,user_img,user_name,user_phone;
+    String gender_id,from_date,to_date,title,price_before_offer,price_after_offer,offer_des,user_img,user_name,user_phone,user_id;
     DatePickerDialog.OnDateSetListener date_picker_dialog,date_picker_dialog2;
     Calendar myCalendar,myCalendar2;
     Integer IMG = 1 ,REQUESTCAMERA =2,user_type ;
@@ -89,7 +90,7 @@ public class AddOfferActivity extends AppCompatActivity implements NavigationVie
         addOfferViewModel = new AddOfferViewModel(this);
         activityAddOfferBinding.setAddofferviewmodel(addOfferViewModel);
         getSharedPreferenceData();
-        init_navigation_menu();
+        addOfferViewModel.getData(user_id);
         addOfferViewModel.get_gender();
         myCalendar = Calendar.getInstance();
         myCalendar2 = Calendar.getInstance();
@@ -146,6 +147,7 @@ public class AddOfferActivity extends AppCompatActivity implements NavigationVie
     private void getSharedPreferenceData() {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
+        user_id = loginModel.getData().getUser().getId()+"";
         trader_id = loginModel.getData().getUser().getTraderId();
         user_img = loginModel.getData().getUser().getUserImg();
         user_name = loginModel.getData().getUser().getName();
@@ -371,5 +373,17 @@ public class AddOfferActivity extends AppCompatActivity implements NavigationVie
     @Override
     public boolean onNavigationItemSelected(@NonNull  MenuItem item) {
         return false;
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityAddOfferBinding.userImg);
+        }
+        activityAddOfferBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

@@ -77,23 +77,16 @@ public class DetailsFragment extends Fragment {
         instagram_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!store_instagram.equals("")||store_instagram != null){
+                try {
                     Uri uri = Uri.parse("http://instagram.com/_u/"+store_instagram+"/");
                     Log.e("store_inst",store_instagram);
                     Intent likeIng = new Intent(Intent.ACTION_VIEW, uri);
-
                     likeIng.setPackage("com.instagram.android");
 
-                    try {
-                        getActivity().startActivity(likeIng);
-                    } catch (ActivityNotFoundException e) {
-                        /*getActivity().startActivity(new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("http://instagram.com/noamany_fitness_center_")));*/
-                        Toast.makeText(getActivity(), "عفوا لا يوجد صفحة اتستجرام لدينا", Toast.LENGTH_SHORT).show();
-                    }
-                }else {
+                }catch (Exception e){
                     Toast.makeText(getActivity(), "عفوا لا يوجد صفحة اتستجرام لدينا", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
         return view;

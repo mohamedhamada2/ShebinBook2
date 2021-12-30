@@ -35,6 +35,7 @@ import com.alatheer.shebinbook.home.slider.MenuItem;
 import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.stores.StoresAdapter;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -78,8 +79,8 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
         activityFavoriteBinding.swiperefresh.setOnRefreshListener(this);
         fav_rec = activityFavoriteBinding.favoriteRecycler;
         getSharedPreferanceData();
+        favoriteViewModel.getData(user_id);
         favoriteViewModel.getStores();
-        init_navigation_menu();
         activityFavoriteBinding.imgSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -274,5 +275,17 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
         message_recycler.setHasFixedSize(true);
         message_recycler.setLayoutManager(layoutManager2);
         message_recycler.setAdapter(messageAdapter2);
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityFavoriteBinding.userImg);
+        }
+        activityFavoriteBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

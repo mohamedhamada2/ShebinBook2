@@ -34,6 +34,7 @@ import com.alatheer.shebinbook.api.MySharedPreference;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityAddImagesBinding;
 import com.alatheer.shebinbook.home.MenuAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.trader.addoffer.AddOfferActivity;
 import com.google.android.material.navigation.NavigationView;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -54,7 +55,7 @@ public class AddImagesActivity extends AppCompatActivity implements NavigationVi
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
     Integer trader_id;
-    String title,store_id,user_name,user_phone,user_img;
+    String title,store_id,user_name,user_phone,user_img,user_id;
     Integer user_type;
     RecyclerView menu_recycler;
     MenuAdapter menuAdapter;
@@ -69,13 +70,15 @@ public class AddImagesActivity extends AppCompatActivity implements NavigationVi
         activityAddImagesBinding.setAddimageviewmodel(addImageViewModel);
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
+        user_id = loginModel.getData().getUser().getId()+"";
         trader_id = loginModel.getData().getUser().getTraderId();
         store_id = getIntent().getStringExtra("store_id");
         user_img = loginModel.getData().getUser().getUserImg();
         user_name = loginModel.getData().getUser().getName();
         user_phone = loginModel.getData().getUser().getPhone();
         user_type = loginModel.getData().getUser().getRoleIdFk();
-        init_navigation_menu();
+        addImageViewModel.getData(user_id);
+
         if (user_img != null){
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityAddImagesBinding.userImg);
         }
@@ -295,5 +298,17 @@ public class AddImagesActivity extends AppCompatActivity implements NavigationVi
     @Override
     public boolean onNavigationItemSelected(@NonNull  MenuItem item) {
         return false;
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityAddImagesBinding.userImg);
+        }
+        activityAddImagesBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

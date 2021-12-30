@@ -2,6 +2,7 @@ package com.alatheer.shebinbook.setting;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
@@ -10,6 +11,7 @@ import com.alatheer.shebinbook.Utilities.Utilities;
 import com.alatheer.shebinbook.api.GetDataService;
 import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
+import com.alatheer.shebinbook.home.HomeActivity;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -76,6 +78,8 @@ public class SettingViewModel {
                             Toast.makeText(settingActivity, "تم تعديل بياناتك بنجاح", Toast.LENGTH_SHORT).show();
                             getData(user_id);
                             pd.dismiss();
+                            context.startActivity(new Intent(settingActivity, HomeActivity.class));
+                            settingActivity.finish();
                         }
                     }
                 }
@@ -100,6 +104,8 @@ public class SettingViewModel {
                         if (response.body().getStatus()){
                             Toast.makeText(settingActivity, "تم تعديل بياناتك بنجاح", Toast.LENGTH_SHORT).show();
                             getData(user_id);
+                            context.startActivity(new Intent(settingActivity, HomeActivity.class));
+                            settingActivity.finish();
                         }
                     }
                 }

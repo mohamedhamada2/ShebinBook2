@@ -117,20 +117,21 @@ public class DetailsFragment extends Fragment {
         instagram_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!store_instagram.equals("")){
-                    Uri uri = Uri.parse("http://instagram.com/_u/"+store_instagram+"/");
-                    Intent likeIng = new Intent(Intent.ACTION_VIEW, uri);
-                    //Log.e("store_inst",store_instagram);
-                    likeIng.setPackage("com.instagram.android");
+                try {
+                    if (!store_instagram.equals("")){
+                        try {
+                            Uri uri = Uri.parse("http://instagram.com/_u/"+store_instagram+"/");
+                            Intent likeIng = new Intent(Intent.ACTION_VIEW, uri);
+                            //Log.e("store_inst",store_instagram);
+                            likeIng.setPackage("com.instagram.android");
+                        }catch (Exception e){
+                            Toast.makeText(getActivity(), "عفوا لا يوجد صفحة اتستجرام لدينا", Toast.LENGTH_SHORT).show();
+                        }
 
-                    try {
-                        getActivity().startActivity(likeIng);
-                    } catch (ActivityNotFoundException e) {
-                        /*getActivity().startActivity(new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("http://instagram.com/noamany_fitness_center_")));*/
+                    }else {
                         Toast.makeText(getActivity(), "عفوا لا يوجد صفحة اتستجرام لدينا", Toast.LENGTH_SHORT).show();
                     }
-                }else {
+                }catch (Exception e){
                     Toast.makeText(getActivity(), "عفوا لا يوجد صفحة اتستجرام لدينا", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -159,7 +160,7 @@ public class DetailsFragment extends Fragment {
             public void onClick(View view) {
                 txt_phone.setFocusable(true);
                 txt_phone.setEnabled(true);
-                txt_phone.setClickable(false);
+                txt_phone.setClickable(true);
                 txt_phone.setFocusableInTouchMode(true);
                 txt_phone.requestFocus();
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);

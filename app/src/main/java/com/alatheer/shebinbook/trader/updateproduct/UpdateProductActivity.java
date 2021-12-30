@@ -45,6 +45,7 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityUpdateProductBinding;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.home.slider.MenuItem;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.trader.addproduct.AddProductActivity;
 import com.alatheer.shebinbook.trader.profile.ProfileActivity;
 import com.google.android.material.navigation.NavigationView;
@@ -60,7 +61,7 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
     UpdateProductViewModel updateProductViewModel;
     Product product;
     com.alatheer.shebinbook.products.Product product2;
-    String product_name,product_details,product_price,store_id,alboum_id,trader_id,product_id,user_phone,user_img,user_name;
+    String product_name,product_details,product_price,store_id,alboum_id,trader_id,product_id,user_phone,user_img,user_name,user_id;
     Integer IMG = 1,REQUESTCAMERA=2;
     Uri filepath;
     MySharedPreference mySharedPreference;
@@ -81,7 +82,7 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
         updateProductViewModel = new UpdateProductViewModel(this);
         activityUpdateProductBinding.setUpdateproductviewmodel(updateProductViewModel);
         getSharedPreferenceData();
-        init_navigation_menu();
+        updateProductViewModel.getData(user_id);
         getDataFromIntent();
         activityUpdateProductBinding.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +122,7 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
     private void getSharedPreferenceData() {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
+        user_id = loginModel.getData().getUser().getId()+"";
         trader_id = loginModel.getData().getUser().getTraderId()+"";
         user_img = loginModel.getData().getUser().getUserImg();
         user_name = loginModel.getData().getUser().getName();
@@ -156,7 +158,11 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
         if (flag != 2){
             product = (Product) getIntent().getSerializableExtra("product");
             activityUpdateProductBinding.etProductName.setText(product.getTitle());
-            activityUpdateProductBinding.etProductPrice.setText(product.getPrice()+"");
+            if (product.getPrice() != null){
+                activityUpdateProductBinding.etProductPrice.setText(product.getPrice()+"");
+            }else {
+                activityUpdateProductBinding.etProductPrice.setText("");
+            }
             activityUpdateProductBinding.etDetails.setText(product.getDetails());
             alboum_id = product.getAlboumIdFk()+"";
             store_id = product.getStoreIdFk()+"";
@@ -165,7 +171,11 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
         }else {
             product2 = (com.alatheer.shebinbook.products.Product) getIntent().getSerializableExtra("product");
             activityUpdateProductBinding.etProductName.setText(product2.getTitle());
-            activityUpdateProductBinding.etProductPrice.setText(product2.getPrice()+"");
+            if (product2.getPrice() != null){
+                activityUpdateProductBinding.etProductPrice.setText(product2.getPrice()+"");
+            }else {
+                activityUpdateProductBinding.etProductPrice.setText("");
+            }
             activityUpdateProductBinding.etDetails.setText(product2.getDetails());
             alboum_id = product2.getAlboumIdFk()+"";
             store_id = product2.getStoreIdFk()+"";
@@ -302,5 +312,17 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
     @Override
     public boolean onNavigationItemSelected(@NonNull  android.view.MenuItem item) {
         return false;
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityUpdateProductBinding.userImg);
+        }
+        activityUpdateProductBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

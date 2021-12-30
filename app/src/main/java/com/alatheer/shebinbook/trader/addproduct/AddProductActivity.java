@@ -36,6 +36,7 @@ import com.alatheer.shebinbook.databinding.ActivityAddProductBinding;
 import com.alatheer.shebinbook.home.AskAdapter;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.home.slider.MenuItem;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.google.android.material.navigation.NavigationView;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
@@ -50,7 +51,7 @@ public class AddProductActivity extends AppCompatActivity implements NavigationV
     ActivityAddProductBinding activityAddProductBinding;
     AddProductViewModel addProductViewModel ;
     Uri filepath;
-    String product_name,product_price,product_details,user_img,user_name,user_phone;
+    String product_name,product_price,product_details,user_img,user_name,user_phone,user_id;
     Integer trader_id,store_id,alboum_id;
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
@@ -68,7 +69,7 @@ public class AddProductActivity extends AppCompatActivity implements NavigationV
         addProductViewModel = new AddProductViewModel(this);
         activityAddProductBinding.setAddproductviewmodel(addProductViewModel);
         getSharedPreferanceData();
-        init_navigation_menu();
+        addProductViewModel.getData(user_id);
         getDataFromIntent();
         activityAddProductBinding.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +82,7 @@ public class AddProductActivity extends AppCompatActivity implements NavigationV
     private void getSharedPreferanceData() {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
+        user_id = loginModel.getData().getUser().getId()+"";
         user_img = loginModel.getData().getUser().getUserImg();
         user_name = loginModel.getData().getUser().getName();
         user_phone = loginModel.getData().getUser().getPhone();
@@ -223,5 +225,17 @@ public class AddProductActivity extends AppCompatActivity implements NavigationV
     @Override
     public boolean onNavigationItemSelected(@NonNull  android.view.MenuItem item) {
         return false;
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityAddProductBinding.userImg);
+        }
+        activityAddProductBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

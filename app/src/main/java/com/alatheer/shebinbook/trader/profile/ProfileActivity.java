@@ -64,6 +64,7 @@ import com.alatheer.shebinbook.products.StoreDetails;
 import com.alatheer.shebinbook.products.offers.OffersFragment;
 import com.alatheer.shebinbook.products.rating.RatingFragment;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.stores.StoresActivity;
 import com.alatheer.shebinbook.stores.StoresAdapter;
@@ -83,7 +84,7 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
     String trader_id,user_img,user_name,user_phone,store_id,store_image,store_name,store_phone,store_address,store_desc,store_attendance,store_facebook,store_what_app,store_instagram,store_mini_desc;
-    String store_lat,store_lon,store_products,store_offer,store_city,store_gov;
+    String store_lat,store_lon,store_products,store_offer,store_city,store_gov,user_id;
     String slider_trader_id;
     Integer user_type,department;
     List<MenuItem> menuItemList;
@@ -126,7 +127,7 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
         activityProfileBinding.swiperefresh.setOnRefreshListener(this);
         fa = this;
         getSharedPreferenceData();
-        init_navigation_menu();
+        profileViewModel.getData(user_id);
         getDataIntent();
         activityProfileBinding.editImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,6 +235,7 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
     private void getSharedPreferenceData() {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
+        user_id = loginModel.getData().getUser().getId()+"";
         trader_id = loginModel.getData().getUser().getTraderId()+"";
         user_img = loginModel.getData().getUser().getUserImg();
         user_name = loginModel.getData().getUser().getName();
@@ -576,14 +578,14 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.image_item, null);
         ImageView img = view.findViewById(R.id.img);
-        Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+product_img).into(img);
+        Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+product_img).resize(600,600).into(img);
         builder.setView(view);
         Dialog dialog = builder.create();
         dialog.show();
         Window window = dialog.getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.setGravity(Gravity.CENTER_HORIZONTAL);
-        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        window.setLayout(600, 600);
     }
     private void Create_message_Dialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -659,6 +661,7 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                profileViewModel.getData(user_id);
                 profileViewModel.get_store(trader_id);
                 activityProfileBinding.swiperefresh.setRefreshing(false);
             }
@@ -733,5 +736,17 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
         dialog3.dismiss();
         finish();
         startActivity(getIntent());
+    }
+
+    public void setUserData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getName();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityProfileBinding.userImg);
+        }
+        activityProfileBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

@@ -47,6 +47,7 @@ import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.stores.StoresAdapter;
 import com.alatheer.shebinbook.subcategory.SubCategoryActivity;
@@ -97,9 +98,9 @@ public class CategoryActivity extends AppCompatActivity implements NavigationVie
         activityCategoryBinding.swiperefresh.setOnRefreshListener(this);
         viewPager2 = activityCategoryBinding.viewpager2;
         getSharedPreferanceData();
+        categoryViewModel.getData(user_id);
         categoryViewModel.getAds();
         categoryViewModel.getCategories();
-        init_navigation_menu();
         activityCategoryBinding.imgSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -233,9 +234,6 @@ public class CategoryActivity extends AppCompatActivity implements NavigationVie
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
         user_id = loginModel.getData().getUser().getId()+"";
-        user_img = loginModel.getData().getUser().getUserImg();
-        user_name = loginModel.getData().getUser().getName();
-        user_phone = loginModel.getData().getUser().getPhone();
         user_type = loginModel.getData().getUser().getRoleIdFk();
         if (user_type == 4){
             trader_id2 = loginModel.getData().getUser().getTraderId()+"";
@@ -347,10 +345,24 @@ public class CategoryActivity extends AppCompatActivity implements NavigationVie
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                categoryViewModel.getData(user_id);
                 categoryViewModel.getAds();
                 categoryViewModel.getCategories();
                 activityCategoryBinding.swiperefresh.setRefreshing(false);
             }
         }, 2000);
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+        user_type = loginModel.getData().getUser().getRoleIdFk();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityCategoryBinding.userImg);
+        }
+        activityCategoryBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }

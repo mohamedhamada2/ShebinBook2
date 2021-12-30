@@ -53,6 +53,7 @@ import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.products.offers.OffersFragment;
 import com.alatheer.shebinbook.products.rating.RatingFragment;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
+import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.stores.StoresActivity;
 import com.alatheer.shebinbook.trader.images.ImageFragment;
@@ -79,11 +80,11 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
     Fragment selectedfragment;
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
-    int rating,user_type,flag,trader_id2;
+    int rating,user_type,flag;
     Dialog dialog4;
     Slider slider;
     Store store;
-    Integer trader_id;
+    Integer trader_id,trader_id2;
     Dialog dialog;
     RecyclerView message_recycler;
     MessageAdapter2 messageAdapter2;
@@ -107,8 +108,8 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         activityProductsBinding.swiperefresh.setOnRefreshListener(this);
         department = 1;
         getsharedpreferanceData();
+        productViewModel.getData(user_id);
         getDataIntent();
-        init_navigation_menu();
 
         activityProductsBinding.constraint.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,7 +188,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
         message_recycler = view.findViewById(R.id.message_recycler);
         if (user_type == 4){
-            productViewModel.getMessages(trader_id,page2);
+            productViewModel.getMessages(trader_id2,page2);
         }else {
             productViewModel.getUserMessages(user_id,page2);
         }
@@ -249,14 +250,14 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.image_item, null);
         ImageView img = view.findViewById(R.id.img);
-        Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+product_img).into(img);
+        Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+product_img).resize(600,600).into(img);
         builder.setView(view);
         Dialog dialog = builder.create();
         dialog.show();
         Window window = dialog.getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.setGravity(Gravity.CENTER_HORIZONTAL);
-        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        window.setLayout(600, 600);
     }
 
     public void init_search_recycler(List<Store> data) {
@@ -299,6 +300,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
             @Override
             public void onClick(View view) {
                 desc = et_post1.getText().toString();
+                //Toast.makeText(ProductsActivity.this, desc, Toast.LENGTH_SHORT).show();
                 productViewModel.add_rating(store_id,user_id,rating+"",desc);
                 dialog4.dismiss();
                 //CreateBasketDialog(product);
@@ -315,6 +317,9 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         user_phone = loginModel.getData().getUser().getPhone();
         user_id = loginModel.getData().getUser().getId()+"";
         user_type = loginModel.getData().getUser().getRoleIdFk();
+        if (user_type == 4){
+            trader_id2 = loginModel.getData().getUser().getTraderId();
+        }
         if (user_img != null){
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityProductsBinding.userImg);
         }
@@ -447,6 +452,9 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         }else {
             product_price.setText("أطلب السعر");
         }
+        if (user_type == 4){
+            msg_img.setVisibility(View.GONE);
+        }
         if (slider.getPriceAfterOffer() != null){
             product_price_offer.setText(slider.getPriceAfterOffer());
         }else {
@@ -475,7 +483,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         final View view = inflater.inflate(R.layout.basket_dialog, null);
         ImageView product_img = view.findViewById(R.id.product_img);
         EditText et_post = view.findViewById(R.id.et_post);
-        ImageView user_img = view.findViewById(R.id.user_img);
+        ImageView user_img2 = view.findViewById(R.id.user_img);
         AppCompatButton btn_add = view.findViewById(R.id.btn_add);
         TextView txt_store_name = view.findViewById(R.id.store_name);
         ImageView image_store_img = view.findViewById(R.id.store_logo);
@@ -484,7 +492,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         dialog2.show();
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/advertisement/"+slider.getImg()).into(product_img);
         Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+store_img).into(image_store_img);
-
+        Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+user_img).into(user_img2);
         txt_store_name.setText(store_name);
         Window window = dialog2.getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -497,6 +505,8 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
                 if (!TextUtils.isEmpty(post)){
                     productViewModel.add_message(user_id,slider.getId()+"",slider.getTraderIdFk()+"",store_id,post);
                     dialog2.dismiss();
+                }else {
+                    et_post.setError("أكتب رسالتك");
                 }
             }
         });
@@ -710,7 +720,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         store_phone = this.store.getStoreMobile();
         store_attendance = this.store.getAppointmentsWork();
         store_description = this.store.getDescription();
-        store_instagram = "https://www.instagram.com/alahlyegypt/";
+        store_instagram = this.store.getInstagram();;
         store_what_app = this.store.getStoreWhats();
         store_facebook = this.store.getFacebook();
         activityProductsBinding.storeName.setText(store_name);
@@ -736,10 +746,9 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         if (user_type != 4){
             CreateOfferDialog(slider);
         }else {
-            Integer id = mySharedPreference.Get_UserData(ProductsActivity.this).getData().getUser().getTraderId();
             Integer slider_trader_id = slider.getTraderIdFk();
             //Log.d("trader_id_",id+"");
-            if (id.equals(slider_trader_id)){
+            if (trader_id2.equals(slider_trader_id)){
                 creatTraderOfferDialog(slider);
 
             }else {
@@ -765,6 +774,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                productViewModel.getData(user_id);
                 getDataIntent();
                 getStoreDetails();
                 activityProductsBinding.swiperefresh.setRefreshing(false);
@@ -783,7 +793,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         store_description = store.getDescription();
         store_facebook = store.getFacebook();
         store_what_app = store.getStoreWhats();
-        store_instagram = "https://www.instagram.com/alahlyegypt/";
+        store_instagram = store.getInstagram();
         activityProductsBinding.txtDescription.setText(store.getMini_description());
         activityProductsBinding.storeName.setText(store_name);
         Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+store_img).into(activityProductsBinding.storeLogo);
@@ -811,5 +821,17 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
             store.setFavourite(1);
             activityProductsBinding.favImg.setImageResource(R.drawable.fav3);
         }
+    }
+
+    public void setData(ProfileData body) {
+        user_img = body.getData().getUserImg();
+        user_name = body.getData().getName();
+        user_phone = body.getData().getPhone();
+
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityProductsBinding.userImg);
+        }
+        activityProductsBinding.userName.setText(user_name);
+        init_navigation_menu();
     }
 }
