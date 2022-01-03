@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alatheer.shebinbook.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -43,13 +44,14 @@ public class RepliesAdapter extends RecyclerView.Adapter<RepliesAdapter.RepliesH
 
     class RepliesHolder extends RecyclerView.ViewHolder{
         TextView txt_name,txt_reply,fav_num2,msg_num2;
-        ImageView fav_img2,comment_img2;
+        ImageView fav_img2,comment_img2,userimg2;
         public RepliesHolder(@NonNull  View itemView) {
             super(itemView);
             txt_name = itemView.findViewById(R.id.txt_name2);
             txt_reply = itemView.findViewById(R.id.txt_replay);
             comment_img2 = itemView.findViewById(R.id.comment_img2);
             msg_num2 = itemView.findViewById(R.id.msg_num2);
+            userimg2 = itemView.findViewById(R.id.userimg2);
         }
 
         public void setData(RepliesData replyData) {
@@ -57,6 +59,7 @@ public class RepliesAdapter extends RecyclerView.Adapter<RepliesAdapter.RepliesH
             txt_name.setText(replyData.getName()+replyData.getLastName());
             comment_img2.setVisibility(View.GONE);
             msg_num2.setVisibility(View.GONE);
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+replyData.getUserImg()).into(userimg2);
         }
     }
 }

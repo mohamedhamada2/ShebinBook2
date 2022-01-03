@@ -115,11 +115,10 @@
                     android:layout_marginTop="@dimen/_10sdp"/>
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/stores_recycler"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:layout_marginRight="@dimen/_5sdp"/>
+                    android:layout_gravity="center_horizontal"/>
             </LinearLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         <com.google.android.material.navigation.NavigationView
