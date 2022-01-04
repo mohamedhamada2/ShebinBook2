@@ -26,6 +26,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -65,6 +66,8 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -239,20 +242,51 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == IMG && resultCode == Activity.RESULT_OK
                 && data != null && data.getData() != null) {
-            filepath = data.getData();
-            activityPostsBinding.relativeAddImg.setVisibility(View.GONE);
-            activityPostsBinding.postImg.setVisibility(View.VISIBLE);
-            Picasso.get().load(filepath).into(activityPostsBinding.postImg);
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),data.getData());
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                File finalfile = new File(path,file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath = Uri.fromFile(finalfile);
+                activityPostsBinding.relativeAddImg.setVisibility(View.GONE);
+                activityPostsBinding.postImg.setVisibility(View.VISIBLE);
+                activityPostsBinding.postImg.setImageURI(filepath);
+            }catch (Exception e){
+                filepath = data.getData();
+                activityPostsBinding.relativeAddImg.setVisibility(View.GONE);
+                activityPostsBinding.postImg.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath).into(activityPostsBinding.postImg);
+            }
         }else if (requestCode == REQUESTCAMERA && resultCode == Activity.RESULT_OK){
-            Bundle bundle = data.getExtras();
-            final Bitmap bitmap = (Bitmap) bundle.get("data");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
-            filepath = Utilities.compressImage(PostsActivity.this,path);
-            activityPostsBinding.relativeAddImg.setVisibility(View.GONE);
-            activityPostsBinding.postImg.setVisibility(View.VISIBLE);
-            Picasso.get().load(filepath).into(activityPostsBinding.postImg);
+            try {
+                Bundle bundle = data.getExtras();
+                Bitmap bitmap = (Bitmap) bundle.get("data");
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                File finalfile = new File(path,file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath = Uri.fromFile(finalfile);
+                activityPostsBinding.relativeAddImg.setVisibility(View.GONE);
+                activityPostsBinding.postImg.setVisibility(View.VISIBLE);
+                activityPostsBinding.postImg.setImageURI(filepath);
+            }catch (Exception e){
+                Bundle bundle = data.getExtras();
+                final Bitmap bitmap = (Bitmap) bundle.get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
+                filepath = Utilities.compressImage(PostsActivity.this,path);
+                activityPostsBinding.relativeAddImg.setVisibility(View.GONE);
+                activityPostsBinding.postImg.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath).into(activityPostsBinding.postImg);
+            }
         }
     }
 

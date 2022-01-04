@@ -21,6 +21,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -36,11 +37,14 @@ import com.alatheer.shebinbook.databinding.ActivityAddImagesBinding;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.trader.addoffer.AddOfferActivity;
+import com.alatheer.shebinbook.trader.addproduct.AddProductActivity;
 import com.google.android.material.navigation.NavigationView;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,17 +131,27 @@ public class AddImagesActivity extends AppCompatActivity implements NavigationVi
 
     private void Validation() {
         title = activityAddImagesBinding.etAlboumName.getText().toString();
-        if (filepath != null){
-            all_images.add(filepath);
+        if (filepath != null ){
+            if (all_images.contains(filepath)){
+            }else {
+                all_images.add(filepath);
+            }
+            //Toast.makeText(this, all_images.size()+"", Toast.LENGTH_SHORT).show();
         }
         if (filepath2 != null){
-            all_images.add(filepath2);
+            if (!all_images.contains(filepath2)){
+                all_images.add(filepath2);
+            }
         }
         if (filepath3 != null){
-            all_images.add(filepath3);
+            if (!all_images.contains(filepath3)){
+                all_images.add(filepath3);
+            }
         }
         if (filepath4 != null){
-            all_images.add(filepath4);
+            if (!all_images.contains(filepath4)){
+                all_images.add(filepath4);
+            }
         }
         if (!all_images.isEmpty()&& !TextUtils.isEmpty(title)){
             addImageViewModel.add_gallery(title,trader_id,all_images,store_id);
@@ -227,72 +241,186 @@ public class AddImagesActivity extends AppCompatActivity implements NavigationVi
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == IMG && resultCode == Activity.RESULT_OK
                 && data != null && data.getData() != null) {
-            filepath = data.getData();
-            activityAddImagesBinding.linearAdd.setVisibility(View.GONE);
-            activityAddImagesBinding.productImg.setVisibility(View.VISIBLE);
-            Picasso.get().load(filepath).into(activityAddImagesBinding.productImg);
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),data.getData());
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                File finalfile = new File(path,file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath = Uri.fromFile(finalfile);
+                activityAddImagesBinding.linearAdd.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg.setVisibility(View.VISIBLE);
+                activityAddImagesBinding.productImg.setImageURI(filepath);
+            }catch (Exception e){
+
+            }
+            //Picasso.get().load(filepath).into(activityAddImagesBinding.productImg);
         } else if (requestCode == REQUESTCAMERA && resultCode == Activity.RESULT_OK) {
-            Bundle bundle = data.getExtras();
-            final Bitmap bitmap = (Bitmap) bundle.get("data");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
-            filepath = Utilities.compressImage(AddImagesActivity.this, path);
-            activityAddImagesBinding.linearAdd.setVisibility(View.GONE);
-            activityAddImagesBinding.productImg.setVisibility(View.VISIBLE);
-            Picasso.get().load(filepath).into(activityAddImagesBinding.productImg);
+            try {
+                Bundle bundle = data.getExtras();
+                Bitmap bitmap = (Bitmap) bundle.get("data");
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                File finalfile = new File(path,file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath = Uri.fromFile(finalfile);
+                activityAddImagesBinding.linearAdd.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg.setVisibility(View.VISIBLE);
+                activityAddImagesBinding.productImg.setImageURI(filepath);
+            }catch (Exception e){
+                Bundle bundle = data.getExtras();
+                final Bitmap bitmap = (Bitmap) bundle.get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
+                filepath = Utilities.compressImage(AddImagesActivity.this, path);
+                activityAddImagesBinding.linearAdd.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath).into(activityAddImagesBinding.productImg);
+            }
         }
         if (requestCode == IMG2 && resultCode == Activity.RESULT_OK
                 && data != null && data.getData() != null) {
-            filepath2 = data.getData();
-            activityAddImagesBinding.linearAdd2.setVisibility(View.GONE);
-            activityAddImagesBinding.productImg2.setVisibility(View.VISIBLE);
-            Picasso.get().load(filepath2).into(activityAddImagesBinding.productImg2);
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),data.getData());
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                File finalfile = new File(path,file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath2 = Uri.fromFile(finalfile);
+                activityAddImagesBinding.linearAdd2.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg2.setVisibility(View.VISIBLE);
+                activityAddImagesBinding.productImg2.setImageURI(filepath2);
+            }catch (Exception e){
+
+            }
         } else if (requestCode == REQUESTCAMERA2 && resultCode == Activity.RESULT_OK) {
-            Bundle bundle = data.getExtras();
-            final Bitmap bitmap = (Bitmap) bundle.get("data");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
-            filepath2 = Utilities.compressImage(AddImagesActivity.this, path);
-            activityAddImagesBinding.linearAdd2.setVisibility(View.GONE);
-            activityAddImagesBinding.productImg2.setVisibility(View.VISIBLE);
-            Picasso.get().load(filepath2).into(activityAddImagesBinding.productImg2);
+            try {
+                Bundle bundle = data.getExtras();
+                Bitmap bitmap = (Bitmap) bundle.get("data");
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                File finalfile = new File(path,file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath2 = Uri.fromFile(finalfile);
+                activityAddImagesBinding.linearAdd2.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg2.setVisibility(View.VISIBLE);
+                activityAddImagesBinding.productImg2.setImageURI(filepath2);
+            }catch (Exception e){
+                Bundle bundle = data.getExtras();
+                final Bitmap bitmap = (Bitmap) bundle.get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
+                filepath2 = Utilities.compressImage(AddImagesActivity.this, path);
+                activityAddImagesBinding.linearAdd2.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg2.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath2).into(activityAddImagesBinding.productImg2);
+            }
         }
         if (requestCode == IMG3 && resultCode == Activity.RESULT_OK
                 && data != null && data.getData() != null) {
-            filepath3 = data.getData();
-            activityAddImagesBinding.linearAdd3.setVisibility(View.GONE);
-            activityAddImagesBinding.productImg3.setVisibility(View.VISIBLE);
-            Picasso.get().load(filepath3).into(activityAddImagesBinding.productImg3);
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),data.getData());
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                File finalfile = new File(path,file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath3 = Uri.fromFile(finalfile);
+                activityAddImagesBinding.linearAdd3.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg3.setVisibility(View.VISIBLE);
+                activityAddImagesBinding.productImg3.setImageURI(filepath3);
+            }catch (Exception e){
+
+            }
         } else if (requestCode == REQUESTCAMERA3 && resultCode == Activity.RESULT_OK) {
-            Bundle bundle = data.getExtras();
-            final Bitmap bitmap = (Bitmap) bundle.get("data");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
-            filepath3 = Utilities.compressImage(AddImagesActivity.this, path);
-            activityAddImagesBinding.linearAdd3.setVisibility(View.GONE);
-            activityAddImagesBinding.productImg3.setVisibility(View.VISIBLE);
-            Picasso.get().load(filepath3).into(activityAddImagesBinding.productImg3);
+            try {
+                Bundle bundle = data.getExtras();
+                Bitmap bitmap = (Bitmap) bundle.get("data");
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                File finalfile = new File(path,file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath3 = Uri.fromFile(finalfile);
+                activityAddImagesBinding.linearAdd3.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg3.setVisibility(View.VISIBLE);
+                activityAddImagesBinding.productImg3.setImageURI(filepath3);
+            }catch (Exception e){
+                Bundle bundle = data.getExtras();
+                final Bitmap bitmap = (Bitmap) bundle.get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
+                filepath3 = Utilities.compressImage(AddImagesActivity.this, path);
+                activityAddImagesBinding.linearAdd3.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg3.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath3).into(activityAddImagesBinding.productImg3);
+            }
         }
         if (requestCode == IMG4 && resultCode == Activity.RESULT_OK
                 && data != null && data.getData() != null) {
-            filepath4 = data.getData();
-            activityAddImagesBinding.linearAdd4.setVisibility(View.GONE);
-            activityAddImagesBinding.productImg4.setVisibility(View.VISIBLE);
-            Picasso.get().load(filepath4).into(activityAddImagesBinding.productImg4);
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),data.getData());
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                File finalfile = new File(path,file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath4 = Uri.fromFile(finalfile);
+                activityAddImagesBinding.linearAdd4.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg4.setVisibility(View.VISIBLE);
+                activityAddImagesBinding.productImg4.setImageURI(filepath4);
+            }catch (Exception e){
+
+            }
         } else if (requestCode == REQUESTCAMERA4 && resultCode == Activity.RESULT_OK) {
-            Bundle bundle = data.getExtras();
-            final Bitmap bitmap = (Bitmap) bundle.get("data");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
-            filepath4 = Utilities.compressImage(AddImagesActivity.this, path);
-            activityAddImagesBinding.linearAdd4.setVisibility(View.GONE);
-            activityAddImagesBinding.productImg4.setVisibility(View.VISIBLE);
-            Picasso.get().load(filepath4).into(activityAddImagesBinding.productImg4);
+            try {
+                Bundle bundle = data.getExtras();
+                Bitmap bitmap = (Bitmap) bundle.get("data");
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                File finalfile = new File(path,file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath4 = Uri.fromFile(finalfile);
+                activityAddImagesBinding.linearAdd4.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg4.setVisibility(View.VISIBLE);
+                activityAddImagesBinding.productImg4.setImageURI(filepath4);
+            }catch (Exception e){
+                Bundle bundle = data.getExtras();
+                final Bitmap bitmap = (Bitmap) bundle.get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
+                filepath4 = Utilities.compressImage(AddImagesActivity.this, path);
+                activityAddImagesBinding.linearAdd4.setVisibility(View.GONE);
+                activityAddImagesBinding.productImg4.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath4).into(activityAddImagesBinding.productImg4);
+            }
         }
+
     }
 
     @Override

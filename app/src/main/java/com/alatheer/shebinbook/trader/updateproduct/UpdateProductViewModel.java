@@ -1,5 +1,6 @@
 package com.alatheer.shebinbook.trader.updateproduct;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -36,6 +37,9 @@ public class UpdateProductViewModel {
         RequestBody rb_product_details= Utilities.getRequestBodyText(product_details);
         MultipartBody.Part product_img = Utilities.getMultiPart(context, filepath, "img");
         if (Utilities.isNetworkAvailable(context)){
+            ProgressDialog pd = new ProgressDialog(updateProductActivity);
+            pd.setMessage("loading ...");
+            pd.show();
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
             Call<CommentModel> call = getDataService.update_product_to_alboum_with_img(rb_product_id,rb_trader_id,rb_store_id,rb_alboum_id,rb_product_name,rb_product_price,rb_product_details,product_img);
             call.enqueue(new Callback<CommentModel>() {
@@ -43,6 +47,7 @@ public class UpdateProductViewModel {
                 public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
                     if (response.isSuccessful()){
                         if (response.body().getData().getSuccess()==1){
+                            pd.dismiss();
                             updateProductActivity.createsuccessDialog();
                         }
                     }
@@ -58,6 +63,9 @@ public class UpdateProductViewModel {
 
     public void update_product_without_img(String productId, String trader_id, String store_id, String alboum_id, String product_name, String product_price, String product_details) {
         if (Utilities.isNetworkAvailable(context)){
+            ProgressDialog pd = new ProgressDialog(updateProductActivity);
+            pd.setMessage("loading ...");
+            pd.show();
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
             Call<CommentModel> call = getDataService.update_product_to_alboum_without_img(productId,trader_id,store_id,alboum_id,product_name,product_price,product_details);
             call.enqueue(new Callback<CommentModel>() {
@@ -65,6 +73,7 @@ public class UpdateProductViewModel {
                 public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
                     if (response.isSuccessful()){
                         if (response.body().getData().getSuccess()==1){
+                            pd.dismiss();
                             updateProductActivity.createsuccessDialog();
                         }
                     }

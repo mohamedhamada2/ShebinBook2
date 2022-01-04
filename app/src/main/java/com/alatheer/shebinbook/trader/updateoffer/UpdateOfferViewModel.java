@@ -1,5 +1,6 @@
 package com.alatheer.shebinbook.trader.updateoffer;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -63,6 +64,9 @@ public class UpdateOfferViewModel {
         RequestBody rb_offer_des = Utilities.getRequestBodyText(offer_des);
         MultipartBody.Part offer_img = Utilities.getMultiPart(context, filepath, "img");
         if (Utilities.isNetworkAvailable(context)){
+            ProgressDialog pd = new ProgressDialog(updateOfferActivity);
+            pd.setMessage("loading ...");
+            pd.show();
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
             Call<CommentModel> call = getDataService.update_offer_with_img(rb_offer_id,rb_title,rb_gender_id,rb_trader_id,rb_from_date,rb_to_date,rb_price_before_offers,rb_price_after_offer,rb_offer_des,offer_img);
             call.enqueue(new Callback<CommentModel>() {
@@ -70,6 +74,7 @@ public class UpdateOfferViewModel {
                 public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
                     if (response.isSuccessful()){
                         if (response.body().getData().getSuccess() ==1){
+                            pd.dismiss();
                             updateOfferActivity.createsuccessDialog() ;
                         }
                     }
@@ -85,6 +90,9 @@ public class UpdateOfferViewModel {
 
     public void update_offer_without_img(Integer offer_id, Integer trader_id, String title, String gender_id, String from_date, String to_date, String price_before_offer, String price_after_offer,String offer_des) {
         if (Utilities.isNetworkAvailable(context)){
+            ProgressDialog pd = new ProgressDialog(updateOfferActivity);
+            pd.setMessage("loading ...");
+            pd.show();
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
             Call<CommentModel> call = getDataService.update_offer_without_img(offer_id+"",title,gender_id,trader_id+"",from_date,to_date,price_before_offer,price_after_offer,offer_des);
             call.enqueue(new Callback<CommentModel>() {
@@ -92,6 +100,7 @@ public class UpdateOfferViewModel {
                 public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
                     if (response.isSuccessful()){
                         if (response.body().getData().getSuccess() ==1){
+                            pd.dismiss();
                             updateOfferActivity.createsuccessDialog() ;
                         }
                     }
