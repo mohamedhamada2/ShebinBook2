@@ -176,7 +176,7 @@ public class CategoryActivity extends AppCompatActivity implements NavigationVie
         RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
         message_recycler = view.findViewById(R.id.message_recycler);
-
+        page2 = 1;
         if (user_type == 4){
             categoryViewModel.getMessages(trader_id2,page2);
         }else {
@@ -206,9 +206,9 @@ public class CategoryActivity extends AppCompatActivity implements NavigationVie
                     if(!isloading2 &&(totalitemcount2-visibleitemcount2)<= pastvisibleitem2+view_threshold2){
                         page2++;
                         if (user_type == 4){
-                            categoryViewModel.TraderPagination(trader_id2,page);
+                            categoryViewModel.TraderPagination(trader_id2,page2);
                         }else {
-                            categoryViewModel.UserPagination(user_id,page);
+                            categoryViewModel.UserPagination(user_id,page2);
                         }
                         isloading2 = true;
                     }

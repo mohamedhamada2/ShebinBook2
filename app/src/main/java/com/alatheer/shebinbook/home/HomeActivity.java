@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alatheer.shebinbook.MainActivity;
 import com.alatheer.shebinbook.R;
@@ -85,11 +86,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     MessageAdapter messageAdapter;
     RecyclerView search_recycler;
     SearchStoresAdapter storesAdapter;
-    Integer page = 1 ,page2 =1;
+    Integer page = 1 ;
     PostAdapter postAdapter;
-    private boolean isloading;
-    private int pastvisibleitem,visibleitemcount,totalitemcount,previous_total=0;
-    int view_threshold = 10;
+    boolean isloading;
+    int pastvisibleitem,visibleitemcount,totalitemcount,previous_total,view_threshold;
+    int page2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -176,8 +177,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         final View view = inflater.inflate(R.layout.message_dialog_item, null);
         RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
+        page2 = 1;
+        isloading = false;
+        pastvisibleitem =0;
+        visibleitemcount =0;
+        totalitemcount =0;
+        previous_total=0;
+        view_threshold = 10;
         message_recycler = view.findViewById(R.id.message_recycler);
-
         if (user_type == 4){
             homeViewModel.getMessages(trader_id,page2);
         }else {
@@ -192,24 +199,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         message_recycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull  RecyclerView recyclerView, int dx, int dy) {
+
                 super.onScrolled(recyclerView, dx, dy);
                 visibleitemcount = layoutManager2.getChildCount();
                 totalitemcount = layoutManager2.getItemCount();
                 pastvisibleitem = layoutManager2.findFirstVisibleItemPosition();
                 if(dy>0){
+                    //Toast.makeText(HomeActivity.this, "hello", Toast.LENGTH_SHORT).show();
                     if(isloading){
                         if(totalitemcount>previous_total){
                             isloading = false;
                             previous_total = totalitemcount;
-
                         }
                     }
                     if(!isloading &&(totalitemcount-visibleitemcount)<= pastvisibleitem+view_threshold){
                         page++;
                         if (user_type == 4){
                             homeViewModel.TraderPagination(trader_id+"",page);
+
                         }else {
                             homeViewModel.UserPagination(user_id,page);
+
                         }
                         isloading = true;
                     }

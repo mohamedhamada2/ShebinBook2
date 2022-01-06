@@ -146,6 +146,7 @@ public class ContactUsActivity extends AppCompatActivity {
         RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
         message_recycler = view.findViewById(R.id.message_recycler);
+        page2 = 1;
         if (user_type == 4){
             getMessages(trader_id,page2);
         }else {
@@ -394,7 +395,7 @@ public class ContactUsActivity extends AppCompatActivity {
 
     public void UserPagination(String user_id, Integer page) {
         GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<MessageModel> call = getDataService.get_messages(user_id,page);
+        Call<MessageModel> call = getDataService.get_user_messages(user_id,page);
         call.enqueue(new Callback<MessageModel>() {
             @Override
             public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {

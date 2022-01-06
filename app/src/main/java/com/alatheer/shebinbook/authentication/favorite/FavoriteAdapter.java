@@ -97,4 +97,10 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
 
         }
     }
+    public void add_store(List<Store> storeList2){
+        for (Store store: storeList2){
+            favoriteList.add(store);
+        }
+        notifyDataSetChanged();
+    }
 }

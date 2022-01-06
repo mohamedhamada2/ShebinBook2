@@ -176,7 +176,7 @@ public interface GetDataService{
     /*21*/
     @FormUrlEncoded
     @POST("api/member/get_like_store")
-    Call<FavoriteStoreModel> get_fav_stores(@Field("user_id_fk")String user_id_fk);
+    Call<FavoriteStoreModel> get_fav_stores(@Field("user_id_fk")String user_id_fk,@Field("page")Integer page);
 
     /*22*/
     @FormUrlEncoded

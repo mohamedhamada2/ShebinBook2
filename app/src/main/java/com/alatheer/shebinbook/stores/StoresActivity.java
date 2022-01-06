@@ -60,7 +60,7 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
     StoresViewModel storesViewModel;
     StoresAdapter storesAdapter;
     SearchStoresAdapter searchstoresAdapter;
-    LinearLayoutManager layoutManager,layoutManager2;
+    LinearLayoutManager layoutManager,layoutManager2,layoutManager3;
     MenuAdapter menuAdapter;
     List<MenuItem> menuItemList;
     RecyclerView.LayoutManager menulayoutmanager;
@@ -113,9 +113,9 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                visibleitemcount = layoutManager2.getChildCount();
-                totalitemcount = layoutManager2.getItemCount();
-                pastvisibleitem = layoutManager2.findFirstVisibleItemPosition();
+                visibleitemcount = layoutManager.getChildCount();
+                totalitemcount = layoutManager.getItemCount();
+                pastvisibleitem = layoutManager.findFirstVisibleItemPosition();
                 if(dy>0){
                     if(isloading){
                         if(totalitemcount>previous_total){
@@ -158,6 +158,7 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
         final View view = inflater.inflate(R.layout.message_dialog_item, null);
         RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
+         page2 = 1;
          message_recycler = view.findViewById(R.id.message_recycler);
         if (user_type == 4){
             storesViewModel.getMessages(trader_id2,page2);
@@ -188,9 +189,9 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
                     if(!isloading2 &&(totalitemcount2-visibleitemcount2)<= pastvisibleitem2+view_threshold2){
                         page2++;
                         if (user_type == 4){
-                            storesViewModel.TraderPagination(trader_id+"",page);
+                            storesViewModel.TraderPagination(trader_id+"",page2);
                         }else {
-                            storesViewModel.UserPagination(user_id,page);
+                            storesViewModel.UserPagination(user_id,page2);
                         }
                         isloading2 = true;
                     }
@@ -198,10 +199,6 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
                 }
             }
         });
-        layoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true);
-        message_type_recycler.setAdapter(messageAdapter);
-        message_type_recycler.setLayoutManager(layoutManager);
-        message_type_recycler.setHasFixedSize(true);
         builder.setView(view);
         dialog = builder.create();
         dialog.show();
@@ -354,9 +351,9 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
     }
 
     public void init_recycler(StoresAdapter storesAdapter) {
-        layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         activityStoresBinding.storesRecycler.setHasFixedSize(true);
-        activityStoresBinding.storesRecycler.setLayoutManager(layoutManager2);
+        activityStoresBinding.storesRecycler.setLayoutManager(layoutManager);
         activityStoresBinding.storesRecycler.setAdapter(storesAdapter);
     }
 
@@ -407,9 +404,9 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
                     @Override
                     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                         super.onScrolled(recyclerView, dx, dy);
-                        visibleitemcount = layoutManager2.getChildCount();
-                        totalitemcount = layoutManager2.getItemCount();
-                        pastvisibleitem = layoutManager2.findFirstVisibleItemPosition();
+                        visibleitemcount = layoutManager.getChildCount();
+                        totalitemcount = layoutManager.getItemCount();
+                        pastvisibleitem = layoutManager.findFirstVisibleItemPosition();
                         if(dy>0){
                             if(isloading){
                                 if(totalitemcount>previous_total){

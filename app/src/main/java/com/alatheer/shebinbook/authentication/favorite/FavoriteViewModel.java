@@ -32,6 +32,8 @@ public class FavoriteViewModel {
     String user_id;
     List<Datum> messagelist;
     MessageAdapter2 messageAdapter2;
+    List<Store> storeList;
+    FavoriteAdapter favoriteAdapter;
 
     public FavoriteViewModel(Context context) {
         this.context = context;
@@ -49,7 +51,7 @@ public class FavoriteViewModel {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
                             Toast.makeText(context, "تمت الإزالة من المفضلة بنجاح", Toast.LENGTH_SHORT).show();
-                            getStores();
+                            getStores(1);
                         }
                     }
                 }
@@ -62,18 +64,20 @@ public class FavoriteViewModel {
         }
     }
 
-    public void getStores() {
+    public void getStores(Integer page) {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(context);
         user_id = loginModel.getData().getUser().getId()+"";
         GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<FavoriteStoreModel> call = getDataService.get_fav_stores(user_id);
+        Call<FavoriteStoreModel> call = getDataService.get_fav_stores(user_id,page);
         call.enqueue(new Callback<FavoriteStoreModel>() {
             @Override
             public void onResponse(Call<FavoriteStoreModel> call, Response<FavoriteStoreModel> response) {
                 if (response.isSuccessful()){
                     if (response.body().getStatus()){
-                        favoriteActivity.init_recycler(response.body().getData().getData());
+                        storeList = response.body().getData().getData();
+                        favoriteAdapter = new FavoriteAdapter(storeList,favoriteActivity);
+                        favoriteActivity.init_recycler(favoriteAdapter);
                     }
                 }
             }
@@ -183,7 +187,7 @@ public class FavoriteViewModel {
 
     public void UserPagination(String user_id, Integer page) {
         GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<MessageModel> call = getDataService.get_messages(user_id,page);
+        Call<MessageModel> call = getDataService.get_user_messages(user_id,page);
         call.enqueue(new Callback<MessageModel>() {
             @Override
             public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
@@ -222,6 +226,34 @@ public class FavoriteViewModel {
                 @Override
                 public void onFailure(Call<ProfileData> call, Throwable t) {
                     Log.e("getdata",t.getMessage());
+                }
+            });
+        }
+    }
+
+    public void PerformPagination(String user_id, Integer page) {
+        if (Utilities.isNetworkAvailable(context)) {
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<FavoriteStoreModel> call = getDataService.get_fav_stores(user_id, page);
+            call.enqueue(new Callback<FavoriteStoreModel>() {
+                @Override
+                public void onResponse(Call<FavoriteStoreModel> call, Response<FavoriteStoreModel> response) {
+                    if (response.isSuccessful()) {
+                        if (!response.body().getData().getData().isEmpty()) {
+                            if (response.body().getStatus()) {
+                                storeList = response.body().getData().getData();
+                                favoriteAdapter.add_store(storeList);
+                                // Toast.makeText(context, page+""+"loading", Toast.LENGTH_SHORT).show();
+                                //productActivity.init_products(productAdapter);
+                            }
+                        }
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<FavoriteStoreModel> call, Throwable t) {
+
                 }
             });
         }

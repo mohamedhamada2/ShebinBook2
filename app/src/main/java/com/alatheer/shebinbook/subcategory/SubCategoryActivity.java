@@ -156,6 +156,7 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
         final View view = inflater.inflate(R.layout.message_dialog_item, null);
         RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
+        page = 1;
         message_recycler = view.findViewById(R.id.message_recycler);
 
         if (user_type == 4){

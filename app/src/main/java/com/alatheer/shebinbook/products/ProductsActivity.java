@@ -187,6 +187,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
         message_recycler = view.findViewById(R.id.message_recycler);
+        page2 = 1;
         if (user_type == 4){
             productViewModel.getMessages(trader_id2,page2);
         }else {

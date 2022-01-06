@@ -159,6 +159,7 @@ public class MessageActivity extends AppCompatActivity {
         RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
         message_recycler = view.findViewById(R.id.message_recycler);
+        page = 1;
         if (user_type == 4){
             messageViewModel.getMessages(trader_id+"",page);
         }else {

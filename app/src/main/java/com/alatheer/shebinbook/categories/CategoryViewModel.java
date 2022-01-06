@@ -187,7 +187,7 @@ public class CategoryViewModel {
 
     public void UserPagination(String user_id, Integer page) {
         GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<MessageModel> call = getDataService.get_messages(user_id,page);
+        Call<MessageModel> call = getDataService.get_user_messages(user_id,page);
         call.enqueue(new Callback<MessageModel>() {
             @Override
             public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {

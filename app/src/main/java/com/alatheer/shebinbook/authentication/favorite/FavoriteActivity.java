@@ -48,7 +48,7 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
     List<Favorite>favoriteList;
     FavoriteAdapter favoriteAdapter;
     RecyclerView fav_rec;
-    RecyclerView.LayoutManager layoutManager;
+    LinearLayoutManager layoutManager;
     ActivityFavoriteBinding activityFavoriteBinding;
     FavoriteViewModel favoriteViewModel;
     List<MenuItem> menuItemList;
@@ -65,6 +65,10 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
     MessageAdapter2 messageAdapter2;
     Integer user_role,trader_id;
     String user_id;
+    private int pastvisibleitem,visibleitemcount,totalitemcount,previous_total=0;
+    int view_threshold = 10;
+    Integer page = 1;
+    boolean isloading;
     private int pastvisibleitem2,visibleitemcount2,totalitemcount2,previous_total2=0;
     int view_threshold2 = 10;
     Integer page2 = 1;
@@ -80,7 +84,7 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
         fav_rec = activityFavoriteBinding.favoriteRecycler;
         getSharedPreferanceData();
         favoriteViewModel.getData(user_id);
-        favoriteViewModel.getStores();
+        favoriteViewModel.getStores(page);
         activityFavoriteBinding.imgSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,6 +95,44 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
             @Override
             public void onClick(View view) {
                 Create_message_Dialog();
+            }
+        });
+        activityFavoriteBinding.favoriteRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                visibleitemcount = layoutManager.getChildCount();
+                totalitemcount = layoutManager.getItemCount();
+                pastvisibleitem = layoutManager.findFirstVisibleItemPosition();
+                if(dy>0){
+                    if(isloading){
+                        if(totalitemcount>previous_total){
+                            isloading = false;
+                            previous_total = totalitemcount;
+
+                        }
+                    }
+                    if(!isloading &&(totalitemcount-visibleitemcount)<= pastvisibleitem+view_threshold){
+                        page++;
+                        favoriteViewModel.PerformPagination(user_id,page);
+                        isloading = true;
+                    }
+
+                }else {
+                    /*if(isloading){
+                        if(totalitemcount>previous_total){
+                            isloading = false;
+                            previous_total = totalitemcount;
+                            Log.e("store1","eeeeee");
+                        }
+                    }
+                    if(!isloading &&(totalitemcount-visibleitemcount)<= pastvisibleitem+view_threshold){
+                        page++;
+                        Log.e("store2","eeeeee");
+                        offerViewModel.PerformPagination(page);
+                        isloading = true;
+                    }*/
+                }
             }
         });
         /*favoriteList = new ArrayList<>();
@@ -107,6 +149,7 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
         RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
         message_recycler = view.findViewById(R.id.message_recycler);
+        page2 = 1;
         if (user_role == 4){
             favoriteViewModel.getMessages(trader_id,page2);
         }else {
@@ -243,8 +286,7 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
         favoriteViewModel.delete_fav(favorite);
     }
 
-    public void init_recycler(List<Store> data) {
-        favoriteAdapter = new FavoriteAdapter(data,this);
+    public void init_recycler(FavoriteAdapter favoriteAdapter) {
         layoutManager = new LinearLayoutManager(this);
         fav_rec.setHasFixedSize(true);
         fav_rec.setAdapter(favoriteAdapter);
@@ -256,7 +298,7 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                favoriteViewModel.getStores();
+                favoriteViewModel.getStores(1);
                 activityFavoriteBinding.swiperefresh.setRefreshing(false);
             }
         }, 2000);

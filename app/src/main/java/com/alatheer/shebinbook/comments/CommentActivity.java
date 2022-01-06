@@ -125,7 +125,29 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
                 Create_message_Dialog();
             }
         });
+        activityCommentBinding.postImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CreateImageDialog(post.getImg());
+            }
+        });
     }
+
+    private void CreateImageDialog(String img) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.image_item2, null);
+        ImageView postimg = view.findViewById(R.id.img);
+        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+post.getImg()).into(postimg);
+        builder.setView(view);
+        Dialog dialog = builder.create();
+        dialog.show();
+        Window window = dialog.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+
     private void getSharedPreferenceData() {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(this);
@@ -363,7 +385,7 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
         RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
         message_recycler = view.findViewById(R.id.message_recycler);
-
+        page2 = 1;
         if (user_type == 4){
             commentViewModel.getMessages(trader_id2,page2);
         }else {

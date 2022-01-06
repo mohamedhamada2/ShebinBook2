@@ -273,6 +273,7 @@ public class HomeViewModel {
                 if (response.isSuccessful()){
                     if (response.body().getStatus()){
                         if (!response.body().getData().getData().isEmpty()){
+                            //Toast.makeText(homeActivity, "hello", Toast.LENGTH_SHORT).show();
                             messagelist = response.body().getData().getData();
                             messageAdapter2.add_message(messagelist);
                         }
@@ -288,13 +289,15 @@ public class HomeViewModel {
     }
 
     public void UserPagination(String user_id, Integer page) {
+        //Toast.makeText(homeActivity, "hello", Toast.LENGTH_SHORT).show();
         GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<MessageModel> call = getDataService.get_messages(user_id,page);
+        Call<MessageModel> call = getDataService.get_user_messages(user_id,page);
         call.enqueue(new Callback<MessageModel>() {
             @Override
             public void onResponse(Call<MessageModel> call, Response<MessageModel> response) {
                 if (response.isSuccessful()){
                     if (response.body().getStatus()){
+                        //Toast.makeText(homeActivity, "hello", Toast.LENGTH_SHORT).show();
                         if (!response.body().getData().getData().isEmpty()){
                             messagelist = response.body().getData().getData();
                             messageAdapter2.add_message(messagelist);

@@ -154,6 +154,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         final View view = inflater.inflate(R.layout.message_dialog_item, null);
         RecyclerView message_type_recycler = view.findViewById(R.id.message_type_recycler);
         ImageView cancel_img = view.findViewById(R.id.cancel_img);
+        page2 = 1;
         message_recycler = view.findViewById(R.id.message_recycler);
         if (user_role == 4){
             productViewModel.getMessages(trader_id,page2);
