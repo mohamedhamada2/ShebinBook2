@@ -189,7 +189,11 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
     private void validation() {
         post = activityPostsBinding.etPost.getText().toString();
         if(!TextUtils.isEmpty(post)){
-            postViewModel.addpost(user_id,gender_id,filepath,post);
+            if(user_type != 4){
+                postViewModel.addpost(user_id,gender_id,filepath,post);
+            }else {
+                activityPostsBinding.etPost.setError("لا يمكنك كتابة منشور إذا كنت تاجر");
+            }
         }else {
             activityPostsBinding.etPost.setError("برجاء كتابة البوست الذي تريد نشره");
         }
