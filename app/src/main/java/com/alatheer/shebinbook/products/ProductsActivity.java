@@ -46,7 +46,6 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityProductsBinding;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.home.slider.Slider;
-import com.alatheer.shebinbook.home.slider.SliderAdapter;
 import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter;
 import com.alatheer.shebinbook.message.MessageAdapter2;
@@ -431,7 +430,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         });
     }
 
-    private void CreateOfferDialog(Slider slider) {
+    public void CreateOfferDialog(Slider slider) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);

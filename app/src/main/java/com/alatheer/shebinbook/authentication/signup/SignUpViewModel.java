@@ -1,5 +1,6 @@
 package com.alatheer.shebinbook.authentication.signup;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -61,6 +62,9 @@ public class SignUpViewModel {
         RequestBody rb_gender= Utilities.getRequestBodyText(gender_id+"");
         MultipartBody.Part img = Utilities.getMultiPart(context, filepath, "user_img");
         if (Utilities.isNetworkAvailable(context)) {
+            ProgressDialog pd = new ProgressDialog(signupActivity);
+            pd.setMessage("loading ...");
+            pd.show();
             mprefs = MySharedPreference.getInstance();
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
             Call<LoginModel> call = getDataService.add_user_with_img(rb_first_name, rb_last_name, rb_phone, rb_password,rb_gender,rb_city_id,img);
@@ -70,6 +74,7 @@ public class SignUpViewModel {
                     if(response.isSuccessful()){
                         if(response.body().getStatus()){
                             Toast.makeText(context, "تم تسجيلك بنجاح", Toast.LENGTH_SHORT).show();
+                            pd.dismiss();
                             loginModel = response.body();
                             mprefs.Create_Update_UserData(context,loginModel);
                             //Toast.makeText(context, "login successfully", Toast.LENGTH_SHORT).show();
@@ -90,6 +95,9 @@ public class SignUpViewModel {
 
     public void sendRegisterRequestwithoutImage(String first_name, String last_name, String phone, String password, String city_id, String gender_id) {
         if (Utilities.isNetworkAvailable(context)) {
+            ProgressDialog pd = new ProgressDialog(signupActivity);
+            pd.setMessage("loading ...");
+            pd.show();
             mprefs = MySharedPreference.getInstance();
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
             Call<LoginModel> call = getDataService.add_user(first_name,last_name,phone,password,gender_id,city_id);
@@ -99,6 +107,7 @@ public class SignUpViewModel {
                     if(response.isSuccessful()){
                         if(response.body().getStatus()){
                             Toast.makeText(context, "تم تسجيلك بنجاح", Toast.LENGTH_SHORT).show();
+                            pd.dismiss();
                             loginModel = response.body();
                             mprefs.Create_Update_UserData(context,loginModel);
                             //Toast.makeText(context, "login successfully", Toast.LENGTH_SHORT).show();

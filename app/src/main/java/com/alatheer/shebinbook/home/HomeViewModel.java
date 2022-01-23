@@ -53,7 +53,11 @@ public class HomeViewModel {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
                             if (!response.body().getData().getData().isEmpty()){
-                                homeActivity.init_sliders(response.body().getData().getData());
+                                try {
+                                    homeActivity.init_sliders(response.body().getData().getData());
+                                }catch (Exception e){
+
+                                }
                             }else {
                                 homeActivity.setViewPagerGone();
                             }

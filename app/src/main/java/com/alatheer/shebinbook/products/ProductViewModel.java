@@ -342,7 +342,11 @@ public class ProductViewModel {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
                             if (!response.body().getData().isEmpty()){
-                                productsActivity.setStoreDataIntent(response.body().getData().get(0));
+                                try {
+                                    productsActivity.setStoreDataIntent(response.body().getData().get(0));
+                                }catch (Exception e){
+                                    Toast.makeText(productsActivity, "تأكد من الإتصال بالأنترنت", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
                     }

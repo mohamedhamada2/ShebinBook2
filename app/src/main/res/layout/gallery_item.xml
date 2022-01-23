@@ -32,6 +32,7 @@
                 android:fontFamily="@font/tajawal_bold"
                 android:text="دليل شبين"/>
             <LinearLayout
+                android:id="@+id/linear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -39,8 +40,9 @@
                 android:layout_below="@+id/btn_shebin"
                 android:layout_marginBottom="@dimen/_5sdp">
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cardview"
                     android:layout_width="0dp"
-                    android:layout_height="@dimen/_90sdp"
+                    android:layout_height="@dimen/_100sdp"
                     app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="@dimen/_10sdp"
                     android:layout_weight="1"
@@ -71,7 +73,9 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_weight="2"
-                    android:layout_margin="@dimen/_2sdp"/>
+                    android:layout_marginLeft="@dimen/_2sdp"
+                    android:layout_marginRight="@dimen/_2sdp"
+                    android:layout_marginTop="@dimen/_5sdp"/>
             </LinearLayout>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>

@@ -50,6 +50,13 @@ public class GalleryAdapter extends RecyclerView.Adapter <GalleryAdapter.Product
     @Override
     public void onBindViewHolder(@NonNull  ProductsHolder holder, int position) {
         holder.setData(galleryList.get(position));
+        if (galleryList.get(position).getProducts().size() == 1){
+            holder.linear_see_all.setWeightSum(2);
+            /*LinearLayout.LayoutParams Params = (LinearLayout.LayoutParams) holder.linearLayout.getLayoutParams(); //or create new LayoutParams...
+            Params.weight = 1;
+            holder.cardview.setLayoutParams(Params);
+            holder.recyclerView.setLayoutParams(Params);*/
+        }
         holder.txt_see_all.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

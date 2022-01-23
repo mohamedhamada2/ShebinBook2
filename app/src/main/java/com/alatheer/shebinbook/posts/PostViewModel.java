@@ -1,5 +1,6 @@
 package com.alatheer.shebinbook.posts;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
@@ -40,6 +41,9 @@ public class PostViewModel {
 
     public void addpost(String user_id, String gender_id, Uri filepath, String post) {
         if (Utilities.isNetworkAvailable(context)){
+            ProgressDialog pd = new ProgressDialog(postsActivity);
+            pd.setMessage("loading ...");
+            pd.show();
             if (filepath != null){
                 RequestBody rb_user_id = Utilities.getRequestBodyText(user_id);
                 RequestBody rb_gender_id = Utilities.getRequestBodyText(gender_id);
@@ -53,6 +57,7 @@ public class PostViewModel {
                     public void onResponse(Call<PostModel> call, Response<PostModel> response) {
                         if (response.isSuccessful()){
                             if (response.body().getData().getSuccess()==1){
+                                pd.dismiss();
                                 Toast.makeText(context, "تم إضافة البوست بنجاح", Toast.LENGTH_SHORT).show();
                                 getPosts(gender_id,1,user_id);
                                }
@@ -73,6 +78,7 @@ public class PostViewModel {
                     public void onResponse(Call<PostModel> call, Response<PostModel> response) {
                         if (response.isSuccessful()){
                             if (response.body().getData().getSuccess()==1){
+                                pd.dismiss();
                                 Toast.makeText(context, "تم إضافة البوست بنجاح", Toast.LENGTH_SHORT).show();
                                 getPosts(gender_id,1,user_id);
                             }
@@ -100,7 +106,7 @@ public class PostViewModel {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
                             askAdapter = new AskAdapter(response.body().getData().getData(),postsActivity);
-                            postsActivity.init_recycler(response.body().getData().getData());
+                            postsActivity.init_recycler(askAdapter);
                         }
                     }
                 }

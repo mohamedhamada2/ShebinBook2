@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
@@ -32,6 +33,8 @@ import com.alatheer.shebinbook.databinding.ActivitySignupBinding;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 public class SignupActivity extends AppCompatActivity {
@@ -64,8 +67,13 @@ public class SignupActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 gender_id = genderList.get(i).getGender_id();
                 TextView textView = (TextView) view;
-                textView.setTextColor(getResources().getColor(R.color.purple_500));
-                textView.setBackground(null);
+                try {
+                    textView.setTextColor(getResources().getColor(R.color.purple_500));
+                    textView.setBackground(null);
+                }catch (Exception e){
+
+                }
+
             }
 
             @Override
@@ -174,9 +182,24 @@ public class SignupActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == IMG && resultCode == Activity.RESULT_OK
                 && data != null && data.getData() != null) {
-            filepath = data.getData();
-            activitySignupBinding.cardview.setVisibility(View.VISIBLE);
-            Picasso.get().load(filepath).into(activitySignupBinding.userimg);
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),data.getData());
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                File finalfile = new File(path,file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath = Uri.fromFile(finalfile);
+                activitySignupBinding.userimg.setImageURI(filepath);
+                Picasso.get().load(filepath).into(activitySignupBinding.userimg);
+            }catch (Exception e){
+                filepath = data.getData();
+                activitySignupBinding.cardview.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath).into(activitySignupBinding.userimg);
+            }
+
         }else if (requestCode == REQUESTCAMERA && resultCode == Activity.RESULT_OK){
             Bundle bundle = data.getExtras();
             final Bitmap bitmap = (Bitmap) bundle.get("data");

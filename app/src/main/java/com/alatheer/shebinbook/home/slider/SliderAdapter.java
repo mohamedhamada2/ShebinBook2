@@ -102,6 +102,7 @@ public class SliderAdapter extends PagerAdapter {
                             intent.putExtra("flag",1);
                             context.startActivity(intent);
                         }else {
+
                             Intent intent = new Intent(context, ProductsActivity.class);
                             intent.putExtra("slider",slider);
                             intent.putExtra("flag",1);

@@ -381,8 +381,7 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
         dialog.dismiss();
     }
 
-    public void init_recycler(List<Post> data) {
-        askAdapter = new AskAdapter(data, this);
+    public void init_recycler(AskAdapter askAdapter) {
         layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         activityPostsBinding.askRecycler.setHasFixedSize(true);
         activityPostsBinding.askRecycler.setLayoutManager(layoutManager2);
@@ -394,8 +393,37 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                postViewModel.getPosts(gender_user,1,user_id);
+                page = 1;
+                pastvisibleitem=0;
+                visibleitemcount=0;
+                totalitemcount = 0;
+                previous_total=0;
+                view_threshold = 10;
+                postViewModel.getPosts(gender_user,page,user_id);
                 activityPostsBinding.swiperefresh.setRefreshing(false);
+                activityPostsBinding.askRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+                        visibleitemcount = layoutManager2.getChildCount();
+                        totalitemcount = layoutManager2.getItemCount();
+                        pastvisibleitem = layoutManager2.findFirstVisibleItemPosition();
+                        if(dy>0){
+                            if(isloading){
+                                if(totalitemcount>previous_total){
+                                    isloading = false;
+                                    previous_total = totalitemcount;
+                                }
+                            }
+                            if(!isloading &&(totalitemcount-visibleitemcount)<= pastvisibleitem+view_threshold){
+                                page++;
+                                postViewModel.PerformPagination(gender_user,page,user_id);
+                                isloading = true;
+                            }
+
+                        }
+                    }
+                });
             }
         }, 2000);
     }

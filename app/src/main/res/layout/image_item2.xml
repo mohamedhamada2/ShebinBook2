@@ -7,10 +7,9 @@
     app:cardCornerRadius="@dimen/_10sdp">
     <ImageView
         android:id="@+id/img"
-        android:layout_width="@dimen/_250sdp"
-        android:layout_height="@dimen/_250sdp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_350sdp"
         android:layout_gravity="center"
-        android:scaleType="fitXY"
-        />
+        android:scaleType="fitXY" />
 
 </androidx.cardview.widget.CardView>

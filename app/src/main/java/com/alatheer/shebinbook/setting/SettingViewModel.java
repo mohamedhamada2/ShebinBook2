@@ -76,7 +76,7 @@ public class SettingViewModel {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
                             Toast.makeText(settingActivity, "تم تعديل بياناتك بنجاح", Toast.LENGTH_SHORT).show();
-                            getData(user_id);
+                            //getData2(user_id);
                             pd.dismiss();
                             context.startActivity(new Intent(settingActivity, HomeActivity.class));
                             settingActivity.finish();
@@ -94,7 +94,10 @@ public class SettingViewModel {
 
     public void updateuserwithoutImage(String user_id, String user_first_name, String user_last_name, String user_phone, String new_password, String s, String gender) {
         if (Utilities.isNetworkAvailable(context)){
-            Toast.makeText(settingActivity,gender, Toast.LENGTH_SHORT).show();
+            ProgressDialog pd = new ProgressDialog(settingActivity);
+            pd.setMessage("loading ...");
+            pd.show();
+            //Toast.makeText(settingActivity,gender, Toast.LENGTH_SHORT).show();
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
             Call<ProfileData> call = getDataService.update_user_without_img(user_id,user_first_name,user_last_name,user_phone,new_password,gender,s);
             call.enqueue(new Callback<ProfileData>() {
@@ -103,7 +106,8 @@ public class SettingViewModel {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
                             Toast.makeText(settingActivity, "تم تعديل بياناتك بنجاح", Toast.LENGTH_SHORT).show();
-                            getData(user_id);
+                            //getData2(user_id);
+                            pd.dismiss();
                             context.startActivity(new Intent(settingActivity, HomeActivity.class));
                             settingActivity.finish();
                         }
@@ -113,6 +117,34 @@ public class SettingViewModel {
                 @Override
                 public void onFailure(Call<ProfileData> call, Throwable t) {
 
+                }
+            });
+        }
+    }
+
+    private void getData2(String user_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            ProgressDialog pd = new ProgressDialog(settingActivity);
+            pd.setMessage("loading ...");
+            pd.show();
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<ProfileData> call = getDataService.get_user_data(user_id);
+            call.enqueue(new Callback<ProfileData>() {
+                @Override
+                public void onResponse(Call<ProfileData> call, Response<ProfileData> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            settingActivity.setData(response.body());
+                            pd.dismiss();
+                            context.startActivity(new Intent(settingActivity, HomeActivity.class));
+                            settingActivity.finish();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ProfileData> call, Throwable t) {
+                    Log.e("getdata",t.getMessage());
                 }
             });
         }

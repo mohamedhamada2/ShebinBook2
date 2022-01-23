@@ -51,7 +51,11 @@ public class ProfileViewModel {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
                             if (!response.body().getData().isEmpty()){
-                                profileActivity.setData(response.body().getData().get(0));
+                                try {
+                                    profileActivity.setData(response.body().getData().get(0));
+                                }catch (Exception e){
+
+                                }
                             }
                         }
                     }

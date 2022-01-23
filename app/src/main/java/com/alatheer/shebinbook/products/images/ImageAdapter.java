@@ -69,7 +69,7 @@ public class ImageAdapter  extends RecyclerView.Adapter<ImageAdapter.ImageHolder
         dialog.show();
         Window window = dialog.getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setGravity(Gravity.CENTER);
         window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 

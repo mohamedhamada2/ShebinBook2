@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,13 @@ public class GalleryAdapter extends RecyclerView.Adapter <GalleryAdapter.Product
     @Override
     public void onBindViewHolder(@NonNull  GalleryAdapter.ProductsHolder holder, int position) {
         holder.setData(galleryList.get(position));
+        if (galleryList.get(position).getProducts().size() == 1){
+            holder.linearLayout.setWeightSum(2);
+            /*LinearLayout.LayoutParams Params = (LinearLayout.LayoutParams) holder.linearLayout.getLayoutParams(); //or create new LayoutParams...
+            Params.weight = 1;
+            holder.cardview.setLayoutParams(Params);
+            holder.recyclerView.setLayoutParams(Params);*/
+        }
         holder.txt_see_all.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,13 +76,16 @@ public class GalleryAdapter extends RecyclerView.Adapter <GalleryAdapter.Product
         Button btn_shebin;
         TextView txt_see_all;
         RecyclerView recyclerView;
-        CardView category_card;
+        CardView category_card,cardview;
+        LinearLayout linearLayout;
         public ProductsHolder(@NonNull View itemView) {
             super(itemView);
             btn_shebin = itemView.findViewById(R.id.btn_shebin);
             txt_see_all = itemView.findViewById(R.id.txt_see_all);
             recyclerView = itemView.findViewById(R.id.products_recycler);
             category_card = itemView.findViewById(R.id.category_card);
+            cardview = itemView.findViewById(R.id.cardview);
+            linearLayout = itemView.findViewById(R.id.linear);
         }
         public void setData(Gallery gallery) {
            // Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+category.getImg()).into(category_img);
