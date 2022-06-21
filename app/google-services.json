@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "396506296977",
+    "project_id": "shebinbook-104ae",
+    "storage_bucket": "shebinbook-104ae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:396506296977:android:a02fe18b2c3e477e248530",
+        "android_client_info": {
+          "package_name": "com.alatheer.shebinbook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "396506296977-7e5a0cdlt9sutkpundeue6di2lve3p00.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alatheer.shebinbook",
+            "certificate_hash": "4485a3234106b1961fa97f11595d1745db1517d1"
+          }
+        },
+        {
+          "client_id": "396506296977-rrngnb11nqemkgd6ik6bfuma7vj944a0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3RNQS6dsBtHDDmeSSGjvuJNVhaZRFBNQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "396506296977-rrngnb11nqemkgd6ik6bfuma7vj944a0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

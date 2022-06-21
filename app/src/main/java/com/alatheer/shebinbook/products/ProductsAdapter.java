@@ -15,7 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -36,6 +38,7 @@ import com.alatheer.shebinbook.subcategory.SubCategoryActivity;
 import com.alatheer.shebinbook.trader.updateproduct.UpdateProductActivity;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -86,6 +89,8 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
                         createAlertDialog(productList.get(position));
                     }
                 }catch (Exception e){
+                    Log.e("error5",e.getMessage());
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     createAlertDialog(productList.get(position));
                 }
 
@@ -102,11 +107,14 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
     class CategoryHolder extends RecyclerView.ViewHolder{
         ImageView category_img;
         TextView category_txt;
+        CheckBox checkBox;
 
         public CategoryHolder(@NonNull  View itemView) {
             super(itemView);
             category_img = itemView.findViewById(R.id.category_img);
             category_txt = itemView.findViewById(R.id.category_name);
+            checkBox = itemView.findViewById(R.id.checkbox);
+            checkBox.setVisibility(View.GONE);
         }
 
         public void setData(Product product) {
@@ -117,18 +125,22 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
     private void createTraderDialog(Product product) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.trader_product_dialog, null);
+        final View view = inflater.inflate(R.layout.trader_product_dialog2, null);
         ImageView product_img = view.findViewById(R.id.product_img);
         TextView product_name = view.findViewById(R.id.product_name);
         TextView product_price = view.findViewById(R.id.product_price);
         TextView product_details = view.findViewById(R.id.product_details);
         TextView product_price_offer = view.findViewById(R.id.product_price_offer);
+        //ImageView iv_gif_container = view.findViewById(R.id.iv_gif_container);
+        //FrameLayout fl_shadow_container = view.findViewById(R.id.iv_gif_container);
         //TextView txt_product_decription = view.findViewById(R.id.product_decription);
         ImageView bin_img = view.findViewById(R.id.bin_img);
         ImageView edit_img = view.findViewById(R.id.edit_img);
         ImageView image_store_img = view.findViewById(R.id.store_logo);
         TextView txt_store_name = view.findViewById(R.id.store_name);
         product_price.setVisibility(View.GONE);
+        //iv_gif_container.setVisibility(View.GONE);
+        //fl_shadow_container.setVisibility(View.GONE);
         builder.setView(view);
         Dialog dialog3 = builder.create();
         dialog3.show();
@@ -197,9 +209,11 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
     }
 
     private void delete_product(Integer id) {
+        List<Integer> id_list = new ArrayList<>();
+        id_list.add(id);
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<CommentModel> call = getDataService.delete_product_from_alboum(id+"");
+            Call<CommentModel> call = getDataService.delete_product_from_alboum(id_list);
             call.enqueue(new Callback<CommentModel>() {
                 @Override
                 public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
@@ -259,7 +273,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
     public void createAlertDialog(Product product) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.product_dialog, null);
+        final View view = inflater.inflate(R.layout.productdialog2, null);
         ImageView product_img = view.findViewById(R.id.product_img);
         TextView product_name = view.findViewById(R.id.product_name);
         TextView product_price = view.findViewById(R.id.product_price);

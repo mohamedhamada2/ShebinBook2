@@ -12,7 +12,7 @@ public class LoginModel {
     private Boolean status;
     @SerializedName("error")
     @Expose
-    private Object error;
+    private String error;
 
     public Data getData() {
         return data;
@@ -30,11 +30,11 @@ public class LoginModel {
         this.status = status;
     }
 
-    public Object getError() {
+    public String getError() {
         return error;
     }
 
-    public void setError(Object error) {
+    public void setError(String error) {
         this.error = error;
     }
 }

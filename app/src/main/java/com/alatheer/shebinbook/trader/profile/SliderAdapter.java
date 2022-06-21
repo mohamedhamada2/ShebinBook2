@@ -70,7 +70,7 @@ public class SliderAdapter extends PagerAdapter {
     private void creatOfferDialog(Slider slider) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.trader_product_dialog, null);
+        final View view = inflater.inflate(R.layout.trader_product_dialog2, null);
         ImageView product_img = view.findViewById(R.id.product_img);
         TextView product_name = view.findViewById(R.id.product_name);
         TextView product_price = view.findViewById(R.id.product_price);

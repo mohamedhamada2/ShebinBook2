@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -34,23 +37,28 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alatheer.shebinbook.R;
+import com.alatheer.shebinbook.Utilities.Utilities;
+import com.alatheer.shebinbook.api.GetDataService;
 import com.alatheer.shebinbook.api.MySharedPreference;
+import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityAllProductsBinding;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.home.slider.MenuItem;
-import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter2;
+import com.alatheer.shebinbook.products.ProductSliderClient;
+import com.alatheer.shebinbook.products.ProductsSlider_for_Trader;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
 import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.trader.addproduct.AddProductActivity;
-import com.alatheer.shebinbook.trader.images.Image;
-import com.alatheer.shebinbook.trader.updateproduct.UpdateProductActivity;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
+import com.smarteist.autoimageslider.SliderAnimations;
+import com.smarteist.autoimageslider.SliderView;
+import com.smarteist.autoimageslider.SliderViewAdapter;
 import com.squareup.picasso.Picasso;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +87,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
     int view_threshold2 = 10;
     Integer page2 = 1;
     boolean isloading2;
+    List<Integer> product_id_list;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +95,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         activityAllProductsBinding = DataBindingUtil.setContentView(this,R.layout.activity_all_products);
         productViewModel = new ProductViewModel(this);
         activityAllProductsBinding.setProductviewmodel(productViewModel);
+        product_id_list = new ArrayList<>();
         activityAllProductsBinding.swiperefresh.setOnRefreshListener(this);
         getDataIntent();
         getSharedPreferenceData();
@@ -112,6 +122,16 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
             @Override
             public void onClick(View view) {
                 Create_message_Dialog();
+            }
+        });
+        activityAllProductsBinding.deleteFromAlboumImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!product_id_list.isEmpty()){
+                    productViewModel.delete_products(product_id_list);
+                }else {
+                    Toast.makeText(AllProductsActivity.this, "قم بتحديد المنتجات التي تريد حذفها", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -224,11 +244,14 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         }
         if(user_role != 4){
             activityAllProductsBinding.addToAlboumImg.setVisibility(View.GONE);
+            activityAllProductsBinding.deleteFromAlboumImg.setVisibility(View.GONE);
         }else {
             if (trader_id.equals(trader_id2)){
+                activityAllProductsBinding.deleteFromAlboumImg.setVisibility(View.VISIBLE);
                 activityAllProductsBinding.addToAlboumImg.setVisibility(View.VISIBLE);
             }else {
                 activityAllProductsBinding.addToAlboumImg.setVisibility(View.GONE);
+                activityAllProductsBinding.deleteFromAlboumImg.setVisibility(View.GONE);
             }
         }
         activityAllProductsBinding.userName.setText(user_name);
@@ -255,8 +278,41 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
     public void createAlertDialog(Product product) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.product_dialog, null);
-        ImageView product_img = view.findViewById(R.id.product_img);
+        final View view = inflater.inflate(R.layout.trader_product_dialog, null);
+        if (Utilities.isNetworkAvailable(this)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<ProductModel> call = getDataService.get_products(gallery_id+"");
+            call.enqueue(new Callback<ProductModel>() {
+                @Override
+                public void onResponse(Call<ProductModel> call, Response<ProductModel> response) {
+                    if (response.isSuccessful()){
+                        SliderView sliderView = view.findViewById(R.id.imageSlider2);
+                        ProductSliderClient productSliderClient = new ProductSliderClient(AllProductsActivity.this,response.body().getData(),store_name,store_img);
+                        sliderView.setSliderAdapter(productSliderClient);
+                        sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM); //set indicator animation by using IndicatorAnimationType. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
+                        sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
+                        sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
+                        sliderView.setIndicatorSelectedColor(R.color.purple_500);
+                        sliderView.setIndicatorUnselectedColor(Color.GRAY);
+                        sliderView.setScrollTimeInSec(4); //set scroll delay in seconds :
+                        sliderView.startAutoCycle();
+                        for (int i = 0;i<response.body().getData().size();i++){
+                            if (product.getId().equals(response.body().getData().get(i).getId())){
+                                sliderView.setCurrentPagePosition(i);
+                            }else {
+                                //Toast.makeText(AllProductsActivity.this, product.getId()+"", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ProductModel> call, Throwable t) {
+
+                }
+            });
+        }
+        /*ImageView product_img = view.findViewById(R.id.product_img);
         TextView product_name = view.findViewById(R.id.product_name);
         TextView product_price = view.findViewById(R.id.product_price);
         TextView product_price_offer = view.findViewById(R.id.product_price_offer);
@@ -284,21 +340,19 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         }
         product_price.setVisibility(View.GONE);
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(product_img);
-        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+store_img).into(store_img2);
+        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+store_img).into(store_img2);*/
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
         Window window = dialog.getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.setGravity(Gravity.CENTER_HORIZONTAL);
         window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-        msg_img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-                CreateBasketDialog(product);
-            }
-        });
+
     }
 
-    private void CreateBasketDialog(Product product) {
+    public void CreateBasketDialog(Product product) {
+        dialog.dismiss();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.basket_dialog, null);
@@ -376,7 +430,37 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.trader_product_dialog, null);
-        ImageView product_img = view.findViewById(R.id.product_img);
+        if (Utilities.isNetworkAvailable(this)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<ProductModel> call = getDataService.get_products(gallery_id+"");
+            call.enqueue(new Callback<ProductModel>() {
+                @Override
+                public void onResponse(Call<ProductModel> call, Response<ProductModel> response) {
+                    if (response.isSuccessful()){
+                        SliderView sliderView = view.findViewById(R.id.imageSlider2);
+                        sliderView.setSliderAdapter(new ProductsSlider_for_Trader(AllProductsActivity.this,response.body().getData(),store_name,store_img));
+                        sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM); //set indicator animation by using IndicatorAnimationType. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
+                        sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
+                        sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
+                        sliderView.setIndicatorSelectedColor(R.color.purple_500);
+                        sliderView.setIndicatorUnselectedColor(Color.GRAY);
+                        sliderView.setScrollTimeInSec(4); //set scroll delay in seconds :
+                        sliderView.startAutoCycle();
+                        for (int i = 0;i<response.body().getData().size();i++){
+                            if (product.getId().equals(response.body().getData().get(i).getId())){
+                                sliderView.setCurrentPagePosition(i);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ProductModel> call, Throwable t) {
+
+                }
+            });
+        }
+        /*ImageView product_img = view.findViewById(R.id.product_img);
         TextView product_name = view.findViewById(R.id.product_name);
         TextView product_price = view.findViewById(R.id.product_price);
         TextView product_details = view.findViewById(R.id.product_details);
@@ -403,10 +487,6 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         }
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(product_img);
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+store_img).into(store_img2);
-        Window window = dialog3.getWindow();
-        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        window.setGravity(Gravity.CENTER_HORIZONTAL);
-        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         edit_img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -423,10 +503,17 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
                 dialog3.dismiss();
                 CreateDeleteDialog(product);
             }
-        });
+        });*/
+        builder.setView(view);
+        dialog3 = builder.create();
+        dialog3.show();
+        Window window = dialog3.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
-    private void CreateDeleteDialog(Product product) {
+    public void CreateDeleteDialog(Product product) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.delete_dialog, null);
@@ -538,5 +625,13 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         }
         activityAllProductsBinding.userName.setText(user_name);
         init_navigation_menu();
+    }
+
+    public void get_products_id(List<Integer> product_id_list) {
+        this.product_id_list = product_id_list;
+    }
+
+    public void dismiss() {
+        dialog3.dismiss();
     }
 }

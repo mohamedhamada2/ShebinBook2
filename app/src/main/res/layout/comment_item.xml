@@ -76,12 +76,12 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="@dimen/_10sdp"/>
             <ImageView
-                android:id="@+id/fav_img"
+                android:id="@+id/bin_img"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/comment_img"
-                android:src="@drawable/fav"
+                android:src="@drawable/bin"
                 android:layout_marginLeft="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:visibility="gone"/>
@@ -93,7 +93,7 @@
                 android:fontFamily="@font/roboto_medium"
                 android:textColor="@color/white"
                 android:text="12"
-                app:layout_constraintLeft_toRightOf="@+id/fav_img"
+                app:layout_constraintLeft_toRightOf="@+id/bin_img"
                 app:layout_constraintTop_toBottomOf="@+id/comment_img"
                 android:layout_marginLeft="@dimen/_2sdp"
                 android:layout_marginTop="@dimen/_5sdp"

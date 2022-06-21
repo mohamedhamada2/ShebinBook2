@@ -14,9 +14,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.alatheer.shebinbook.R;
+import com.alatheer.shebinbook.Utilities.Utilities;
+import com.alatheer.shebinbook.api.GetDataService;
 import com.alatheer.shebinbook.api.MySharedPreference;
+import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.trader.images.Image;
+import com.alatheer.shebinbook.trader.images.ImagesData;
+import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
+import com.smarteist.autoimageslider.SliderAnimations;
+import com.smarteist.autoimageslider.SliderView;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -25,6 +32,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ImageAdapter  extends RecyclerView.Adapter<ImageAdapter.ImageHolder> {
     List<Image> imageList;
@@ -53,17 +63,48 @@ public class ImageAdapter  extends RecyclerView.Adapter<ImageAdapter.ImageHolder
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CreateImageDialog(imageList.get(position).getImg());
+                CreateImageDialog(imageList.get(position));
             }
         });
 
     }
-    private void CreateImageDialog(String product_img) {
+    private void CreateImageDialog(Image image) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View view = inflater.inflate(R.layout.image_item2, null);
-        ImageView img = view.findViewById(R.id.img);
-        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product_img).into(img);
+        //ImageView img = view.findViewById(R.id.img);
+        //Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product_img).resize(1000,1000).into(img);
+
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<ImagesData> call = getDataService.get_gallery(image.getTraderIdFk()+"");
+            call.enqueue(new Callback<ImagesData>() {
+                @Override
+                public void onResponse(Call<ImagesData> call, Response<ImagesData> response) {
+                    if (response.isSuccessful()){
+                        SliderView sliderView = view.findViewById(R.id.imageSlider);
+                        sliderView.setSliderAdapter(new ImagesSlider(context,response.body().getData(),1));
+                        sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM); //set indicator animation by using IndicatorAnimationType. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
+                        sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
+                        sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
+                        sliderView.setIndicatorSelectedColor(Color.WHITE);
+                        sliderView.setIndicatorUnselectedColor(Color.GRAY);
+                        sliderView.setScrollTimeInSec(4); //set scroll delay in seconds :
+                        sliderView.startAutoCycle();
+                        for (int i = 0;i<response.body().getData().size();i++){
+                            if (image.getId().equals(response.body().getData().get(i).getId())){
+                                sliderView.setCurrentPagePosition(i);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ImagesData> call, Throwable t) {
+
+                }
+            });
+        }
         builder.setView(view);
         Dialog dialog = builder.create();
         dialog.show();

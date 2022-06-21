@@ -20,11 +20,14 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alatheer.shebinbook.R;
+import com.alatheer.shebinbook.allproducts.AllProductsActivity;
 import com.alatheer.shebinbook.databinding.FragmentImage2Binding;
 import com.alatheer.shebinbook.trader.images.addimages.AddImagesActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageFragment extends Fragment {
@@ -33,6 +36,7 @@ public class ImageFragment extends Fragment {
     ImageAdapter imageAdapter;
     GridLayoutManager gridLayoutManager;
     String trader_id,store_id;
+    List<Integer> gallery_id_list;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -43,12 +47,23 @@ public class ImageFragment extends Fragment {
         store_id = getArguments().getString("store_id");
         imagesViewModel.get_gallery(trader_id);
         View view = fragmentImage2Binding.getRoot();
+        gallery_id_list = new ArrayList<>();
         fragmentImage2Binding.btnAddAlboum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), AddImagesActivity.class);
                 intent.putExtra("store_id",store_id);
                 startActivity(intent);
+            }
+        });
+        fragmentImage2Binding.btnDeleteFromAlboum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!gallery_id_list.isEmpty()){
+                    imagesViewModel.delete_images(gallery_id_list,trader_id);
+                }else {
+                    Toast.makeText(getActivity(), "قم بتحديد الصور التي تريد حذفها", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         return view;
@@ -99,4 +114,7 @@ public class ImageFragment extends Fragment {
         });
     }
 
+    public void get_images_id(List<Integer> gallery_id_list) {
+        this.gallery_id_list = gallery_id_list;
+    }
 }

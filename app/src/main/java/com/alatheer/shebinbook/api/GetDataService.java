@@ -20,6 +20,7 @@ import com.alatheer.shebinbook.products.rating.RatingModel;
 import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.StoreModel;
 import com.alatheer.shebinbook.trader.images.ImagesData;
+import com.alatheer.shebinbook.trader.profile.DeleteAlboum;
 
 import java.security.MessageDigest;
 import java.util.List;
@@ -258,7 +259,7 @@ public interface GetDataService{
     /*31*/
     @FormUrlEncoded
     @POST("api/member/delete_product_alboum")
-    Call<CommentModel> delete_product_from_alboum(@Field("row_id")String row_id);
+    Call<CommentModel> delete_product_from_alboum(@Field("row_id[]")List<Integer> row_id);
 
     /*32*/
     @Multipart
@@ -419,11 +420,29 @@ public interface GetDataService{
 
     @FormUrlEncoded
     @POST("api/member/delete_gallery")
-    Call<CommentModel> delete_from_gallery(@Field("row_id")Integer row_id);
+    Call<CommentModel> delete_from_gallery(@Field("row_id[]")List<Integer> row_id);
 
     @FormUrlEncoded
     @POST("api/member/delete_posts")
     Call<CommentModel> delete_post(@Field("row_id")Integer row_id);
+
+    @FormUrlEncoded
+    @POST("api/member/delete_comment")
+    Call<CommentModel> delete_comment(@Field("comment_id")Integer comment_id);
+
+    @FormUrlEncoded
+    @POST("api/member/delete_replay")
+    Call<CommentModel> delete_replay(@Field("replay_id")Integer replay_id);
+
+    @FormUrlEncoded
+    @POST("api/member/delete_alboum")
+    Call<DeleteAlboum> delete_alboum(@Field("alboum_id")Integer alboum_id);
+
+   /* @FormUrlEncoded
+    @POST("api/member/update_token")
+    Call<DeleteAlboum> update_token(@Field("user_id")Integer alboum_id,
+                                    @Field("token")String token,
+                                    @Field("topic")String topic);*/
 
 }
 

@@ -33,18 +33,18 @@ public class AddOfferViewModel {
     public void get_gender() {
         List<Gender> genderlist = new ArrayList<>();
         List<String> gender_names = new ArrayList<>();
+        Gender all_gender = new Gender();
+        all_gender.setGender_id("2");
+        all_gender.setGender_name("للجميع");
         Gender gender_male= new Gender();
         gender_male.setGender_id("1");
         gender_male.setGender_name("ذكر");
         Gender gender_female= new Gender();
         gender_female.setGender_id("3");
         gender_female.setGender_name("أنثي");
-        Gender all_gender = new Gender();
-        all_gender.setGender_id("2");
-        all_gender.setGender_name("للجميع");
+        genderlist.add(all_gender);
         genderlist.add(gender_male);
         genderlist.add(gender_female);
-        genderlist.add(all_gender);
         addOfferActivity.setgender(genderlist);
         for (Gender subcategory : genderlist) {
             gender_names.add(subcategory.getGender_name());

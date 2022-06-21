@@ -14,6 +14,7 @@ import com.alatheer.shebinbook.message.MessageModel;
 import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.StoreModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -78,9 +79,11 @@ public class ProductViewModel {
     }
 
     public void delete_product(Integer id) {
+        List<Integer> id_list = new ArrayList<>();
+        id_list.add(id);
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<CommentModel> call = getDataService.delete_product_from_alboum(id+"");
+            Call<CommentModel> call = getDataService.delete_product_from_alboum(id_list);
             call.enqueue(new Callback<CommentModel>() {
                 @Override
                 public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
@@ -257,6 +260,28 @@ public class ProductViewModel {
                 @Override
                 public void onFailure(Call<ProfileData> call, Throwable t) {
                     Log.e("getdata",t.getMessage());
+                }
+            });
+        }
+    }
+
+    public void delete_products(List<Integer> product_id_list) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<CommentModel> call = getDataService.delete_product_from_alboum(product_id_list);
+            call.enqueue(new Callback<CommentModel>() {
+                @Override
+                public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getData().getSuccess() ==1){
+                            allProductsActivity.createsuccessDialog();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<CommentModel> call, Throwable t) {
+
                 }
             });
         }

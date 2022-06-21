@@ -136,7 +136,7 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
     private void CreateImageDialog(String img) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.image_item2, null);
+        final View view = inflater.inflate(R.layout.image_item, null);
         ImageView postimg = view.findViewById(R.id.img);
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+post.getImg()).into(postimg);
         builder.setView(view);
@@ -463,5 +463,73 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
         }
         activityCommentBinding.userName.setText(user_name);
         init_navigation_menu();
+    }
+
+    public void delete_comment(Comment comment) {
+        CreateDeleteDialog(comment);
+    }
+
+    private void CreateDeleteDialog(Comment comment) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.delete_dialog, null);
+        Button btn_delete = view.findViewById(R.id.btn_delete);
+        Button btn_skip = view.findViewById(R.id.btn_skip);
+        TextView txt = view.findViewById(R.id.txt);
+        txt.setText("هل تريد حذف التعليق؟");
+        builder.setView(view);
+        Dialog dialog4 = builder.create();
+        dialog4.show();
+        Window window = dialog4.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        btn_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                commentViewModel.delete_comment(comment.getId(),comment.getPostIdFk());
+                dialog4.dismiss();
+                //CreateBasketDialog(product);
+            }
+        });
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog4.dismiss();
+                //CreateDeleteDialog(product);
+            }
+        });
+    }
+
+    public void delete_reply(RepliesData repliesData) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View view = inflater.inflate(R.layout.delete_dialog, null);
+        Button btn_delete = view.findViewById(R.id.btn_delete);
+        Button btn_skip = view.findViewById(R.id.btn_skip);
+        TextView txt = view.findViewById(R.id.txt);
+        txt.setText("هل تريد حذف التعليق؟");
+        builder.setView(view);
+        Dialog dialog4 = builder.create();
+        dialog4.show();
+        Window window = dialog4.getWindow();
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setGravity(Gravity.CENTER_HORIZONTAL);
+        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        btn_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                commentViewModel.delete_replay(repliesData.getId(),repliesData.getPostIdFk());
+                dialog4.dismiss();
+                //CreateBasketDialog(product);
+            }
+        });
+        btn_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog4.dismiss();
+                //CreateDeleteDialog(product);
+            }
+        });
     }
 }

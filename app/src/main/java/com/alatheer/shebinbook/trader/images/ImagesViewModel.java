@@ -8,6 +8,9 @@ import com.alatheer.shebinbook.api.GetDataService;
 import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.comments.CommentModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,9 +46,34 @@ public class ImagesViewModel {
     }
 
     public void delete(Integer id,String trader_id) {
+        List<Integer> id_list = new ArrayList<>();
+        id_list.add(id);
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<CommentModel> call = getDataService.delete_from_gallery(id);
+            Call<CommentModel> call = getDataService.delete_from_gallery(id_list);
+            call.enqueue(new Callback<CommentModel>() {
+                @Override
+                public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getData().getSuccess() == 1){
+                            Toast.makeText(context, "تم الحذف بنجاج", Toast.LENGTH_SHORT).show();
+                            get_gallery(trader_id);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<CommentModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void delete_images(List<Integer> gallery_id_list,String trader_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<CommentModel> call = getDataService.delete_from_gallery(gallery_id_list);
             call.enqueue(new Callback<CommentModel>() {
                 @Override
                 public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {

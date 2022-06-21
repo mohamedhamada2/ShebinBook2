@@ -16,6 +16,7 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.contactus.ContactUsActivity;
 import com.alatheer.shebinbook.home.slider.MenuItem;
 import com.alatheer.shebinbook.setting.SettingActivity;
+import com.alatheer.shebinbook.start.StartActivity;
 import com.alatheer.shebinbook.trader.profile.ProfileActivity;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.MenuHolder> {
                     context.startActivity(new Intent(context, ContactUsActivity.class));
                 }else if (menuItem == menuItemList.get(4)){
                     mySharedPreference.ClearData(context);
-                    context.startActivity(new Intent(context, LoginActivity.class));
+                    context.startActivity(new Intent(context, StartActivity.class));
                 }else if (menuItem == menuItemList.get(5)){
                     Intent intent = new Intent(context, ProfileActivity.class);
                     intent.putExtra("flag",2);

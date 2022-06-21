@@ -56,7 +56,7 @@ public class ReplayAdapter  extends RecyclerView.Adapter<ReplayAdapter.MessageHo
 
     class MessageHolder extends RecyclerView.ViewHolder{
         TextView txt_time,txt_date,txt_name,txt_comment;
-        ImageView user_img;
+        ImageView user_img,bin_img;
         public MessageHolder(@NonNull  View itemView) {
             super(itemView);
             txt_date = itemView.findViewById(R.id.txt_date);
@@ -64,6 +64,7 @@ public class ReplayAdapter  extends RecyclerView.Adapter<ReplayAdapter.MessageHo
             txt_name = itemView.findViewById(R.id.txt_name);
             txt_time = itemView.findViewById(R.id.txt_time);
             user_img = itemView.findViewById(R.id.userimg);
+            bin_img = itemView.findViewById(R.id.bin_img);
         }
 
         public void setData(Reply datum) {

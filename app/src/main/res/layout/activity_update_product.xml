@@ -168,7 +168,8 @@
                         android:hint="سعر المنتج"
                         android:paddingRight="@dimen/_5sdp"
                         android:paddingLeft="@dimen/_5sdp"
-                        android:layout_marginRight="@dimen/_4sdp"/>
+                        android:layout_marginRight="@dimen/_4sdp"
+                        android:inputType="number"/>
                     <EditText
                         android:id="@+id/et_product_name"
                         android:layout_width="0dp"

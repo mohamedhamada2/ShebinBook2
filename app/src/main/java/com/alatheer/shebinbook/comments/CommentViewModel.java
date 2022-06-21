@@ -276,4 +276,47 @@ public class CommentViewModel {
             });
         }
     }
+
+    public void delete_comment(Integer id, Integer post_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<CommentModel> call = getDataService.delete_comment(id);
+            call.enqueue(new Callback<CommentModel>() {
+                @Override
+                public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
+                    if (response.isSuccessful()){
+                        Toast.makeText(commentActivity, "تم حذف التعليق بنجاح", Toast.LENGTH_SHORT).show();
+                        getComments(post_id+"");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<CommentModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void delete_replay(Integer id, Integer postIdFk) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<CommentModel> call = getDataService.delete_replay(id);
+            call.enqueue(new Callback<CommentModel>() {
+                @Override
+                public void onResponse(Call<CommentModel> call, Response<CommentModel> response) {
+                    if (response.isSuccessful()){
+                        Toast.makeText(commentActivity, "تم حذف التعليق بنجاح", Toast.LENGTH_SHORT).show();
+                        getComments(postIdFk+"");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<CommentModel> call, Throwable t) {
+
+                }
+            });
+        }
+
+    }
 }

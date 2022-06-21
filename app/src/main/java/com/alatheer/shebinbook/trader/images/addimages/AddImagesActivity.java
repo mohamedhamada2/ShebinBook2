@@ -208,6 +208,7 @@ public class AddImagesActivity extends AppCompatActivity implements NavigationVi
                     startActivityForResult(intent, REQUESTCAMERA);
                 } else if (items[which].equals("ملفات الصور")) {
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    //intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                     intent.setType("image/*");
                     //startActivityForResult(intent.createChooser(intent,"Select File"),img);
                     startActivityForResult(intent, img);

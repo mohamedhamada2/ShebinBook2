@@ -93,7 +93,7 @@ public class AskAdapter extends RecyclerView.Adapter<AskAdapter.AskHolder> {
     private void CreateImageDialog(Post post) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.image_item2, null);
+        final View view = inflater.inflate(R.layout.image_item, null);
         ImageView img = view.findViewById(R.id.img);
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+post.getImg()).into(img);
         builder.setView(view);

@@ -39,6 +39,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alatheer.shebinbook.R;
 import com.alatheer.shebinbook.Utilities.Utilities;
@@ -61,6 +62,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -88,6 +90,7 @@ public class UpdateOfferActivity extends AppCompatActivity implements Navigation
     RecyclerView.LayoutManager menulayoutmanager;
     Integer user_type;
     List<MenuItem> menuItemList;
+    Date d1,d2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -186,14 +189,51 @@ public class UpdateOfferActivity extends AppCompatActivity implements Navigation
         to_date = activityUpdateOfferBinding.etToDate.getText().toString();
         from_date = activityUpdateOfferBinding.etFromDate.getText().toString();
         offer_des = activityUpdateOfferBinding.etDetails.getText().toString();
-        if (!TextUtils.isEmpty(price_after_offer)&&!TextUtils.isEmpty(price_before_offer)&&!TextUtils.isEmpty(title)
-                &&!TextUtils.isEmpty(to_date)&&!TextUtils.isEmpty(from_date)&&!TextUtils.isEmpty(offer_des)){
+        if (!TextUtils.isEmpty(title)&&!TextUtils.isEmpty(offer_des)&& Double.parseDouble(price_after_offer)<Double.parseDouble(price_before_offer)&&!TextUtils.isEmpty(price_before_offer)&&!TextUtils.isEmpty(price_after_offer)&&!TextUtils.isEmpty(to_date)&&!TextUtils.isEmpty(from_date)){
             if (filepath != null){
                 updateOfferViewModel.update_offer_with_img(offer_id,trader_id,title,gender_id,from_date,to_date,price_before_offer,price_after_offer,offer_des,filepath);
             }else {
                 updateOfferViewModel.update_offer_without_img(offer_id,trader_id,title,gender_id,from_date,to_date,price_before_offer,price_after_offer,offer_des);
             }
 
+        }else {
+            if(TextUtils.isEmpty(title)){
+                activityUpdateOfferBinding.etProductName.setError("ادخل اسم المنتج");
+            }else {
+                activityUpdateOfferBinding.etProductName.setError(null);
+            }
+            if(TextUtils.isEmpty(from_date)){
+                Toast.makeText(this, "ادخل تاريخ بداية الخصم", Toast.LENGTH_SHORT).show();
+            }else {
+                activityUpdateOfferBinding.etFromDate.setError(null);
+            }
+            if(TextUtils.isEmpty(to_date)){
+                Toast.makeText(this, "ادخل تاريخ نهاية الخصم", Toast.LENGTH_SHORT).show();
+            }else {
+                activityUpdateOfferBinding.etToDate.setError(null);
+            }
+            if(TextUtils.isEmpty(offer_des)){
+                activityUpdateOfferBinding.etDetails.setError("ادخل تفاصيل العرض");
+            }else {
+                activityUpdateOfferBinding.etDetails.setError(null);
+            }
+            if(TextUtils.isEmpty(price_before_offer)){
+                activityUpdateOfferBinding.etProductPrice.setError("ادخل السعر قبل الخصم");
+            }else {
+                activityUpdateOfferBinding.etProductPrice.setError(null);
+            }
+            if(TextUtils.isEmpty(price_after_offer)){
+                activityUpdateOfferBinding.etOfferPrice.setError("ادخل السعر بعد الخصم");
+            }else {
+                activityUpdateOfferBinding.etOfferPrice.setError(null);
+            }
+            if (!TextUtils.isEmpty(price_after_offer)&&!TextUtils.isEmpty(price_before_offer)) {
+                if (Double.parseDouble(price_after_offer) > Double.parseDouble(price_before_offer)) {
+                    activityUpdateOfferBinding.etOfferPrice.setError("سعر الخصم لابد ان يكون أقل من السعر قبل الخصم");
+                } else {
+                    activityUpdateOfferBinding.etOfferPrice.setError(null);
+                }
+            }
         }
     }
 
@@ -201,7 +241,16 @@ public class UpdateOfferActivity extends AppCompatActivity implements Navigation
         String myFormat = "dd-MM-yyyy";//In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
         to_date = sdf.format(myCalendar2.getTime());
-        activityUpdateOfferBinding.etToDate.setText(to_date);
+        try {
+            d2 = sdf.parse(to_date);
+            if (d1.compareTo(d2) < 0){
+                activityUpdateOfferBinding.etToDate.setText(to_date);
+            }else {
+                Toast.makeText(this, "تاريخ نهاية العرض قبل تاريخ البداية", Toast.LENGTH_SHORT).show();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateLabelStart() {

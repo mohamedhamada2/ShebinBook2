@@ -78,7 +78,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class ProfileActivity extends AppCompatActivity {
     ActivityProfileBinding activityProfileBinding;
     ProfileViewModel profileViewModel;
     MySharedPreference mySharedPreference;
@@ -124,7 +124,7 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
         profileViewModel = new ProfileViewModel(this);
         viewPager2 = activityProfileBinding.viewpager2;
         activityProfileBinding.setProfileviewmodel(profileViewModel);
-        activityProfileBinding.swiperefresh.setOnRefreshListener(this);
+        //activityProfileBinding.swiperefresh.setOnRefreshListener(this);
         fa = this;
         getSharedPreferenceData();
         profileViewModel.getData(user_id);
@@ -283,7 +283,7 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
     public void init_sliders(List<Slider> sliderList) {
         if (!sliderList.isEmpty()){
             viewPager2.setAdapter(new SliderAdapter(this,sliderList,store_name,store_image));
-            viewPager2.setPadding(60,0,60,0);
+            viewPager2.setPadding(30,0,30,0);
             viewPager2.setOffscreenPageLimit(3);
             viewPager2.startAutoScroll();
             viewPager2.setInterval(3000);
@@ -654,18 +654,6 @@ public class ProfileActivity extends AppCompatActivity implements SwipeRefreshLa
         search_recycler.setHasFixedSize(true);
         search_recycler.setLayoutManager(layoutManager2);
         search_recycler.setAdapter(storesAdapter);
-    }
-
-    @Override
-    public void onRefresh() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                profileViewModel.getData(user_id);
-                profileViewModel.get_store(trader_id);
-                activityProfileBinding.swiperefresh.setRefreshing(false);
-            }
-        }, 2000);
     }
     private void Check_ReadPermission(Integer img) {
         if (ContextCompat.checkSelfPermission(ProfileActivity.this, Manifest.permission.CAMERA)

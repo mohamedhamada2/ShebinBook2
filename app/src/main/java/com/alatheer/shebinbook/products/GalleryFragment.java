@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,13 +34,17 @@ public class GalleryFragment extends Fragment {
         View view = fragmentGalleryBinding.getRoot();
         galleryViewModel = new GalleryViewModel(getActivity(),this);
         fragmentGalleryBinding.setGalleryviewmodel(galleryViewModel);
+        //fragmentGalleryBinding.swiperefresh.setOnRefreshListener(getActivity());
         store_id = getArguments().getString("store_id");
         store_name = getArguments().getString("store_name");
         store_image = getArguments().getString("store_image");
         trader_id = getArguments().getInt("trader_id");
         galleryViewModel.get_galleries(store_id);
+
         return view;
     }
+
+
 
     public void init_recycler(List<Gallery> data) {
         fragmentGalleryBinding.productsRecycler.setHasFixedSize(true);

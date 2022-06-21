@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +17,7 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.products.ProductsAdapter;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -29,11 +31,14 @@ public class ProductAdapter2 extends RecyclerView.Adapter<ProductAdapter2.Catego
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
     Integer trader_id;
+    List<Integer> product_id_list;
+
     public ProductAdapter2(List<Product> productList, Context context,Integer user_role) {
         this.productList = productList;
         this.context = context;
         allProductsActivity = (AllProductsActivity) context;
         this.user_role = user_role;
+        product_id_list = new ArrayList<>();
     }
 
     @NonNull
@@ -63,6 +68,21 @@ public class ProductAdapter2 extends RecyclerView.Adapter<ProductAdapter2.Catego
                 }
             }
         });
+        holder.checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (holder.checkBox.isChecked()){
+                    holder.checkBox.setButtonDrawable(R.drawable.ic_checkbox_active);
+                    product_id_list.add(productList.get(position).getId());
+                    allProductsActivity.get_products_id(product_id_list);
+                }else {
+                    holder.checkBox.setButtonDrawable(R.drawable.ic_checkbox_svgrepo_com);
+                    product_id_list.remove(productList.get(position).getId());
+                    allProductsActivity.get_products_id(product_id_list);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -73,15 +93,26 @@ public class ProductAdapter2 extends RecyclerView.Adapter<ProductAdapter2.Catego
     class CategoryHolder extends RecyclerView.ViewHolder{
         ImageView product_img;
         TextView product_name,product_price;
+        CheckBox checkBox;
 
         public CategoryHolder(@NonNull  View itemView) {
             super(itemView);
             product_img = itemView.findViewById(R.id.product_img);
             product_name = itemView.findViewById(R.id.product_name);
             product_price = itemView.findViewById(R.id.product_price);
+            checkBox = itemView.findViewById(R.id.checkbox);
         }
 
         public void setData(Product product,Integer trader_id) {
+            try {
+                if (trader_id.equals(product.getTraderIdFk())){
+                    checkBox.setVisibility(View.VISIBLE);
+                }else {
+                    checkBox.setVisibility(View.GONE);
+                }
+            }catch (Exception e){
+                checkBox.setVisibility(View.GONE);
+            }
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(product_img);
             product_name.setText(product.getTitle());
             if (product.getPrice() != null){

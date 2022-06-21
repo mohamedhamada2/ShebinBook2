@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -39,6 +40,7 @@ import android.widget.Toast;
 import com.alatheer.shebinbook.MainActivity;
 import com.alatheer.shebinbook.R;
 import com.alatheer.shebinbook.api.MySharedPreference;
+import com.alatheer.shebinbook.authentication.cities.Datum;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.categories.CategoryActivity;
 import com.alatheer.shebinbook.databinding.ActivityHomeBinding;
@@ -46,7 +48,6 @@ import com.alatheer.shebinbook.home.category.Category;
 import com.alatheer.shebinbook.home.category.CategoryAdapter;
 import com.alatheer.shebinbook.home.slider.Slider;
 import com.alatheer.shebinbook.home.slider.SliderAdapter;
-import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.posts.Post;
@@ -56,7 +57,12 @@ import com.alatheer.shebinbook.search.SearchStoresAdapter;
 import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.stores.StoresAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
 
@@ -76,8 +82,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     MenuAdapter menuAdapter;
     MySharedPreference mySharedPreference ;
     LoginModel loginModel;
-    String user_id,user_img,user_name,user_phone,trader_id;
-    Integer user_type;
+    String user_id,user_img,user_name,user_phone,trader_id,firebase_token;
+    Integer user_type,gender,city;
     Dialog dialog;
     RecyclerView message_recycler;
     MessageAdapter2 messageAdapter2;
@@ -106,12 +112,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         homeViewModel.getAdvertisment();
         homeViewModel.getposts(page,user_id);
         homeViewModel.getCategories();
+        homeViewModel.get_cities();
         init_ask();
 
         activityHomeBinding.linearShowAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(HomeActivity.this, CategoryActivity.class));
+                Intent intent =  new Intent(HomeActivity.this, CategoryActivity.class);
+                startActivity(intent);
             }
         });
         activityHomeBinding.btnShebin.setOnClickListener(new View.OnClickListener() {
@@ -246,6 +254,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         loginModel = mySharedPreference.Get_UserData(this);
         user_id = loginModel.getData().getUser().getId()+"";
         user_type = loginModel.getData().getUser().getRoleIdFk();
+        gender = loginModel.getData().getUser().getGender();
+        city = loginModel.getData().getUser().getCityId();
         if (user_type == 4){
             trader_id = loginModel.getData().getUser().getTraderId()+"";
         }
@@ -254,6 +264,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityHomeBinding.userImg);
         }
         activityHomeBinding.userName.setText(user_name);
+        getToken();
+        getTopic();
     }
 
     private void init_ask() {
@@ -486,11 +498,104 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (user_type == 4){
             trader_id = loginModel.getData().getUser().getTraderId()+"";
         }
-
         if (user_img != null){
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityHomeBinding.userImg);
         }
         activityHomeBinding.userName.setText(user_name);
         init_navigation_menu();
+    }
+
+    public void getTopic() {
+        if (gender == 1){
+            //Toast.makeText(this, gender+"", Toast.LENGTH_SHORT).show();
+            FirebaseMessaging.getInstance().subscribeToTopic("male")
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            String msg = "male";
+                            if (!task.isSuccessful()) {
+                                msg = "male";
+                            }
+                            Log.d("TAG", msg);
+                            Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            FirebaseMessaging.getInstance().subscribeToTopic("all")
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            String msg = "all";
+                            if (!task.isSuccessful()) {
+                                msg = "all";
+                            }
+                            Log.d("TAG", msg);
+                            //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }else if (gender == 2){
+            FirebaseMessaging.getInstance().subscribeToTopic("all")
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            String msg = "all";
+                            if (!task.isSuccessful()) {
+                                msg = "all";
+                            }
+                            Log.d("TAG", msg);
+                            //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            FirebaseMessaging.getInstance().subscribeToTopic("female")
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            String msg = "female";
+                            if (!task.isSuccessful()) {
+                                msg = "female";
+                            }
+                            Log.d("TAG", msg);
+                            //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+
+        }
+    }
+
+    public void getToken() {
+        try {
+            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                    if(task.isSuccessful()){
+                        firebase_token = task.getResult().getToken();
+                        Log.e("firebase_token",firebase_token);
+                        //mainViewModel.update_token(firebase_token);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Log.e("exception_e",e.toString());
+            e.printStackTrace();
+        }
+    }
+
+    public void setCities(List<Datum> data) {
+        for (int i = 0;i<data.size();i++){
+            if (city == data.get(i).getId()){
+                FirebaseMessaging.getInstance().subscribeToTopic(city+"")
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                String msg = "city";
+                                if (!task.isSuccessful()) {
+                                    msg = "city";
+                                }
+                                Log.d("TAG", msg);
+                                //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        }
     }
 }

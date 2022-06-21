@@ -5,25 +5,32 @@
             name="tradergalleryviewmodel"
             type="com.alatheer.shebinbook.trader.profile.GalleryViewModel" />
     </data>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/swiperefreshlayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context=".trader.profile.GalleryFragment"
         android:orientation="vertical">
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_add_alboum"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_35sdp"
-            android:layout_margin="@dimen/_10sdp"
-            android:background="@drawable/btn_bg"
-            android:textSize="@dimen/_14ssp"
-            android:text="إضافة ألبوم"
-            android:fontFamily="@font/tajawal_bold"
-            android:textColor="@color/purple_500"/>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/products_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_add_alboum"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_35sdp"
+                android:layout_margin="@dimen/_10sdp"
+                android:background="@drawable/btn_bg"
+                android:textSize="@dimen/_14ssp"
+                android:text="إضافة ألبوم"
+                android:fontFamily="@font/tajawal_bold"
+                android:textColor="@color/purple_500"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/products_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
     </LinearLayout>
 </layout>

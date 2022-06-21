@@ -54,7 +54,17 @@ public class SignUpViewModel {
     }
 
     public void sendRegisterRequestwithImage(String first_name, String last_name, String phone, String password, Uri filepath, String city_id, String gender_id) {
-        RequestBody rb_first_name = Utilities.getRequestBodyText(first_name+"");
+        Intent intent = new Intent(signupActivity,VerificationCodeActivity.class);
+        intent.putExtra("first_name",first_name);
+        intent.putExtra("last_name",last_name);
+        intent.putExtra("phone",phone);
+        intent.putExtra("password",password);
+        intent.putExtra("filepath",filepath.toString());
+        intent.putExtra("city_id",city_id);
+        intent.putExtra("gender_id",gender_id);
+        intent.putExtra("flag",1);
+        context.startActivity(intent);
+        /*RequestBody rb_first_name = Utilities.getRequestBodyText(first_name+"");
         RequestBody rb_last_name = Utilities.getRequestBodyText(last_name);
         RequestBody rb_phone = Utilities.getRequestBodyText(phone+ "");
         RequestBody rb_password = Utilities.getRequestBodyText(password+"");
@@ -90,11 +100,20 @@ public class SignUpViewModel {
 
                 }
             });
-        }
+        }*/
     }
 
     public void sendRegisterRequestwithoutImage(String first_name, String last_name, String phone, String password, String city_id, String gender_id) {
-        if (Utilities.isNetworkAvailable(context)) {
+        Intent intent = new Intent(signupActivity,VerificationCodeActivity.class);
+        intent.putExtra("first_name",first_name);
+        intent.putExtra("last_name",last_name);
+        intent.putExtra("phone",phone);
+        intent.putExtra("password",password);
+        intent.putExtra("city_id",city_id);
+        intent.putExtra("gender_id",gender_id);
+        intent.putExtra("flag",2);
+        context.startActivity(intent);
+        /*if (Utilities.isNetworkAvailable(context)) {
             ProgressDialog pd = new ProgressDialog(signupActivity);
             pd.setMessage("loading ...");
             pd.show();
@@ -123,6 +142,6 @@ public class SignUpViewModel {
 
                 }
             });
-        }
+        }*/
     }
 }

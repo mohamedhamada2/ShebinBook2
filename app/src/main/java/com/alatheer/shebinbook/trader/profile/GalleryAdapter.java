@@ -87,6 +87,12 @@ public class GalleryAdapter extends RecyclerView.Adapter <GalleryAdapter.Product
                 context.startActivity(intent);
             }
         });
+        holder.delete_alboum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                galleryFragment.setDeleteAlertDialog(galleryList.get(position));
+            }
+        });
         if (galleryList.get(position).getProducts().isEmpty()){
             holder.linear_see_all.setVisibility(View.GONE);
         }
@@ -102,7 +108,7 @@ public class GalleryAdapter extends RecyclerView.Adapter <GalleryAdapter.Product
         TextView txt_see_all;
         RecyclerView recyclerView;
         LinearLayout linear_see_all;
-        ImageView add_to_alboum_img,edit_alboum;
+        ImageView add_to_alboum_img,edit_alboum,delete_alboum;
         public ProductsHolder(@NonNull View itemView) {
             super(itemView);
             btn_shebin = itemView.findViewById(R.id.btn_shebin);
@@ -111,6 +117,7 @@ public class GalleryAdapter extends RecyclerView.Adapter <GalleryAdapter.Product
             linear_see_all = itemView.findViewById(R.id.linear_see_all);
             add_to_alboum_img = itemView.findViewById(R.id.add_to_alboum_img);
             edit_alboum = itemView.findViewById(R.id.edit_alboum);
+            delete_alboum = itemView.findViewById(R.id.delete_from_alboum);
         }
         public void setData(Gallery gallery) {
            // Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+category.getImg()).into(category_img);

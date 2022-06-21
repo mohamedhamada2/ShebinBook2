@@ -104,7 +104,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         productViewModel = new ProductViewModel(this);
         activityProductsBinding.setProductsviewmodel(productViewModel);
         viewPager2 = activityProductsBinding.viewpager2;
-        activityProductsBinding.swiperefresh.setOnRefreshListener(this);
+        //activityProductsBinding.swiperefresh.setOnRefreshListener(this);
         department = 1;
         getsharedpreferanceData();
         productViewModel.getData(user_id);
@@ -434,7 +434,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.product_dialog, null);
+        final View view = inflater.inflate(R.layout.productdialog2, null);
         ImageView product_img = view.findViewById(R.id.product_img);
         ImageView image_store_img = view.findViewById(R.id.store_logo);
         TextView product_name = view.findViewById(R.id.product_name);
@@ -582,7 +582,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         ///Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
         if (!sliderList.isEmpty()){
             viewPager2.setAdapter(new SliderAdapter(this,sliderList));
-            viewPager2.setPadding(60,0,60,0);
+            viewPager2.setPadding(30,0,30,0);
             viewPager2.setOffscreenPageLimit(3);
             viewPager2.startAutoScroll();
             viewPager2.setInterval(3000);
@@ -777,7 +777,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
                 productViewModel.getData(user_id);
                 getDataIntent();
                 getStoreDetails();
-                activityProductsBinding.swiperefresh.setRefreshing(false);
+                //activityProductsBinding.swiperefresh.setRefreshing(false);
             }
         }, 2000);
     }

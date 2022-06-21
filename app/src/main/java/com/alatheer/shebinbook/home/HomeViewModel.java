@@ -9,6 +9,7 @@ import com.alatheer.shebinbook.Utilities.Utilities;
 import com.alatheer.shebinbook.api.GetDataService;
 import com.alatheer.shebinbook.api.MySharedPreference;
 import com.alatheer.shebinbook.api.RetrofitClientInstance;
+import com.alatheer.shebinbook.authentication.cities.CityModel;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.comments.CommentModel;
 import com.alatheer.shebinbook.home.category.CategoryModel;
@@ -327,6 +328,8 @@ public class HomeViewModel {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
                             homeActivity.setData(response.body());
+                            //homeActivity.getTopic();
+                            homeActivity.getToken();
 
                         }
                     }
@@ -338,5 +341,25 @@ public class HomeViewModel {
                 }
             });
         }
+    }
+
+    public void get_cities() {
+        GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<CityModel> cityModelCall = getDataService.get_all_cities("1");
+        cityModelCall.enqueue(new Callback<CityModel>() {
+            @Override
+            public void onResponse(Call<CityModel> call, Response<CityModel> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()){
+                        homeActivity.setCities(response.body().getData().getData());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CityModel> call, Throwable t) {
+
+            }
+        });
     }
 }

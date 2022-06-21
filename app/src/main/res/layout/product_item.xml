@@ -23,6 +23,14 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/loading_img"
                     android:scaleType="fitXY"/>
+                <CheckBox
+                    android:id="@+id/checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:button="@drawable/ic_checkbox_svgrepo_com"
+                    android:buttonTint="@color/purple_500"/>
                 <TextView
                     android:id="@+id/product_price"
                     android:layout_width="match_parent"

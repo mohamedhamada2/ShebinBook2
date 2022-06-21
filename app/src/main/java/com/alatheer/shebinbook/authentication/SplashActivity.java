@@ -12,6 +12,7 @@ import com.alatheer.shebinbook.api.MySharedPreference;
 import com.alatheer.shebinbook.authentication.login.LoginActivity;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.home.HomeActivity;
+import com.alatheer.shebinbook.start.StartActivity;
 
 public class SplashActivity extends AppCompatActivity {
     ImageView logo_img;
@@ -34,7 +35,7 @@ public class SplashActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }else {
-                    Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                    Intent intent = new Intent(SplashActivity.this, StartActivity.class);
                     intent.putExtra("flag", 1);
                     startActivity(intent);
                     finish();

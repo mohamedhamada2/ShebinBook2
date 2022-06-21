@@ -22,6 +22,18 @@
             android:text="إضافة ألبوم صور"
             android:fontFamily="@font/tajawal_bold"
             android:textColor="@color/purple_500"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_delete_from_alboum"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:background="@drawable/btn_bg"
+            android:textSize="@dimen/_14ssp"
+            android:text="حذف بعض الصور"
+            android:fontFamily="@font/tajawal_bold"
+            android:textColor="@color/purple_500"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/images_recycler"
             android:layout_width="match_parent"
