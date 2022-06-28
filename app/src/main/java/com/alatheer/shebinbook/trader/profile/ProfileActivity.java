@@ -280,31 +280,28 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-    public void init_sliders(List<Slider> sliderList) {
-        if (!sliderList.isEmpty()){
-            viewPager2.setAdapter(new SliderAdapter(this,sliderList,store_name,store_image));
-            viewPager2.setPadding(30,0,30,0);
-            viewPager2.setOffscreenPageLimit(3);
-            viewPager2.startAutoScroll();
-            viewPager2.setInterval(3000);
-            viewPager2.setCycle(true);
-            viewPager2.setStopScrollWhenTouch(true);
+    public void init_sliders(SliderAdapter sliderAdapter) {
+
+        viewPager2.setPadding(30,0,30,0);
+        viewPager2.setOffscreenPageLimit(3);
+        viewPager2.startAutoScroll();
+        viewPager2.setInterval(3000);
+        viewPager2.setCycle(true);
+        viewPager2.setStopScrollWhenTouch(true);
+        viewPager2.setAdapter(sliderAdapter);
             //viewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
-            CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
-            compositePageTransformer.addTransformer(new MarginPageTransformer(40));
-            compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
-                @Override
-                public void transformPage(@NonNull View page, float position) {
-                    float r = 1 - Math.abs(position);
-                    page.setScaleY(0.85f + r * 0.15f);
-                }
-            });
-        }else {
-            activityProfileBinding.viewpager2.setVisibility(View.GONE);
-        }
+        CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+        compositePageTransformer.addTransformer(new MarginPageTransformer(40));
+        compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                float r = 1 - Math.abs(position);
+                page.setScaleY(0.85f + r * 0.15f);
+            }
+        });
+    }
         ///Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
         //viewPager2.setPageTransformer(compositePageTransformer);
-    }
 
     public void showmenu(View view) {
         openDrawer();
@@ -407,7 +404,7 @@ public class ProfileActivity extends AppCompatActivity {
         selectedfragment.setArguments(bundle);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.fragment_container, selectedfragment).commit();
-        profileViewModel.getAdvertisment(trader_id);
+        profileViewModel.getAdvertisment(trader_id,store_name,store_image);
 
     }
     private void getStoreDetails() {
@@ -525,7 +522,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void run() {
                 if (dialog3.isShowing()) {
                     dialog3.dismiss();
-                    profileViewModel.getAdvertisment(trader_id+"");
+                    profileViewModel.getAdvertisment(trader_id+"",store_name,store_image);
                     //Intent intent = new Intent(AllProductsActivity.this,AllProductsActivity.class);
                     //intent.putExtra("gallery_id",product.getAlboumIdFk());
                     //startActivity(intent);
@@ -736,5 +733,9 @@ public class ProfileActivity extends AppCompatActivity {
         }
         activityProfileBinding.userName.setText(user_name);
         init_navigation_menu();
+    }
+
+    public void setViewpagervisibility() {
+        activityProfileBinding.viewpager2.setVisibility(View.GONE);
     }
 }

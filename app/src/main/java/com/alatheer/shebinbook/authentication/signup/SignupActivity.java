@@ -47,6 +47,7 @@ public class SignupActivity extends AppCompatActivity {
     Uri filepath;
     int REQUESTCAMERA = 2;
     String first_name,last_name,phone,password;
+    public static Activity fa;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +55,7 @@ public class SignupActivity extends AppCompatActivity {
         activitySignupBinding = DataBindingUtil.setContentView(this,R.layout.activity_signup);
         signUpViewModel = new SignUpViewModel(this);
         activitySignupBinding.setSignupviewmodel(signUpViewModel);
+        fa = this;
         signUpViewModel.get_gender();
         //getDataIntent();
         activitySignupBinding.txtSignIn.setOnClickListener(new View.OnClickListener() {

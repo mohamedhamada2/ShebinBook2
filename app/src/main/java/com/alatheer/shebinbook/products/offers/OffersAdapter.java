@@ -380,7 +380,7 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
         Toast.makeText(context, user_gender+"", Toast.LENGTH_SHORT).show();
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<SliderModel> call = getDataService.get_ads_in_store(user_gender+"",5,trader_id);
+            Call<SliderModel> call = getDataService.get_ads_in_store(user_gender+"",5,trader_id,1);
             call.enqueue(new Callback<SliderModel>() {
                 @Override
                 public void onResponse(Call<SliderModel> call, Response<SliderModel> response) {
@@ -399,5 +399,11 @@ public class OffersAdapter extends RecyclerView.Adapter<OffersAdapter.OffersHold
                 }
             });
         }
+    }
+    public void add_offer(List<Slider> sliderList1) {
+        for (Slider slider : sliderList1) {
+            sliderList.add(slider);
+        }
+        notifyDataSetChanged();
     }
 }

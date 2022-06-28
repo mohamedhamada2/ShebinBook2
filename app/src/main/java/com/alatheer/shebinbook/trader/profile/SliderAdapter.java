@@ -155,4 +155,10 @@ public class SliderAdapter extends PagerAdapter {
     public void destroyItem(@NonNull  ViewGroup container, int position, @NonNull  Object object) {
        container.removeView((View) object);
     }
+    public void add_offer(List<Slider> sliderList1) {
+        for (Slider slider : sliderList1) {
+            sliderList.add(slider);
+        }
+        notifyDataSetChanged();
+    }
 }

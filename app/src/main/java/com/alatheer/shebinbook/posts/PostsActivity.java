@@ -589,4 +589,8 @@ public class PostsActivity extends AppCompatActivity implements NavigationView.O
         activityPostsBinding.userName.setText(user_name);
         init_navigation_menu();
     }
+
+    public void clear_text() {
+        activityPostsBinding.etPost.setText("");
+    }
 }

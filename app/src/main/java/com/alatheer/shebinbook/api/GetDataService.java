@@ -9,6 +9,8 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.comments.Comment;
 import com.alatheer.shebinbook.comments.CommentModel;
 import com.alatheer.shebinbook.comments.ReplyModel;
+import com.alatheer.shebinbook.forgetpassword.NewPassword;
+import com.alatheer.shebinbook.home.Token;
 import com.alatheer.shebinbook.home.category.CategoryModel;
 import com.alatheer.shebinbook.home.slider.SliderModel;
 import com.alatheer.shebinbook.message.MessageModel;
@@ -103,7 +105,8 @@ public interface GetDataService{
     @FormUrlEncoded
     @POST("api/member/get_offers_screens")
     Call<SliderModel> get_ads_in_store(@Field("gender")String gender,@Field("screen")Integer screen,
-                                       @Field("trader_id_fk")String trader_id_fk);
+                                       @Field("trader_id_fk")String trader_id_fk,
+                                       @Field("page")Integer page);
 
     /*10*/
     @GET("api/member/categories")
@@ -438,11 +441,26 @@ public interface GetDataService{
     @POST("api/member/delete_alboum")
     Call<DeleteAlboum> delete_alboum(@Field("alboum_id")Integer alboum_id);
 
-   /* @FormUrlEncoded
+    @FormUrlEncoded
     @POST("api/member/update_token")
-    Call<DeleteAlboum> update_token(@Field("user_id")Integer alboum_id,
-                                    @Field("token")String token,
-                                    @Field("topic")String topic);*/
+    Call<Token> update_token(@Field("user_id")String user_id,
+                             @Field("token")String token,
+                             @Field("topic")String topic);
+
+    @FormUrlEncoded
+    @POST("api/member/forget_password")
+    Call<NewPassword> new_password(@Field("phone")String phone,
+                                   @Field("password")String password);
+
+    @FormUrlEncoded
+    @POST("api/member/check_memberphone")
+    Call<NewPassword> check_phone(@Field("phone")String phone);
+
+    @FormUrlEncoded
+    @POST("api/member/visit_category")
+    Call<NewPassword> visit_category(@Field("category_id_fk")Integer category_id_fk,
+                                  @Field("type")String type,
+                                  @Field("user_id_fk")Integer user_id_fk);
 
 }
 

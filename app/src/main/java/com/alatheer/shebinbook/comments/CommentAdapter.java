@@ -84,7 +84,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentH
             loginModel = mySharedPreference.Get_UserData(context);
             user_id = loginModel.getData().getUser().getId();
             txt_comment.setText(comment.getComment());
-            txt_name.setText(comment.getName()+comment.getLastName());
+            txt_name.setText(comment.getName()+"  "+comment.getLastName());
             msg_num.setText(comment.getRepliesCount()+"");
             if (comment.getImg().equals("noimage")) {
                 comment_img.setVisibility(View.GONE);

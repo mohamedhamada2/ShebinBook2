@@ -96,6 +96,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
     int view_threshold2 = 10;
     Integer page2 = 1;
     boolean isloading2;
+    Integer page = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -578,31 +579,28 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
     }
 
 
-    public void init_sliders(List<Slider> sliderList) {
+    public void init_sliders(SliderAdapter sliderAdapter) {
         ///Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
-        if (!sliderList.isEmpty()){
-            viewPager2.setAdapter(new SliderAdapter(this,sliderList));
-            viewPager2.setPadding(30,0,30,0);
-            viewPager2.setOffscreenPageLimit(3);
-            viewPager2.startAutoScroll();
-            viewPager2.setInterval(3000);
-            viewPager2.setCycle(true);
-            viewPager2.setStopScrollWhenTouch(true);
+
+        viewPager2.setAdapter(sliderAdapter);
+        viewPager2.setPadding(30,0,30,0);
+        viewPager2.setOffscreenPageLimit(3);
+        viewPager2.startAutoScroll();
+        viewPager2.setInterval(3000);
+        viewPager2.setCycle(true);
+        viewPager2.setStopScrollWhenTouch(true);
             //viewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
-            CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
-            compositePageTransformer.addTransformer(new MarginPageTransformer(40));
-            compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
-                @Override
-                public void transformPage(@NonNull View page, float position) {
-                    float r = 1 - Math.abs(position);
-                    page.setScaleY(0.85f + r * 0.15f);
-                }
-            });
-        }else {
-            activityProductsBinding.viewpager2.setVisibility(View.GONE);
-        }
-        //viewPager2.setPageTransformer(compositePageTransformer);
+        CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+        compositePageTransformer.addTransformer(new MarginPageTransformer(40));
+        compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                float r = 1 - Math.abs(position);
+                page.setScaleY(0.85f + r * 0.15f);
+            }
+        });
     }
+        //viewPager2.setPageTransformer(compositePageTransformer);
 
     public void showmenu(View view) {
         //activityHomeBinding.navView.setNavigationItemSelectedListener(this);
@@ -833,5 +831,9 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         }
         activityProductsBinding.userName.setText(user_name);
         init_navigation_menu();
+    }
+
+    public void setViewpagervisibility() {
+        activityProductsBinding.viewpager2.setVisibility(View.GONE);
     }
 }

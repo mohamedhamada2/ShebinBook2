@@ -75,7 +75,7 @@ public class RepliesAdapter extends RecyclerView.Adapter<RepliesAdapter.RepliesH
                 bin_img.setVisibility(View.VISIBLE);
             }
             txt_reply.setText(replyData.getReplayMessage());
-            txt_name.setText(replyData.getName()+replyData.getLastName());
+            txt_name.setText(replyData.getName()+"  "+replyData.getLastName());
             comment_img2.setVisibility(View.GONE);
             msg_num2.setVisibility(View.GONE);
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+replyData.getUserImg()).into(userimg2);

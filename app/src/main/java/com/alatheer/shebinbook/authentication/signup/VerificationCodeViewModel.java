@@ -11,6 +11,7 @@ import com.alatheer.shebinbook.api.GetDataService;
 import com.alatheer.shebinbook.api.MySharedPreference;
 import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
+import com.alatheer.shebinbook.forgetpassword.NewPassword;
 import com.alatheer.shebinbook.home.HomeActivity;
 
 import okhttp3.MultipartBody;
@@ -58,6 +59,7 @@ public class VerificationCodeViewModel {
                             context.startActivity(new Intent(context, HomeActivity.class));
                             //Animatoo.animateFade(context);
                             verificationCodeActivity.finish();
+                            SignupActivity.fa.finish();
                         }else {
                             pd.dismiss();
                             Toast.makeText(context, response.body().getError(), Toast.LENGTH_SHORT).show();
@@ -94,6 +96,7 @@ public class VerificationCodeViewModel {
                             context.startActivity(new Intent(context, HomeActivity.class));
                             //Animatoo.animateFade(context);
                             verificationCodeActivity.finish();
+                            SignupActivity.fa.finish();
                         }else {
                             pd.dismiss();
                             Toast.makeText(context, response.body().getError(), Toast.LENGTH_SHORT).show();
@@ -103,6 +106,33 @@ public class VerificationCodeViewModel {
 
                 @Override
                 public void onFailure(Call<LoginModel> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void check_phone(String phone) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<NewPassword> call = getDataService.check_phone(phone);
+            call.enqueue(new Callback<NewPassword>() {
+                @Override
+                public void onResponse(Call<NewPassword> call, Response<NewPassword> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getSuccess()==1){
+                            Toast.makeText(verificationCodeActivity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                            verificationCodeActivity.sendVerificationCodeToUser("+2"+phone);
+                        }else {
+                            Toast.makeText(verificationCodeActivity, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                            context.startActivity(new Intent(verificationCodeActivity,SignupActivity.class));
+                            verificationCodeActivity.finish();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<NewPassword> call, Throwable t) {
 
                 }
             });

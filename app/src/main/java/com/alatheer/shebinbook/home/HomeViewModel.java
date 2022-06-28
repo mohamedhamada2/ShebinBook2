@@ -343,7 +343,7 @@ public class HomeViewModel {
         }
     }
 
-    public void get_cities() {
+    /*public void get_cities() {
         GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
         Call<CityModel> cityModelCall = getDataService.get_all_cities("1");
         cityModelCall.enqueue(new Callback<CityModel>() {
@@ -361,5 +361,27 @@ public class HomeViewModel {
 
             }
         });
+    }*/
+
+    public void update_token(String user_id, String firebase_token, String topic) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<Token> call = getDataService.update_token(user_id,firebase_token,topic);
+            call.enqueue(new Callback<Token>() {
+                @Override
+                public void onResponse(Call<Token> call, Response<Token> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            //Toast.makeText(context, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Token> call, Throwable t) {
+
+                }
+            });
+        }
     }
 }

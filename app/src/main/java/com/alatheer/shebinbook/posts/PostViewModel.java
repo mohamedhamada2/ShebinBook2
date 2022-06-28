@@ -60,6 +60,7 @@ public class PostViewModel {
                                 pd.dismiss();
                                 Toast.makeText(context, "تم إضافة البوست بنجاح", Toast.LENGTH_SHORT).show();
                                 getPosts(gender_id,1,user_id);
+                                postsActivity.clear_text();
                                }
                             }
                         }
@@ -81,6 +82,7 @@ public class PostViewModel {
                                 pd.dismiss();
                                 Toast.makeText(context, "تم إضافة البوست بنجاح", Toast.LENGTH_SHORT).show();
                                 getPosts(gender_id,1,user_id);
+                                postsActivity.clear_text();
                             }
                         }
                     }

@@ -11,6 +11,7 @@ import android.view.View;
 import com.alatheer.shebinbook.R;
 import com.alatheer.shebinbook.authentication.signup.SignupActivity;
 import com.alatheer.shebinbook.databinding.ActivityLoginBinding;
+import com.alatheer.shebinbook.forgetpassword.ForgetPasswordActivity;
 
 public class LoginActivity extends AppCompatActivity {
     ActivityLoginBinding activityLoginBinding;
@@ -35,6 +36,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 validation();
+            }
+        });
+        activityLoginBinding.txtForgetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(new Intent(LoginActivity.this, ForgetPasswordActivity.class));
+                startActivity(intent);
             }
         });
 

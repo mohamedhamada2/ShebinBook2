@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import com.alatheer.shebinbook.R;
 import com.alatheer.shebinbook.databinding.ActivityVerificationCodeBinding;
+import com.alatheer.shebinbook.forgetpassword.NewPasswordActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -46,7 +48,6 @@ public class VerificationCodeActivity extends AppCompatActivity {
         activityVerificationCodeBinding.setVerificationcodeviewmodel(verificationCodeViewModel);
         getDataIntent();
         activityVerificationCodeBinding.txtPhone.setText("+2"+phone);
-        sendVerificationCodeToUser("+2"+phone);
         activityVerificationCodeBinding.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,14 +55,18 @@ public class VerificationCodeActivity extends AppCompatActivity {
                 if (!code.isEmpty()){
                     verifycode(code);
                 }else{
-                    activityVerificationCodeBinding.pinView.setError("ادخل الكود المرسل حتي يتم تفعيل حسابك");
+                    if (flag == 1 ||flag == 2){
+                        activityVerificationCodeBinding.pinView.setError("ادخل الكود المرسل حتي يتم تفعيل حسابك");
+                    }else {
+                        activityVerificationCodeBinding.pinView.setError("ادخل الكود المرسل حتي يتم تعديل كلمة المرور");
+                    }
                 }
             }
         });
 
     }
 
-    private void sendVerificationCodeToUser(String phone_no) {
+    public void sendVerificationCodeToUser(String phone_no) {
         PhoneAuthOptions options =
                 PhoneAuthOptions.newBuilder(mAuth)
                         .setPhoneNumber(phone_no)       // Phone number to verify
@@ -165,8 +170,12 @@ public class VerificationCodeActivity extends AppCompatActivity {
                             FirebaseUser user = task.getResult().getUser();
                             if (flag == 1){
                                 verificationCodeViewModel.sendRegisterRequestwithImage(first_name,last_name,phone, password, filepath,city_id,gender_id);
-                            }else {
+                            }else if (flag == 2){
                                 verificationCodeViewModel.sendRegisterRequestwithoutImage(first_name,last_name,phone, password,city_id,gender_id);
+                            }else if (flag == 3){
+                                Intent intent = new Intent(VerificationCodeActivity.this, NewPasswordActivity.class);
+                                intent.putExtra("phone",phone);
+                                startActivity(intent);
                             }
                             //Toast.makeText(getActivity(), "verification success", Toast.LENGTH_SHORT).show();
                             // Update UI
@@ -186,17 +195,23 @@ public class VerificationCodeActivity extends AppCompatActivity {
             first_name = getIntent().getStringExtra("first_name");
             last_name = getIntent().getStringExtra("last_name");
             phone = getIntent().getStringExtra("phone");
-            password = getIntent().getStringExtra("passsword");
+            password = getIntent().getStringExtra("password");
             city_id = getIntent().getStringExtra("city_id");
-            gender_id = getIntent().getStringExtra("gender");
+            gender_id = getIntent().getStringExtra("gender_id");
             filepath = Uri.parse(getIntent().getStringExtra("filepath"));
+            verificationCodeViewModel.check_phone(phone);
         }else if (flag == 2){
             first_name = getIntent().getStringExtra("first_name");
             last_name = getIntent().getStringExtra("last_name");
             phone = getIntent().getStringExtra("phone");
-            password = getIntent().getStringExtra("passsword");
+            password = getIntent().getStringExtra("password");
             city_id = getIntent().getStringExtra("city_id");
-            gender_id = getIntent().getStringExtra("gender");
+            gender_id = getIntent().getStringExtra("gender_id");
+            verificationCodeViewModel.check_phone(phone);
+        }else if (flag == 3){
+            phone = getIntent().getStringExtra("phone");
+            sendVerificationCodeToUser("+2"+phone);
+
         }
     }
 }

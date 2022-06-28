@@ -22,6 +22,7 @@ import com.alatheer.shebinbook.api.MySharedPreference;
 import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.comments.CommentModel;
+import com.alatheer.shebinbook.home.slider.Slider;
 import com.alatheer.shebinbook.home.slider.SliderModel;
 import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter2;
@@ -44,6 +45,9 @@ public class ProductViewModel {
     String trader_id;
     List<Datum> messagelist;
     MessageAdapter2 messageAdapter2;
+    List<Slider> sliderList;
+    SliderAdapter sliderAdapter;
+    Integer page2 = 1;
     public ProductViewModel(Context context) {
         this.context = context;
         productsActivity = (ProductsActivity) context;
@@ -56,14 +60,50 @@ public class ProductViewModel {
         user_gender = loginModel.getData().getUser().getGender();
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<SliderModel> call = getDataService.get_ads_in_store(user_gender+"",5,trader_id);
+            Call<SliderModel> call = getDataService.get_ads_in_store(user_gender+"",5,trader_id,page2);
             call.enqueue(new Callback<SliderModel>() {
                 @Override
                 public void onResponse(Call<SliderModel> call, Response<SliderModel> response) {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
-                            productsActivity.init_sliders(response.body().getData().getData());
+                            sliderList = response.body().getData().getData();
+                            if (!sliderList.isEmpty()){
+                                if (page2 <= 4){
+                                    sliderAdapter = new SliderAdapter(context,sliderList);
+                                    productsActivity.init_sliders(sliderAdapter);
+                                    page2 = page2+1;
+                                    performpagination(trader_id,page2);
+                                }
+                            }else {
+                                productsActivity.setViewpagervisibility();
+                            }
+                        }
+                    }
+                }
 
+                @Override
+                public void onFailure(Call<SliderModel> call, Throwable t) {
+                    Log.d("bug1",t.getMessage());
+                    Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void performpagination(String trader_id, Integer page) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<SliderModel> call = getDataService.get_ads_in_store(user_gender+"",5,trader_id,page);
+            call.enqueue(new Callback<SliderModel>() {
+                @Override
+                public void onResponse(Call<SliderModel> call, Response<SliderModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            sliderList = response.body().getData().getData();
+                            //Toast.makeText(context, page+"", Toast.LENGTH_SHORT).show();
+                            sliderList = response.body().getData().getData();
+                            sliderAdapter.add_offer(sliderList);
+                            productsActivity.init_sliders(sliderAdapter);
                         }
                     }
                 }

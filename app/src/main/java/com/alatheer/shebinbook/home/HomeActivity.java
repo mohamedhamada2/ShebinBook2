@@ -112,7 +112,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         homeViewModel.getAdvertisment();
         homeViewModel.getposts(page,user_id);
         homeViewModel.getCategories();
-        homeViewModel.get_cities();
         init_ask();
 
         activityHomeBinding.linearShowAll.setOnClickListener(new View.OnClickListener() {
@@ -148,6 +147,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
 
     }
+
     private void Create_Alert_Dialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -517,7 +517,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                 msg = "male";
                             }
                             Log.d("TAG", msg);
-                            Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            homeViewModel.update_token(user_id,firebase_token,"male");
+                            //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
                         }
                     });
             FirebaseMessaging.getInstance().subscribeToTopic("all")
@@ -529,6 +530,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                 msg = "all";
                             }
                             Log.d("TAG", msg);
+                            homeViewModel.update_token(user_id,firebase_token,"all");
                             //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -542,6 +544,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                 msg = "all";
                             }
                             Log.d("TAG", msg);
+                            homeViewModel.update_token(user_id,firebase_token,"all");
                             //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -554,12 +557,26 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                 msg = "female";
                             }
                             Log.d("TAG", msg);
+                            homeViewModel.update_token(user_id,firebase_token,"female");
                             //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
                         }
                     });
 
 
         }
+        FirebaseMessaging.getInstance().subscribeToTopic(city+"")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "city";
+                        if (!task.isSuccessful()) {
+                            msg = "city";
+                        }
+                        Log.d("TAG", msg);
+                        homeViewModel.update_token(user_id,firebase_token,city+"");
+                        //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     public void getToken() {
@@ -577,25 +594,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         } catch (Exception e) {
             Log.e("exception_e",e.toString());
             e.printStackTrace();
-        }
-    }
-
-    public void setCities(List<Datum> data) {
-        for (int i = 0;i<data.size();i++){
-            if (city == data.get(i).getId()){
-                FirebaseMessaging.getInstance().subscribeToTopic(city+"")
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                String msg = "city";
-                                if (!task.isSuccessful()) {
-                                    msg = "city";
-                                }
-                                Log.d("TAG", msg);
-                                //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
         }
     }
 }

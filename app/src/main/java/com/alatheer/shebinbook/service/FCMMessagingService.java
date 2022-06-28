@@ -3,6 +3,7 @@ package com.alatheer.shebinbook.service;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.os.Build;
 
 import com.alatheer.shebinbook.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -31,7 +32,13 @@ public class FCMMessagingService extends FirebaseMessagingService {
             Notification.Builder notification = new Notification.Builder(this,CHANNEL_ID);
             notification.setContentTitle(title2);
             notification.setContentText(messageBody);
-            notification.setSmallIcon(R.drawable.logo);
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                notification.setSmallIcon(R.drawable.shebinbook_notification);
+                notification.setColor(getResources().getColor(R.color.purple_500));
+            } else {
+                notification.setSmallIcon(R.drawable.logo);
+            }
+
             notification.setAutoCancel(true);
             NotificationManagerCompat.from(this).notify(1,notification.build());
         }

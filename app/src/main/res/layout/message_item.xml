@@ -78,7 +78,7 @@
             android:layout_margin="@dimen/_5sdp"
             android:textSize="@dimen/_12ssp"
             android:fontFamily="@font/tajawal_regular"/>
-        <TextView
+        <ImageView
             android:id="@+id/bin_img"
             android:layout_width="@dimen/_24sdp"
             android:layout_height="@dimen/_24sdp"
