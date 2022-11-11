@@ -45,36 +45,10 @@ public class VerificationCodeActivity extends AppCompatActivity {
         activityVerificationCodeBinding = DataBindingUtil.setContentView(this,R.layout.activity_verification_code);
         verificationCodeViewModel = new VerificationCodeViewModel(this);
         mAuth = FirebaseAuth.getInstance();
+        //mAuth.getFirebaseAuthSettings().setAppVerificationDisabledForTesting(true);
         activityVerificationCodeBinding.setVerificationcodeviewmodel(verificationCodeViewModel);
         getDataIntent();
-        activityVerificationCodeBinding.txtPhone.setText("+2"+phone);
-        activityVerificationCodeBinding.btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String code = activityVerificationCodeBinding.pinView.getText().toString();
-                if (!code.isEmpty()){
-                    verifycode(code);
-                }else{
-                    if (flag == 1 ||flag == 2){
-                        activityVerificationCodeBinding.pinView.setError("ادخل الكود المرسل حتي يتم تفعيل حسابك");
-                    }else {
-                        activityVerificationCodeBinding.pinView.setError("ادخل الكود المرسل حتي يتم تعديل كلمة المرور");
-                    }
-                }
-            }
-        });
-
-    }
-
-    public void sendVerificationCodeToUser(String phone_no) {
-        PhoneAuthOptions options =
-                PhoneAuthOptions.newBuilder(mAuth)
-                        .setPhoneNumber(phone_no)       // Phone number to verify
-                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                        .setActivity(this)                 // Activity (for callback binding)
-                        .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-                        .build();
-        PhoneAuthProvider.verifyPhoneNumber(options);
+        verificationCodeViewModel.get_firebase_token();
     }
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -85,27 +59,19 @@ public class VerificationCodeActivity extends AppCompatActivity {
             //     verified without needing to send or enter a verification code.
             // 2 - Auto-retrieval. On some devices Google Play services can automatically
             //     detect the incoming verification SMS and perform verification without
-            String code = credential.getSmsCode();
-            Toast.makeText(VerificationCodeActivity.this, code, Toast.LENGTH_LONG).show();
-            if (code != null){
-                Log.e("code",code);
-                activityVerificationCodeBinding.pinView.setText(code);
-                verifycode(code);
-            }
-            //Toast.makeText(getActivity(), "completed", Toast.LENGTH_SHORT).show();
             //     user action.
-            //Log.d(TAG, "onVerificationCompleted:" + credential);
+            Toast.makeText(VerificationCodeActivity.this, "vertify", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "onVerificationCompleted:" + credential);
 
-
+            signInWithPhoneAuthCredential(credential);
         }
 
         @Override
         public void onVerificationFailed(FirebaseException e) {
             // This callback is invoked in an invalid request for verification is made,
             // for instance if the the phone number format is not valid.
-            Log.e( "onVerificationFailed", e.getMessage());
-            //Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-            activityVerificationCodeBinding.txt.setText("حدث خطأ حاول مرة اخري");
+            //Toast.makeText(VerificationCodeActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.w(TAG, "onVerificationFailed", e);
 
             if (e instanceof FirebaseAuthInvalidCredentialsException) {
                 // Invalid request
@@ -118,22 +84,28 @@ public class VerificationCodeActivity extends AppCompatActivity {
 
         @Override
         public void onCodeSent(@NonNull String verificationId,
-                               @NonNull PhoneAuthProvider.ForceResendingToken token) {
+                @NonNull PhoneAuthProvider.ForceResendingToken token) {
+            Toast.makeText(VerificationCodeActivity.this, "send", Toast.LENGTH_SHORT).show();
             // The SMS verification code has been sent to the provided phone number, we
             // now need to ask the user to enter the code and then construct a credential
             // by combining the code with a verification ID.
             Log.d(TAG, "onCodeSent:" + verificationId);
-            /*new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    ReadSms();
-                }
-            }, 8000);*/
+
             // Save verification ID and resending token so we can use them later
             mVerificationId = verificationId;
-            //mResendToken = token;
         }
     };
+
+    public void sendVerificationCodeToUser(String phone_no) {
+        PhoneAuthOptions options =
+                PhoneAuthOptions.newBuilder(mAuth)
+                        .setPhoneNumber(phone_no)       // Phone number to verify
+                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                        .setActivity(this)                 // Activity (for callback binding)
+                        .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
+                        .build();
+        PhoneAuthProvider.verifyPhoneNumber(options);
+    }
 
    /* public void ReadSms() {
 
@@ -199,6 +171,7 @@ public class VerificationCodeActivity extends AppCompatActivity {
             city_id = getIntent().getStringExtra("city_id");
             gender_id = getIntent().getStringExtra("gender_id");
             filepath = Uri.parse(getIntent().getStringExtra("filepath"));
+            activityVerificationCodeBinding.txtPhone.setText("+2"+phone);
             verificationCodeViewModel.check_phone(phone);
         }else if (flag == 2){
             first_name = getIntent().getStringExtra("first_name");
@@ -207,11 +180,29 @@ public class VerificationCodeActivity extends AppCompatActivity {
             password = getIntent().getStringExtra("password");
             city_id = getIntent().getStringExtra("city_id");
             gender_id = getIntent().getStringExtra("gender_id");
+            activityVerificationCodeBinding.txtPhone.setText("+2"+phone);
             verificationCodeViewModel.check_phone(phone);
         }else if (flag == 3){
             phone = getIntent().getStringExtra("phone");
+            activityVerificationCodeBinding.txtPhone.setText("+2"+phone);
+            //verificationCodeViewModel.check_phone(phone);
             sendVerificationCodeToUser("+2"+phone);
 
         }
+        activityVerificationCodeBinding.btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String code = activityVerificationCodeBinding.pinView.getText().toString();
+                if (!code.isEmpty()){
+                    verifycode(code);
+                }else{
+                    if (flag == 1 ||flag == 2){
+                        activityVerificationCodeBinding.pinView.setError("ادخل الكود المرسل حتي يتم تفعيل حسابك");
+                    }else {
+                        activityVerificationCodeBinding.pinView.setError("ادخل الكود المرسل حتي يتم تعديل كلمة المرور");
+                    }
+                }
+            }
+        });
     }
 }

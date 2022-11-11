@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="@dimen/_10sdp"
+    app:cardBackgroundColor="@color/white"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <LinearLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -40,27 +44,40 @@
                 android:paddingBottom="@dimen/_3sdp"
                 android:textColor="@color/purple_500"/>
         </RelativeLayout>
-        <androidx.cardview.widget.CardView
-            android:id="@+id/product_card"
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/relative_user"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            android:layout_marginRight="@dimen/_10sdp"
-            android:layout_marginLeft="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            app:cardCornerRadius="@dimen/_5sdp"
-            app:cardElevation="@dimen/_5sdp"
             android:layout_gravity="center_horizontal">
-            <ImageView
-                android:id="@+id/product_img"
+            <pl.pzienowicz.autoscrollviewpager.AutoScrollViewPager
+                android:id="@+id/viewpager2"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_250sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:overScrollMode="never"
+                android:clipToPadding="false"/>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/product_card"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_300sdp"
-                android:scaleType="fitXY"
-                android:adjustViewBounds="true"/>
-        </androidx.cardview.widget.CardView>
+                android:layout_height="wrap_content"
+                app:layout_constraintHorizontal_bias="0.5"
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                app:cardCornerRadius="@dimen/_5sdp"
+                app:cardElevation="@dimen/_5sdp"
+                android:layout_gravity="center_horizontal">
+                <ImageView
+                    android:id="@+id/product_img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_250sdp"
+                    android:scaleType="fitXY"
+                    android:adjustViewBounds="true"
+                    android:layout_gravity="center_horizontal"/>
+            </androidx.cardview.widget.CardView>
+        </FrameLayout>
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/product_constraints"
             android:layout_width="match_parent"
@@ -68,7 +85,8 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/product_card"
-            android:layout_marginTop="@dimen/_10sdp">
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_10sdp">
             <ImageView
                 android:id="@+id/msg_img"
                 android:layout_width="@dimen/_40sdp"
@@ -132,33 +150,7 @@
                 android:fontFamily="@font/tajawal_medium"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:foreground="@drawable/line_bg"
-                android:textColor="#AAAAAA"/>
+                android:textColor="#AAAAAA" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    <ImageView
-        android:id="@+id/iv_gif_container"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_gravity="bottom|start"
-        android:layout_margin="@dimen/_30sdp"
-        app:layout_constraintTop_toBottomOf="@+id/product_constraints"
-        app:layout_constraintRight_toRightOf="parent"/>
-    <FrameLayout
-        android:id="@+id/fl_shadow_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:layout_constraintTop_toBottomOf="@+id/product_constraints">
-
-        <TextView
-            android:id="@+id/tv_auto_image_slider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="25dp"
-            android:padding="6dp"
-            android:textColor="#FFF"
-            android:textSize="18sp" />
-
-    </FrameLayout>
-
     </LinearLayout>
+</androidx.cardview.widget.CardView>

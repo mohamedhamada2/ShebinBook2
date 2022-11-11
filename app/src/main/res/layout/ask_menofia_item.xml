@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:roundedimageview="http://schemas.android.com/tools"
     app:cardCornerRadius="@dimen/_10sdp"
     app:cardBackgroundColor="#001324"
     android:layout_below="@+id/btn_ask_manifa"
@@ -24,12 +24,14 @@
                 android:layout_width="@dimen/_32sdp"
                 android:layout_height="@dimen/_32sdp"
                 app:riv_corner_radius="@dimen/_10sdp"
-                android:background="@drawable/user2"
+                android:background="@drawable/img_bg"
+                android:src="@drawable/ic_male"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_centerVertical="true"
-                android:scaleType="fitXY"/>
+                android:scaleType="fitXY"
+                roundedimageview:riv_mutate_background="true"/>
             <TextView
                 android:id="@+id/txt_name"
                 android:layout_width="wrap_content"

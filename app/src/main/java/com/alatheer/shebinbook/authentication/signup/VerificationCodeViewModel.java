@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.alatheer.shebinbook.Utilities.Utilities;
@@ -13,7 +14,12 @@ import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.forgetpassword.NewPassword;
 import com.alatheer.shebinbook.home.HomeActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
+import androidx.annotation.NonNull;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -25,6 +31,7 @@ public class VerificationCodeViewModel {
     VerificationCodeActivity verificationCodeActivity;
     MySharedPreference mprefs;
     LoginModel loginModel;
+    String firebase_token;
 
     public VerificationCodeViewModel(Context context) {
         this.context = context;
@@ -55,11 +62,9 @@ public class VerificationCodeViewModel {
                             pd.dismiss();
                             loginModel = response.body();
                             mprefs.Create_Update_UserData(context,loginModel);
+                            send_weclome_notify(firebase_token);
                             //Toast.makeText(context, "login successfully", Toast.LENGTH_SHORT).show();
-                            context.startActivity(new Intent(context, HomeActivity.class));
-                            //Animatoo.animateFade(context);
-                            verificationCodeActivity.finish();
-                            SignupActivity.fa.finish();
+
                         }else {
                             pd.dismiss();
                             Toast.makeText(context, response.body().getError(), Toast.LENGTH_SHORT).show();
@@ -73,6 +78,54 @@ public class VerificationCodeViewModel {
                 }
             });
         }
+    }
+
+    public void get_firebase_token() {
+        try {
+            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                    if(task.isSuccessful()){
+                        firebase_token = task.getResult().getToken();
+                        Log.e("firebase_token",firebase_token);
+                        //update_user_token();
+
+                        //mainViewModel.update_token(firebase_token);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Log.e("exception_e",e.toString());
+            e.printStackTrace();
+        }
+    }
+
+    private void send_weclome_notify(String token) {
+        GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<WelcomeNotifications> call = getDataService.welcome_notify(token);
+        call.enqueue(new Callback<WelcomeNotifications>() {
+            @Override
+            public void onResponse(Call<WelcomeNotifications> call, Response<WelcomeNotifications> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getSuccess()==1){
+                        Log.e("nnnn",token);
+                        Intent intent = new Intent(context, HomeActivity.class);
+                        intent.putExtra("flag",2);
+                        intent.putExtra("token",token);
+                        //Toast.makeText(context, "token", Toast.LENGTH_SHORT).show();
+                        context.startActivity(intent);
+                        //Animatoo.animateFade(context);
+                        verificationCodeActivity.finish();
+                        SignupActivity.fa.finish();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WelcomeNotifications> call, Throwable t) {
+
+            }
+        });
     }
 
     public void sendRegisterRequestwithoutImage(String first_name, String last_name, String phone, String password, String city_id, String gender_id) {
@@ -92,11 +145,12 @@ public class VerificationCodeViewModel {
                             pd.dismiss();
                             loginModel = response.body();
                             mprefs.Create_Update_UserData(context,loginModel);
+                            send_weclome_notify(firebase_token);
                             //Toast.makeText(context, "login successfully", Toast.LENGTH_SHORT).show();
-                            context.startActivity(new Intent(context, HomeActivity.class));
+                            /*context.startActivity(new Intent(context, HomeActivity.class));
                             //Animatoo.animateFade(context);
                             verificationCodeActivity.finish();
-                            SignupActivity.fa.finish();
+                            SignupActivity.fa.finish();*/
                         }else {
                             pd.dismiss();
                             Toast.makeText(context, response.body().getError(), Toast.LENGTH_SHORT).show();

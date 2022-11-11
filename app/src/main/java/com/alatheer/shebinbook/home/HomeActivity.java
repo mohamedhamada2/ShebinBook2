@@ -57,6 +57,8 @@ import com.alatheer.shebinbook.search.SearchStoresAdapter;
 import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.stores.StoresAdapter;
+import com.alatheer.shebinbook.trader.addoffer.AddOfferActivity;
+import com.alatheer.shebinbook.trader.profile.ProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -82,7 +84,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     MenuAdapter menuAdapter;
     MySharedPreference mySharedPreference ;
     LoginModel loginModel;
-    String user_id,user_img,user_name,user_phone,trader_id,firebase_token;
+    String user_id,user_img,user_name,user_phone,trader_id,firebase_token,topic;
     Integer user_type,gender,city;
     Dialog dialog;
     RecyclerView message_recycler;
@@ -92,7 +94,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     MessageAdapter messageAdapter;
     RecyclerView search_recycler;
     SearchStoresAdapter storesAdapter;
-    Integer page = 1 ;
+    Integer page = 1,flag;
     PostAdapter postAdapter;
     boolean isloading;
     int pastvisibleitem,visibleitemcount,totalitemcount,previous_total,view_threshold;
@@ -108,10 +110,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         viewPager2 = activityHomeBinding.viewpager2;
         menu_recycler = findViewById(R.id.recycler_view);
         getSharedPreferanceData();
-        homeViewModel.getData(user_id);
         homeViewModel.getAdvertisment();
-        homeViewModel.getposts(page,user_id);
-        homeViewModel.getCategories();
+        getDataIntent();
         init_ask();
 
         activityHomeBinding.linearShowAll.setOnClickListener(new View.OnClickListener() {
@@ -146,6 +146,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+    }
+
+    private void getDataIntent() {
+        flag = getIntent().getIntExtra("flag",0);
+        if (flag == 1){
+            getToken();
+        }else {
+            firebase_token = getIntent().getStringExtra("token");
+            homeViewModel.send_welcome_notification(firebase_token);
+            FirebaseMessaging.getInstance().subscribeToTopic("android");
+            getTopic();
+        }
     }
 
     private void Create_Alert_Dialog() {
@@ -264,8 +276,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityHomeBinding.userImg);
         }
         activityHomeBinding.userName.setText(user_name);
-        getToken();
-        getTopic();
+
     }
 
     private void init_ask() {
@@ -311,12 +322,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
 
     public void init_sliders(List<Slider> sliderList) {
+
         ///Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
         viewPager2.setAdapter(new SliderAdapter(this,sliderList));
-        viewPager2.setPadding(60,0,60,0);
+        viewPager2.setPadding(30,0,30,0);
         viewPager2.setOffscreenPageLimit(3);
         viewPager2.startAutoScroll();
-        viewPager2.setInterval(3000);
+        viewPager2.setInterval(4000);
         viewPager2.setCycle(true);
         viewPager2.setStopScrollWhenTouch(true);
         viewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
@@ -329,10 +341,26 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 page.setScaleY(0.85f + r * 0.15f);
             }
         });
+        final Handler handler  = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                   homeViewModel.getCategories();
+            }
+        };
+        handler.postDelayed(runnable, 200);
         //viewPager2.setPageTransformer(compositePageTransformer);
     }
 
     public void init_categories(List<com.alatheer.shebinbook.home.category.Category> category_list) {
+        final Handler handler  = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                homeViewModel.getData(user_id);
+            }
+        };
+        handler.postDelayed(runnable, 300);
         categoryAdapter = new CategoryAdapter(category_list, this);
         activityHomeBinding.categoryRecycler.setAdapter(categoryAdapter);
         layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
@@ -423,6 +451,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setViewPagerGone() {
+        homeViewModel.getCategories();
         activityHomeBinding.viewpager2.setVisibility(View.GONE);
     }
 
@@ -491,6 +520,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setData(ProfileData body) {
+        final Handler handler  = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                homeViewModel.getposts(page,user_id);
+            }
+        };
+        handler.postDelayed(runnable, 200);
         user_img = body.getData().getUserImg();
         user_name = body.getData().getName();
         user_phone = body.getData().getPhone();
@@ -521,19 +558,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
                         }
                     });
-            FirebaseMessaging.getInstance().subscribeToTopic("all")
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            String msg = "all";
-                            if (!task.isSuccessful()) {
-                                msg = "all";
+            try {
+                Thread.sleep(2000);
+                FirebaseMessaging.getInstance().subscribeToTopic("all")
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                String msg = "all";
+                                if (!task.isSuccessful()) {
+                                    msg = "all";
+                                }
+                                Log.d("TAG", msg);
+                                homeViewModel.update_token(user_id,firebase_token,"all");
+                                //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
                             }
-                            Log.d("TAG", msg);
-                            homeViewModel.update_token(user_id,firebase_token,"all");
-                            //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                        });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }else if (gender == 2){
             FirebaseMessaging.getInstance().subscribeToTopic("all")
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -548,35 +590,44 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
                         }
                     });
-            FirebaseMessaging.getInstance().subscribeToTopic("female")
+            try {
+                Thread.sleep(2000);
+                FirebaseMessaging.getInstance().subscribeToTopic("female")
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                String msg = "female";
+                                if (!task.isSuccessful()) {
+                                    msg = "female";
+                                }
+                                Log.d("TAG", msg);
+                                homeViewModel.update_token(user_id,firebase_token,"female");
+                                //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            Thread.sleep(2000);
+            FirebaseMessaging.getInstance().subscribeToTopic(city+"")
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            String msg = "female";
+                            String msg = "city";
                             if (!task.isSuccessful()) {
-                                msg = "female";
+                                msg = "city";
                             }
                             Log.d("TAG", msg);
-                            homeViewModel.update_token(user_id,firebase_token,"female");
+                            homeViewModel.update_token(user_id,firebase_token,city+"");
                             //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
                         }
                     });
-
-
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        FirebaseMessaging.getInstance().subscribeToTopic(city+"")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        String msg = "city";
-                        if (!task.isSuccessful()) {
-                            msg = "city";
-                        }
-                        Log.d("TAG", msg);
-                        homeViewModel.update_token(user_id,firebase_token,city+"");
-                        //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     public void getToken() {
@@ -584,16 +635,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                 @Override
                 public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         firebase_token = task.getResult().getToken();
-                        Log.e("firebase_token",firebase_token);
+                        Log.e("firebase_token", firebase_token);
+                        //homeViewModel.send_welcome_notification(firebase_token);
+                        getTopic();
+
                         //mainViewModel.update_token(firebase_token);
                     }
                 }
             });
         } catch (Exception e) {
-            Log.e("exception_e",e.toString());
+            Log.e("exception_e", e.toString());
             e.printStackTrace();
         }
+        FirebaseMessaging.getInstance().subscribeToTopic("android");
+
     }
 }

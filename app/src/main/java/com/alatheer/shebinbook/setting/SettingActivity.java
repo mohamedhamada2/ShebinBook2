@@ -117,7 +117,12 @@ public class SettingActivity extends AppCompatActivity {
         city_id = loginModel.getData().getCityId()+"";
         activitySettingBinding.etCity.setText(loginModel.getData().getCityId()+"");
         activitySettingBinding.etPhone.setText(loginModel.getData().getPhone());
-        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+loginModel.getData().getUserImg()).into(activitySettingBinding.userImg);
+        if (loginModel.getData().getUserImg() != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+loginModel.getData().getUserImg()).into(activitySettingBinding.userImg);
+        }else {
+            activitySettingBinding.userImg.setImageResource(R.drawable.ic_male2);
+            activitySettingBinding.userImg.setBackgroundDrawable(getResources().getDrawable(R.drawable.img_bg));
+        }
     }
 
     public void chooseimage(View view) {

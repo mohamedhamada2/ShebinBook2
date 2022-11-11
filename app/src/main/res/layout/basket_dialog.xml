@@ -21,12 +21,13 @@
                 android:layout_width="@dimen/_36sdp"
                 android:layout_height="@dimen/_36sdp"
                 app:riv_corner_radius="@dimen/_10sdp"
-                android:background="@drawable/user2"
+                android:background="@drawable/img_bg"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_centerVertical="true"
-                android:scaleType="fitXY"/>
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_male"/>
             <TextView
                 android:id="@+id/store_name"
                 android:layout_width="wrap_content"
@@ -94,7 +95,7 @@
                 android:layout_width="@dimen/_32sdp"
                 android:layout_height="@dimen/_32sdp"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/user2"
+                android:background="@drawable/ic_male"
                 app:riv_corner_radius="@dimen/_7sdp"/>
             <EditText
                 android:id="@+id/et_post"

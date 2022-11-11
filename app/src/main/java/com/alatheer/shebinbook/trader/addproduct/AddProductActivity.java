@@ -14,9 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -24,6 +26,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,6 +68,10 @@ public class AddProductActivity extends AppCompatActivity implements NavigationV
     MenuAdapter menuAdapter;
     RecyclerView.LayoutManager menulayoutmanager;
     Integer user_type;
+    int PICK_IMAGE_MULTIPLE = 6;
+    String imageEncoded;
+    List<String> imagesEncodedList;
+    ArrayList<Uri> mArrayUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,7 +146,7 @@ public class AddProductActivity extends AppCompatActivity implements NavigationV
         product_price = activityAddProductBinding.etProductPrice.getText().toString();
         product_details = activityAddProductBinding.etDetails.getText().toString();
         if (!TextUtils.isEmpty(product_name)&&filepath != null){
-            addProductViewModel.addproduct(trader_id+"",store_id+"",alboum_id+"",product_name,product_price,product_details,filepath);
+            addProductViewModel.addproduct(trader_id+"",store_id+"",alboum_id+"",product_name,product_price,product_details,filepath,mArrayUri);
         }else {
             if (TextUtils.isEmpty(product_name)){
                 activityAddProductBinding.etProductName.setError("أدخل إسم المنتج");
@@ -152,7 +159,7 @@ public class AddProductActivity extends AppCompatActivity implements NavigationV
         }
     }
 
-    public void chooseimage(View view) {
+    public void chooseimage5(View view) {
         Check_ReadPermission(IMG);
     }
 
@@ -214,14 +221,14 @@ public class AddProductActivity extends AppCompatActivity implements NavigationV
                 fileOutputStream.flush();
                 fileOutputStream.close();
                 filepath = Uri.fromFile(finalfile);
-                activityAddProductBinding.linearAdd.setVisibility(View.GONE);
-                activityAddProductBinding.productImg.setVisibility(View.VISIBLE);
-                activityAddProductBinding.productImg.setImageURI(filepath);
+                activityAddProductBinding.linearAdd5.setVisibility(View.GONE);
+                activityAddProductBinding.productImg5.setVisibility(View.VISIBLE);
+                activityAddProductBinding.productImg5.setImageURI(filepath);
             }catch (Exception e){
                 filepath = data.getData();
-                activityAddProductBinding.linearAdd.setVisibility(View.GONE);
-                activityAddProductBinding.productImg.setVisibility(View.VISIBLE);
-                Picasso.get().load(filepath).into(activityAddProductBinding.productImg);
+                activityAddProductBinding.linearAdd5.setVisibility(View.GONE);
+                activityAddProductBinding.productImg5.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath).into(activityAddProductBinding.productImg5);
             }
             //filepath = data.getData();
         } else if (requestCode == REQUESTCAMERA && resultCode == Activity.RESULT_OK) {
@@ -236,9 +243,9 @@ public class AddProductActivity extends AppCompatActivity implements NavigationV
                 fileOutputStream.flush();
                 fileOutputStream.close();
                 filepath = Uri.fromFile(finalfile);
-                activityAddProductBinding.linearAdd.setVisibility(View.GONE);
-                activityAddProductBinding.productImg.setVisibility(View.VISIBLE);
-                activityAddProductBinding.productImg.setImageURI(filepath);
+                activityAddProductBinding.linearAdd5.setVisibility(View.GONE);
+                activityAddProductBinding.productImg5.setVisibility(View.VISIBLE);
+                activityAddProductBinding.productImg5.setImageURI(filepath);
             }catch (Exception e){
                 Bundle bundle = data.getExtras();
                 final Bitmap bitmap = (Bitmap) bundle.get("data");
@@ -246,10 +253,116 @@ public class AddProductActivity extends AppCompatActivity implements NavigationV
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                 String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
                 filepath = Utilities.compressImage(AddProductActivity.this, path);
-                activityAddProductBinding.linearAdd.setVisibility(View.GONE);
-                activityAddProductBinding.productImg.setVisibility(View.VISIBLE);
-                Picasso.get().load(filepath).into(activityAddProductBinding.productImg);
+                activityAddProductBinding.linearAdd5.setVisibility(View.GONE);
+                activityAddProductBinding.productImg5.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath).into(activityAddProductBinding.productImg5);
             }
+        }
+        try {
+            // When an Image is picked
+            if (requestCode == PICK_IMAGE_MULTIPLE && resultCode == RESULT_OK
+                    && null != data) {
+                // Get the Image from data
+
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                imagesEncodedList = new ArrayList<String>();
+                if(data.getData()!=null){
+
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),data.getData());
+                    File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                    String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                    File finalfile = new File(path,file_name);
+                    FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+                    Uri mImageUri = Uri.fromFile(finalfile);
+                    mArrayUri = new ArrayList<Uri>();
+                    mArrayUri.add(mImageUri);
+                    activityAddProductBinding.linearAdd.setVisibility(View.GONE);
+                    activityAddProductBinding.productImg.setVisibility(View.VISIBLE);
+                    activityAddProductBinding.productImg.setImageURI(mImageUri);
+                    // Get the cursor
+                    Cursor cursor = getContentResolver().query(mImageUri,
+                            filePathColumn, null, null, null);
+                    // Move to first row
+                    cursor.moveToFirst();
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    imageEncoded  = cursor.getString(columnIndex);
+                    cursor.close();
+
+                } else {
+                    if (data.getClipData() != null) {
+                        ClipData mClipData = data.getClipData();
+                        mArrayUri = new ArrayList<Uri>();
+                        for (int i = 0; i < mClipData.getItemCount(); i++) {
+
+                            ClipData.Item item = mClipData.getItemAt(i);
+                            if (mClipData.getItemAt(0).getUri() != null){
+                                activityAddProductBinding.linearAdd.setVisibility(View.GONE);
+                                activityAddProductBinding.productImg.setVisibility(View.VISIBLE);
+                                activityAddProductBinding.productImg.setImageURI(mClipData.getItemAt(0).getUri());
+                            }
+                            if (mClipData.getItemAt(1).getUri() != null){
+                                activityAddProductBinding.linearAdd2.setVisibility(View.GONE);
+                                activityAddProductBinding.productImg2.setVisibility(View.VISIBLE);
+                                activityAddProductBinding.productImg2.setImageURI(mClipData.getItemAt(1).getUri());
+                            }
+                            if (mClipData.getItemAt(2).getUri() != null){
+                                activityAddProductBinding.linearAdd3.setVisibility(View.GONE);
+                                activityAddProductBinding.productImg3.setVisibility(View.VISIBLE);
+                                activityAddProductBinding.productImg3.setImageURI(mClipData.getItemAt(2).getUri());
+                            }
+                            if (mClipData.getItemAt(3).getUri() != null){
+                                activityAddProductBinding.linearAdd4.setVisibility(View.GONE);
+                                activityAddProductBinding.productImg4.setVisibility(View.VISIBLE);
+                                activityAddProductBinding.productImg4.setImageURI(mClipData.getItemAt(3).getUri());
+                            }
+                            Uri uri = item.getUri();
+                            if (mArrayUri.size()<4){
+                                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),uri);
+                                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                                File finalfile = new File(path,file_name);
+                                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                                fileOutputStream.flush();
+                                fileOutputStream.close();
+                                Uri mImageUri = Uri.fromFile(finalfile);
+                                mArrayUri.add(mImageUri);
+                                // Get the cursor
+                                Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
+                                // Move to first row
+                                cursor.moveToFirst();
+
+                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                                imageEncoded  = cursor.getString(columnIndex);
+                                imagesEncodedList.add(imageEncoded);
+                                cursor.close();
+                            }else {
+                                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),uri);
+                                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                                String file_name= String.format("%d.jpg",System.currentTimeMillis());
+                                File finalfile = new File(path,file_name);
+                                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                                fileOutputStream.flush();
+                                fileOutputStream.close();
+                                Uri mImageUri = Uri.fromFile(finalfile);
+                                mArrayUri.remove(mImageUri);
+                            }
+
+                        }
+                        Log.v("LOG_TAG", "Selected Images" + mArrayUri.size());
+                    }
+                }
+            } else {
+                Toast.makeText(this, "You haven't picked Image",
+                        Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG)
+                    .show();
         }
     }
 
@@ -273,5 +386,37 @@ public class AddProductActivity extends AppCompatActivity implements NavigationV
         }
         activityAddProductBinding.userName.setText(user_name);
         init_navigation_menu();
+    }
+
+    public void chooseimage(View view) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
+    }
+
+    public void chooseimage2(View view) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
+    }
+
+    public void chooseimage3(View view) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
+    }
+
+    public void chooseimage4(View view) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);
     }
 }

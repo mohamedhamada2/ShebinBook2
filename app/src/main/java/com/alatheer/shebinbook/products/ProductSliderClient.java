@@ -11,6 +11,9 @@ import android.widget.TextView;
 import com.alatheer.shebinbook.R;
 import com.alatheer.shebinbook.allproducts.AllProductsActivity;
 import com.alatheer.shebinbook.allproducts.Product;
+import com.alatheer.shebinbook.api.MySharedPreference;
+import com.alatheer.shebinbook.authentication.login.LoginModel;
+import com.alatheer.shebinbook.authentication.login.User;
 import com.alatheer.shebinbook.trader.updateproduct.UpdateProductActivity;
 import com.smarteist.autoimageslider.SliderViewAdapter;
 import com.squareup.picasso.Picasso;
@@ -24,7 +27,9 @@ public class ProductSliderClient extends SliderViewAdapter<ProductSliderClient.S
     private int index;
     String store_name,store_img;
     AllProductsActivity allProductsActivity;
-
+    MySharedPreference mySharedPreference;
+    LoginModel user;
+    Integer role_id;
     public ProductSliderClient(Context context, List<com.alatheer.shebinbook.allproducts.Product> mSliderItems, String store_name, String store_img) {
         this.context = context;
         this.mSliderItems = mSliderItems;
@@ -59,6 +64,9 @@ public class ProductSliderClient extends SliderViewAdapter<ProductSliderClient.S
     public void onBindViewHolder(ProductSliderClient.SliderAdapterVH viewHolder, final int position) {
 
         Product product = mSliderItems.get(position);
+        mySharedPreference  = MySharedPreference.getInstance();
+        user = mySharedPreference.Get_UserData(context);
+        role_id = user.getData().getUser().getRoleIdFk();
         /*if (user_role == 4){
             viewHolder.msg_img.setVisibility(View.GONE);
         }*/
@@ -69,6 +77,11 @@ public class ProductSliderClient extends SliderViewAdapter<ProductSliderClient.S
             viewHolder.product_price_offer.setText(product.getPrice()+"");
         }else {
             viewHolder.product_price_offer.setText("أطلب السعر");
+        }
+        if (role_id == 4){
+            viewHolder.msg_img.setVisibility(View.GONE);
+        }else {
+            viewHolder.msg_img.setVisibility(View.VISIBLE);
         }
         if (product.getDetails() != null){
             viewHolder.product_decription.setText(product.getDetails());

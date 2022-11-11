@@ -120,7 +120,6 @@ public class ProfileViewModel {
                         if (response.body().getStatus()){
                             sliderList = response.body().getData().getData();
                             //Toast.makeText(context, page+"", Toast.LENGTH_SHORT).show();
-                            sliderList = response.body().getData().getData();
                             sliderAdapter.add_offer(sliderList);
                             profileActivity.init_sliders(sliderAdapter);
 

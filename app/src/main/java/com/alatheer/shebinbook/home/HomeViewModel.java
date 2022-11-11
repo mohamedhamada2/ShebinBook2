@@ -2,6 +2,7 @@ package com.alatheer.shebinbook.home;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -11,6 +12,8 @@ import com.alatheer.shebinbook.api.MySharedPreference;
 import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.authentication.cities.CityModel;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
+import com.alatheer.shebinbook.authentication.signup.SignupActivity;
+import com.alatheer.shebinbook.authentication.signup.WelcomeNotifications;
 import com.alatheer.shebinbook.comments.CommentModel;
 import com.alatheer.shebinbook.home.category.CategoryModel;
 import com.alatheer.shebinbook.home.slider.SliderModel;
@@ -32,19 +35,20 @@ public class HomeViewModel {
     HomeActivity homeActivity;
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
-    Integer user_gender;
+    Integer user_gender,user_id;
     List<Datum> messagelist;
     MessageAdapter2 messageAdapter2;
     public HomeViewModel(Context context) {
         this.context = context;
         homeActivity = (HomeActivity) context;
+        mySharedPreference = MySharedPreference.getInstance();
+        loginModel = mySharedPreference.Get_UserData(context);
+        user_gender = loginModel.getData().getUser().getGender();
+        user_id = loginModel.getData().getUser().getId();
     }
 
     public void getAdvertisment() {
 
-        mySharedPreference = MySharedPreference.getInstance();
-        loginModel = mySharedPreference.Get_UserData(context);
-        user_gender = loginModel.getData().getUser().getGender();
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
             Call<SliderModel> call = getDataService.get_ads(user_gender+"",1);
@@ -60,6 +64,7 @@ public class HomeViewModel {
 
                                 }
                             }else {
+
                                 homeActivity.setViewPagerGone();
                             }
 
@@ -114,6 +119,7 @@ public class HomeViewModel {
                 public void onResponse(Call<PostData> call, Response<PostData> response) {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
+                            //homeActivity.getTopic();
                             if (response.body().getData().getData().size()>=3){
                                 homeActivity.init_recycler(response.body().getData().getData());
                             }else {
@@ -328,8 +334,8 @@ public class HomeViewModel {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
                             homeActivity.setData(response.body());
-                            //homeActivity.getTopic();
-                            homeActivity.getToken();
+
+                            //homeActivity.getToken();
 
                         }
                     }
@@ -383,5 +389,26 @@ public class HomeViewModel {
                 }
             });
         }
+    }
+
+    public void send_welcome_notification(String firebase_token) {
+        GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<WelcomeNotifications> call = getDataService.welcome_notify(firebase_token);
+        call.enqueue(new Callback<WelcomeNotifications>() {
+            @Override
+            public void onResponse(Call<WelcomeNotifications> call, Response<WelcomeNotifications> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getSuccess()==1){
+                        Log.e("token",firebase_token);
+                        //Toast.makeText(context, "token", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WelcomeNotifications> call, Throwable t) {
+
+            }
+        });
     }
 }

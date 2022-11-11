@@ -24,11 +24,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alatheer.shebinbook.R;
 import com.alatheer.shebinbook.Utilities.Utilities;
 import com.alatheer.shebinbook.authentication.Gender;
 import com.alatheer.shebinbook.authentication.cities.CityActivity;
+import com.alatheer.shebinbook.authentication.cities.Datum;
 import com.alatheer.shebinbook.databinding.ActivitySignupBinding;
 import com.squareup.picasso.Picasso;
 
@@ -48,6 +50,8 @@ public class SignupActivity extends AppCompatActivity {
     int REQUESTCAMERA = 2;
     String first_name,last_name,phone,password;
     public static Activity fa;
+    List<String> datumListtitle;
+    List<Datum> datumList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +61,7 @@ public class SignupActivity extends AppCompatActivity {
         activitySignupBinding.setSignupviewmodel(signUpViewModel);
         fa = this;
         signUpViewModel.get_gender();
+        signUpViewModel.get_cities();
         //getDataIntent();
         activitySignupBinding.txtSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,17 +88,30 @@ public class SignupActivity extends AppCompatActivity {
 
             }
         });
-        activitySignupBinding.etCity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SignupActivity.this, CityActivity.class);
-                startActivityForResult(intent,5);
-            }
-        });
         activitySignupBinding.btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Validation();
+            }
+        });
+        activitySignupBinding.spinnerCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                city_id = datumList.get(i).getId()+"";
+               // Toast.makeText(SignupActivity.this, city_id, Toast.LENGTH_SHORT).show();
+                TextView textView = (TextView) view;
+                try {
+                    textView.setTextColor(getResources().getColor(R.color.purple_500));
+                    textView.setBackground(null);
+                }catch (Exception e){
+
+                }
+                //citytitlelist.clear();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
     }
@@ -104,11 +122,33 @@ public class SignupActivity extends AppCompatActivity {
         phone = activitySignupBinding.etPhone.getText().toString();
         password =activitySignupBinding.etPassword.getText().toString();
         if (!TextUtils.isEmpty(first_name)&&!TextUtils.isEmpty(last_name)&&!TextUtils.isEmpty(phone)
-        &&!TextUtils.isEmpty(password)&&!TextUtils.isEmpty(gender_id)&&!TextUtils.isEmpty(title)){
-            if(filepath != null){
-                signUpViewModel.sendRegisterRequestwithImage(first_name,last_name,phone, password, filepath,city_id+"",gender_id);
+        &&!TextUtils.isEmpty(password)&&!TextUtils.isEmpty(gender_id)) {
+            if (filepath != null) {
+                //Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
+                signUpViewModel.sendRegisterRequestwithImage(first_name, last_name, phone, password, filepath, city_id, gender_id);
+            } else {
+                signUpViewModel.sendRegisterRequestwithoutImage(first_name, last_name, phone, password, city_id, gender_id);
+            }
+        }else {
+            if (TextUtils.isEmpty(first_name)){
+                activitySignupBinding.etFirstName.setError("أدخل الإسم الأول");
             }else {
-                signUpViewModel.sendRegisterRequestwithoutImage(first_name,last_name,phone, password,city_id+"",gender_id);
+                activitySignupBinding.etFirstName.setError(null);
+            }
+            if (TextUtils.isEmpty(last_name)){
+                activitySignupBinding.etLastName.setError("أدخل الإسم الأخير");
+            }else {
+                activitySignupBinding.etLastName.setError(null);
+            }
+            if (TextUtils.isEmpty(phone)){
+                activitySignupBinding.etPhone.setError("أدخل رقم الهاتف");
+            }else {
+                activitySignupBinding.etPhone.setError(null);
+            }
+            if (TextUtils.isEmpty(password)){
+                activitySignupBinding.etPassword.setError("أدخل كلمة المرور");
+            }else {
+                activitySignupBinding.etPassword.setError(null);
             }
         }
     }
@@ -211,11 +251,15 @@ public class SignupActivity extends AppCompatActivity {
             filepath = Utilities.compressImage(SignupActivity.this,path);
             activitySignupBinding.cardview.setVisibility(View.VISIBLE);
             Picasso.get().load(filepath).into(activitySignupBinding.userimg);
-        }else if (requestCode == 5 && resultCode == Activity.RESULT_OK){
-            title = data.getStringExtra("title");
-            city_id = data.getStringExtra("id");
-            activitySignupBinding.etCity.setText(title);
         }
 
     }
+
+    public void setCitiesspinnerData(List<String> datumListtitle, List<Datum> datumList) {
+        this.datumListtitle = datumListtitle;
+        this.datumList = datumList;
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(SignupActivity.this,R.layout.spinner_item,datumListtitle);
+        activitySignupBinding.spinnerCity.setAdapter(arrayAdapter);
+    }
+
 }

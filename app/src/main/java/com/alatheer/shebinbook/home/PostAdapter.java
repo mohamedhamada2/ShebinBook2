@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.alatheer.shebinbook.R;
 import com.alatheer.shebinbook.comments.CommentActivity;
 import com.alatheer.shebinbook.posts.Post;
+import com.alatheer.shebinbook.posts.PostsActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -71,7 +72,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.AskHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //context.startActivity(new Intent(homeActivity, PostsActivity.class));
                 Intent intent = new Intent(context, CommentActivity.class);
+                intent.putExtra("flag",1);
                 intent.putExtra("post",askModelList.get(position));
                 context.startActivity(intent);
             }

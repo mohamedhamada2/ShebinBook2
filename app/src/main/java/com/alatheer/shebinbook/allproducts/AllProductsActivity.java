@@ -10,6 +10,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager2.widget.CompositePageTransformer;
+import androidx.viewpager2.widget.MarginPageTransformer;
+import androidx.viewpager2.widget.ViewPager2;
+import pl.pzienowicz.autoscrollviewpager.AutoScrollViewPager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,6 +29,7 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +50,7 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityAllProductsBinding;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.home.slider.MenuItem;
+import com.alatheer.shebinbook.home.slider.SliderAdapter;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.products.ProductSliderClient;
 import com.alatheer.shebinbook.products.ProductsSlider_for_Trader;
@@ -52,6 +58,7 @@ import com.alatheer.shebinbook.search.SearchStoresAdapter;
 import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.Store;
 import com.alatheer.shebinbook.trader.addproduct.AddProductActivity;
+import com.alatheer.shebinbook.trader.updateproduct.UpdateProductActivity;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
 import com.smarteist.autoimageslider.SliderAnimations;
@@ -276,10 +283,74 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
     }
 
     public void createAlertDialog(Product product) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.trader_product_dialog, null);
-        if (Utilities.isNetworkAvailable(this)){
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View itemView = inflater.inflate(R.layout.product_dialog, null);
+            ImageView product_img = itemView.findViewById(R.id.product_img);
+            TextView product_name = itemView.findViewById(R.id.product_name);
+            TextView product_price = itemView.findViewById(R.id.product_price);
+            TextView product_decription = itemView.findViewById(R.id.product_decription);
+            TextView product_price_offer = itemView.findViewById(R.id.product_price_offer);
+            TextView txt_store_name = itemView.findViewById(R.id.store_name);
+            ImageView store_img2 = itemView.findViewById(R.id.store_logo);
+            ImageView msg_img = itemView.findViewById(R.id.msg_img);
+            AutoScrollViewPager viewPager2 = itemView.findViewById(R.id.viewpager2);
+        /*if (user_role == 4){
+            viewHolder.msg_img.setVisibility(View.GONE);
+        }*/
+
+            product_name.setText(product.getTitle());
+            txt_store_name.setText(store_name);
+            if (product.getPrice() != null){
+                product_price_offer.setText(product.getPrice()+"");
+            }else {
+                product_price_offer.setText("أطلب السعر");
+            }
+            if (user_type == 4){
+                msg_img.setVisibility(View.GONE);
+            }else {
+                msg_img.setVisibility(View.VISIBLE);
+            }
+            if (product.getDetails() != null){
+                product_decription.setText(product.getDetails());
+            }else {
+                product_decription.setText(null);
+            }
+            product_price.setVisibility(View.GONE);
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+store_img).into(store_img2);
+            if (!product.getSubImages().isEmpty()){
+                product_img.setVisibility(View.GONE);
+                viewPager2.setVisibility(View.VISIBLE);
+                viewPager2.setAdapter(new ProductImageAdapter(this,product.getSubImages()));
+                viewPager2.setPadding(30,0,30,0);
+                viewPager2.setOffscreenPageLimit(3);
+                viewPager2.startAutoScroll();
+                viewPager2.setInterval(3000);
+                viewPager2.setCycle(true);
+                viewPager2.setStopScrollWhenTouch(true);
+                //viewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+                CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+                compositePageTransformer.addTransformer(new MarginPageTransformer(40));
+                compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
+                    @Override
+                    public void transformPage(@NonNull View page, float position) {
+                        float r = 1 - Math.abs(position);
+                        page.setScaleY(0.85f + r * 0.15f);
+                    }
+                });
+            }else {
+                product_img.setVisibility(View.VISIBLE);
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(product_img);
+                viewPager2.setVisibility(View.GONE);
+            }
+            msg_img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    CreateBasketDialog(product);
+                }
+            });
+        /*if (Utilities.isNetworkAvailable(this)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
             Call<ProductModel> call = getDataService.get_products(gallery_id+"");
             call.enqueue(new Callback<ProductModel>() {
@@ -311,7 +382,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
 
                 }
             });
-        }
+        }*/
         /*ImageView product_img = view.findViewById(R.id.product_img);
         TextView product_name = view.findViewById(R.id.product_name);
         TextView product_price = view.findViewById(R.id.product_price);
@@ -341,13 +412,17 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
         product_price.setVisibility(View.GONE);
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(product_img);
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+store_img).into(store_img2);*/
-        builder.setView(view);
-        dialog = builder.create();
-        dialog.show();
-        Window window = dialog.getWindow();
-        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        window.setGravity(Gravity.CENTER_HORIZONTAL);
-        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+            builder.setView(itemView);
+            dialog = builder.create();
+            dialog.show();
+            Window window = dialog.getWindow();
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.setGravity(Gravity.CENTER_HORIZONTAL);
+            window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        }catch (Exception e){
+            Log.e("error",e.getMessage());
+        }
+
 
     }
 
@@ -427,10 +502,78 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
     }
 
     public void createTraderDialog(Product product) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.trader_product_dialog, null);
-        if (Utilities.isNetworkAvailable(this)){
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View itemView = inflater.inflate(R.layout.product_slider_item, null);
+            ImageView product_img = itemView.findViewById(R.id.product_img);
+            TextView product_name = itemView.findViewById(R.id.product_name);
+            TextView product_price = itemView.findViewById(R.id.product_price);
+            TextView product_details = itemView.findViewById(R.id.product_details);
+            TextView product_price_offer = itemView.findViewById(R.id.product_price_offer);
+            ImageView bin_img = itemView.findViewById(R.id.bin_img);
+            ImageView edit_img = itemView.findViewById(R.id.edit_img);
+            TextView txt_store_name = itemView.findViewById(R.id.store_name);
+            ImageView store_img2 = itemView.findViewById(R.id.store_logo);
+            AutoScrollViewPager viewPager2 = itemView.findViewById(R.id.viewpager2);
+            product_name.setText(product.getTitle());
+            txt_store_name.setText(store_name);
+            product_price.setVisibility(View.GONE);
+            if (product.getPrice() != null){
+                product_price_offer.setText(product.getPrice()+"");
+            }else {
+                product_price_offer.setText("أدخل السعر ان أردت");
+            }
+            if (product.getDetails() != null){
+                product_details.setText(product.getDetails());
+            }else {
+                product_price.setText("--------");
+            }
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+store_img).into(store_img2);
+            if (!product.getSubImages().isEmpty()){
+                product_img.setVisibility(View.GONE);
+                viewPager2.setVisibility(View.VISIBLE);
+                viewPager2.setAdapter(new ProductImageAdapter(this,product.getSubImages()));
+                viewPager2.setPadding(30,0,30,0);
+                viewPager2.setOffscreenPageLimit(3);
+                viewPager2.startAutoScroll();
+                viewPager2.setInterval(3000);
+                viewPager2.setCycle(true);
+                viewPager2.setStopScrollWhenTouch(true);
+                //viewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+                CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+                compositePageTransformer.addTransformer(new MarginPageTransformer(40));
+                compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
+                    @Override
+                    public void transformPage(@NonNull View page, float position) {
+                        float r = 1 - Math.abs(position);
+                        page.setScaleY(0.85f + r * 0.15f);
+                    }
+                });
+            }else {
+                product_img.setVisibility(View.VISIBLE);
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(product_img);
+                viewPager2.setVisibility(View.GONE);
+            }
+            edit_img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(AllProductsActivity.this, UpdateProductActivity.class);
+                    intent.putExtra("product", product);
+                    intent.putExtra("flag",1);
+                    startActivity(intent);
+                    dismiss();
+                    //CreateBasketDialog(product);
+                }
+            });
+            bin_img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dismiss();
+                    CreateDeleteDialog(product);
+                }
+            });
+        /*if (Utilities.isNetworkAvailable(this)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
             Call<ProductModel> call = getDataService.get_products(gallery_id+"");
             call.enqueue(new Callback<ProductModel>() {
@@ -459,7 +602,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
 
                 }
             });
-        }
+        }*/
         /*ImageView product_img = view.findViewById(R.id.product_img);
         TextView product_name = view.findViewById(R.id.product_name);
         TextView product_price = view.findViewById(R.id.product_price);
@@ -504,13 +647,16 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
                 CreateDeleteDialog(product);
             }
         });*/
-        builder.setView(view);
-        dialog3 = builder.create();
-        dialog3.show();
-        Window window = dialog3.getWindow();
-        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        window.setGravity(Gravity.CENTER_HORIZONTAL);
-        window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+            builder.setView(itemView);
+            dialog3 = builder.create();
+            dialog3.show();
+            Window window = dialog3.getWindow();
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.setGravity(Gravity.CENTER_HORIZONTAL);
+            window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        }catch (Exception e){
+            Log.e("klkl",e.getMessage());
+        }
     }
 
     public void CreateDeleteDialog(Product product) {
@@ -530,7 +676,7 @@ public class AllProductsActivity extends AppCompatActivity implements SwipeRefre
             @Override
             public void onClick(View view) {
                productViewModel.delete_product(product.getId());
-                dialog4.dismiss();
+               dialog4.dismiss();
                 //CreateBasketDialog(product);
             }
         });

@@ -15,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,6 +30,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +40,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alatheer.shebinbook.R;
 import com.alatheer.shebinbook.Utilities.Utilities;
@@ -57,6 +60,9 @@ import com.alatheer.shebinbook.stores.Store;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +80,7 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
     String comment;
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
-    String user_id,user_img,user_name,user_phone;
+    String user_id,user_img,user_name,user_phone,title,message,data;
     RecyclerView.LayoutManager layoutManager;
     CommentAdapter commentAdapter;
     Dialog dialog;
@@ -87,8 +93,11 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
     LinearLayoutManager layoutManager2;
     private int pastvisibleitem2,visibleitemcount2,totalitemcount2,previous_total2=0;
     int view_threshold2 = 10;
-    int page2 =1 ;
+    int page2 =1;
+    Integer flag;
     boolean isloading2;
+    ProgressDialog pd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,8 +108,10 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
         activityCommentBinding.swiperefresh.setOnRefreshListener(this);
         getSharedPreferenceData();
         commentViewModel.getData(user_id);
+        pd = new ProgressDialog(CommentActivity.this);
+        pd.setMessage("تحميل ...");
+        pd.show();
         getDataIntent();
-        commentViewModel.getComments(post.getId()+"");
         activityCommentBinding.btnAddPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -237,18 +248,59 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
 
     }
     private void getDataIntent() {
-        post = (Post) getIntent().getSerializableExtra("post");
-        comments_num = post.getCountComments();
-        activityCommentBinding.txtName.setText(post.getName());
-        activityCommentBinding.txtComment.setText(post.getPost());
-        activityCommentBinding.msgNum.setText(comments_num+"");
-        if (post.getImg().equals("noimage")){
-            activityCommentBinding.postImg.setVisibility(View.GONE);
-        }else{
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+post.getImg()).into(activityCommentBinding.postImg);
+        flag = getIntent().getIntExtra("flag",0);
+        try {
+            if (flag == 2) {
+                try {
+                    title = getIntent().getStringExtra("title");
+                    message = getIntent().getStringExtra("message");
+                    data = getIntent().getStringExtra("moredata");
+                    Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
+                    JSONObject json = new JSONObject(data);
+                    String id = (String) json.get("id");
+                    commentViewModel.getComments(id+"");
+                } catch (JSONException e) {
+                    Log.e("action",e.getMessage());
+                    e.printStackTrace();
+                }
+
+            }else if (flag ==1){
+                post = (Post) getIntent().getSerializableExtra("post");
+                comments_num = post.getCountComments();
+                commentViewModel.getComments(post.getId()+"");
+
+            /*activityCommentBinding.txtName.setText(post.getName());
+            activityCommentBinding.txtComment.setText(post.getPost());
+            activityCommentBinding.msgNum.setText(comments_num+"");
+            if (post.getImg().equals("noimage")){
+                activityCommentBinding.postImg.setVisibility(View.GONE);
+            }else{
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+post.getImg()).into(activityCommentBinding.postImg);
+            }
+            if (post.getUserImg() != null){
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+post.getUserImg()).into(activityCommentBinding.userimg);
+            }
+            if (user_img != null){
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityCommentBinding.userImg);
+            }*/
+            }else {
+                try {
+                    title = getIntent().getStringExtra("title");
+                    message = getIntent().getStringExtra("message");
+                    data = getIntent().getStringExtra("moredata");
+                    JSONObject json = new JSONObject(data);
+                    String id = (String) json.get("id");
+                    commentViewModel.getComments(id+"");
+                } catch (JSONException e) {
+                    Log.e("action",e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }catch (Exception e){
+            Log.e("llll",e.getMessage());
         }
-        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+post.getUserImg()).into(activityCommentBinding.userimg);
-        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityCommentBinding.userImg);
+
+
     }
     public void showmenu(View view) {
         //activityPostsBinding.navView.setNavigationItemSelectedListener(this);
@@ -292,6 +344,21 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
     }
 
     public void init_comments(List<Comment> body) {
+        pd.dismiss();
+        activityCommentBinding.txtName.setText(body.get(0).getPostUserName());
+        activityCommentBinding.txtComment.setText(body.get(0).getPost());
+        //activityCommentBinding.msgNum.setText(comments_num+"");
+        if (body.get(0).getImg().equals("noimage")){
+            activityCommentBinding.postImg.setVisibility(View.GONE);
+        }else{
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+body.get(0).getImg()).into(activityCommentBinding.postImg);
+        }
+        if (body.get(0).getPostUserImage() != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+body.get(0).getPostUserImage()).into(activityCommentBinding.userimg);
+        }
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityCommentBinding.userImg);
+        }
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false);
         activityCommentBinding.commentRecycler.setHasFixedSize(true);
         activityCommentBinding.commentRecycler.setLayoutManager(layoutManager);
@@ -531,5 +598,23 @@ public class CommentActivity extends AppCompatActivity implements SwipeRefreshLa
                 //CreateDeleteDialog(product);
             }
         });
+    }
+
+    public void set_post_data() {
+        pd.dismiss();
+        activityCommentBinding.txtName.setText(post.getName());
+        activityCommentBinding.txtComment.setText(post.getPost());
+        //activityCommentBinding.msgNum.setText(comments_num+"");
+        if (post.getImg().equals("noimage")){
+            activityCommentBinding.postImg.setVisibility(View.GONE);
+        }else{
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+post.getImg()).into(activityCommentBinding.postImg);
+        }
+        if (post.getUserImg() != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+post.getUserImg()).into(activityCommentBinding.userimg);
+        }
+        if (user_img != null){
+            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+user_img).into(activityCommentBinding.userImg);
+        }
     }
 }

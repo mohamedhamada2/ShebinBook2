@@ -32,11 +32,11 @@ import retrofit2.Response;
 
 public class SubCategoryAdapter extends RecyclerView.Adapter<SubCategoryAdapter.SubCategoryHolder> {
     Context context;
-    List<SubCate> subCateList;
+    List<Datum> subCateList;
     MySharedPreference mySharedPreference;
     LoginModel loginModel;
     Integer user_id;
-    public SubCategoryAdapter(Context context, List<SubCate> subCateList) {
+    public SubCategoryAdapter(Context context, List<Datum> subCateList) {
         this.context = context;
         this.subCateList = subCateList;
     }
@@ -95,7 +95,7 @@ public class SubCategoryAdapter extends RecyclerView.Adapter<SubCategoryAdapter.
             category_txt = itemView.findViewById(R.id.category_name);
         }
 
-        public void setData(SubCate subCate) {
+        public void setData(Datum subCate) {
 
             try {
                 Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/subcats_images/"+subCate.getImage()).resize(600, 200).into(category_img);

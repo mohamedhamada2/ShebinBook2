@@ -285,7 +285,7 @@ public class ProfileActivity extends AppCompatActivity {
         viewPager2.setPadding(30,0,30,0);
         viewPager2.setOffscreenPageLimit(3);
         viewPager2.startAutoScroll();
-        viewPager2.setInterval(3000);
+        viewPager2.setInterval(8000);
         viewPager2.setCycle(true);
         viewPager2.setStopScrollWhenTouch(true);
         viewPager2.setAdapter(sliderAdapter);

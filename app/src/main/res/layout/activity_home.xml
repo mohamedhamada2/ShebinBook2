@@ -57,14 +57,13 @@
                                 android:layout_height="match_parent"
                                 android:scaleType="fitXY"
                                 android:background="@drawable/img_bg"
-                                android:src="@drawable/ic_baseline_person"/>
+                                android:src="@drawable/ic_male"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
                     <TextView
                         android:id="@+id/user_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Mohamed"
                         android:layout_toLeftOf="@id/card_img"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="@dimen/_10sdp"
@@ -101,11 +100,11 @@
                         <pl.pzienowicz.autoscrollviewpager.AutoScrollViewPager
                             android:id="@+id/viewpager2"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_180sdp"
+                            android:layout_height="@dimen/_200sdp"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
-                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:overScrollMode="never"
                             android:clipToPadding="false"/>
                         <androidx.cardview.widget.CardView
@@ -116,7 +115,7 @@
                             app:cardBackgroundColor="#00203E"
                             android:layout_marginLeft="@dimen/_5sdp"
                             android:layout_marginRight="@dimen/_5sdp"
-                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_5sdp"
                             app:layout_constraintRight_toRightOf="parent"
                             app:layout_constraintLeft_toLeftOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/viewpager2">
@@ -186,7 +185,7 @@
                             app:cardBackgroundColor="#00203E"
                             android:layout_marginLeft="@dimen/_5sdp"
                             android:layout_marginRight="@dimen/_5sdp"
-                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:layout_marginBottom="@dimen/_10sdp"
                             app:layout_constraintRight_toRightOf="parent"
                             app:layout_constraintLeft_toLeftOf="parent"

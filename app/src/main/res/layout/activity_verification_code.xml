@@ -62,7 +62,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textSize="@dimen/_14ssp"
                 android:fontFamily="@font/tajawal_medium"
-                android:text="+20 1065242773"/>
+                android:text="+201065242773"/>
 
             <EditText
                 android:layout_gravity="center_horizontal"

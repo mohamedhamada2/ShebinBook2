@@ -49,7 +49,11 @@ public class CommentViewModel {
                 @Override
                 public void onResponse(Call<List<Comment>> call, Response<List<Comment>> response) {
                     if (response.isSuccessful()){
-                        commentActivity.init_comments(response.body());
+                        if (!response.body().isEmpty()){
+                            commentActivity.init_comments(response.body());
+                        }else{
+                            commentActivity.set_post_data();
+                        }
                     }
                 }
 

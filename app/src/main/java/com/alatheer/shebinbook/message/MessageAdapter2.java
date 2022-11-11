@@ -54,6 +54,7 @@ public class MessageAdapter2 extends RecyclerView.Adapter<MessageAdapter2.Messag
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, MessageActivity.class);
+                intent.putExtra("flag",1);
                 intent.putExtra("message",datumList.get(position));
                 context.startActivity(intent);
             }
@@ -82,7 +83,12 @@ public class MessageAdapter2 extends RecyclerView.Adapter<MessageAdapter2.Messag
             txt_comment.setText(datum.getMessage());
             if (role_id == 4){
                 txt_name.setText(datum.getName());
-                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
+                if (datum.getUserImg() != null){
+                    Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
+                }else {
+                    user_img.setImageResource(R.drawable.ic_male);
+                    user_img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.img_bg));
+                }
             }else {
                 txt_name.setText(datum.getStoreName());
                 Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getLogo()).into(user_img);

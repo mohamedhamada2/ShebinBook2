@@ -11,6 +11,8 @@ import com.alatheer.shebinbook.api.GetDataService;
 import com.alatheer.shebinbook.api.MySharedPreference;
 import com.alatheer.shebinbook.api.RetrofitClientInstance;
 import com.alatheer.shebinbook.authentication.Gender;
+import com.alatheer.shebinbook.authentication.cities.CityModel;
+import com.alatheer.shebinbook.authentication.cities.Datum;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.authentication.signup.SignupActivity;
 import com.alatheer.shebinbook.home.HomeActivity;
@@ -29,6 +31,8 @@ public class SignUpViewModel {
     SignupActivity signupActivity;
     MySharedPreference mprefs;
     LoginModel loginModel;
+    List<Datum> datumList;
+    List<String> datumListtitle;
 
     public SignUpViewModel(Context context) {
         this.context = context;
@@ -143,5 +147,31 @@ public class SignUpViewModel {
                 }
             });
         }*/
+    }
+
+    public void get_cities() {
+        datumListtitle = new ArrayList<>();
+        if(Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<CityModel> call = getDataService.get_all_cities("1");
+            call.enqueue(new Callback<CityModel>() {
+                @Override
+                public void onResponse(Call<CityModel> call, Response<CityModel> response) {
+                    if(response.isSuccessful()){
+                        //Toast.makeText(context, "hello", Toast.LENGTH_SHORT).show();
+                        datumList = response.body().getData().getData();
+                        for (Datum govern:datumList){
+                            datumListtitle.add(govern.getTitle());
+                        }
+                        signupActivity.setCitiesspinnerData(datumListtitle,datumList);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<CityModel> call, Throwable t) {
+
+                }
+            });
+        }
     }
 }

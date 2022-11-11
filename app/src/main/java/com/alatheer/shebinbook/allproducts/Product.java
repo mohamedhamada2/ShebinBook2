@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Product implements Serializable {
     @SerializedName("id")
@@ -21,15 +22,6 @@ public class Product implements Serializable {
     @SerializedName("details")
     @Expose
     private String details;
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
     @SerializedName("alboum_id_fk")
     @Expose
     private Integer alboumIdFk;
@@ -45,6 +37,9 @@ public class Product implements Serializable {
     @SerializedName("time")
     @Expose
     private String time;
+    @SerializedName("sub_images")
+    @Expose
+    private List<SubImage> subImages = null;
 
     public Integer getId() {
         return id;
@@ -76,6 +71,14 @@ public class Product implements Serializable {
 
     public void setImg(String img) {
         this.img = img;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
     }
 
     public Integer getAlboumIdFk() {
@@ -116,5 +119,13 @@ public class Product implements Serializable {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public List<SubImage> getSubImages() {
+        return subImages;
+    }
+
+    public void setSubImages(List<SubImage> subImages) {
+        this.subImages = subImages;
     }
 }

@@ -92,7 +92,12 @@ public class ReplayAdapter  extends RecyclerView.Adapter<ReplayAdapter.MessageHo
                 Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getLogo()).into(user_img);
                 txt_name.setText(datum.getStoreName());
             }else {
-                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
+                if (datum.getUserImg() != null){
+                    Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+datum.getUserImg()).into(user_img);
+                }else {
+                    user_img.setImageResource(R.drawable.ic_male);
+                    user_img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.img_bg));
+                }
                 txt_name.setText(datum.getName()+datum.getLastName());
             }
 

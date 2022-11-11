@@ -64,6 +64,7 @@ public class AddImagesActivity extends AppCompatActivity implements NavigationVi
     RecyclerView menu_recycler;
     MenuAdapter menuAdapter;
     RecyclerView.LayoutManager menulayoutmanager;
+
     List<com.alatheer.shebinbook.home.slider.MenuItem> menuItemList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

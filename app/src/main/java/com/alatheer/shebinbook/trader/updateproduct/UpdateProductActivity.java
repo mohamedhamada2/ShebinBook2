@@ -15,10 +15,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -29,6 +31,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,9 +68,9 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
     UpdateProductViewModel updateProductViewModel;
     Product product;
     com.alatheer.shebinbook.products.Product product2;
-    String product_name,product_details,product_price,store_id,alboum_id,trader_id,product_id,user_phone,user_img,user_name,user_id;
-    Integer IMG = 1,REQUESTCAMERA=2;
-    Uri filepath;
+    String product_name,product_details,product_price,store_id,alboum_id,trader_id,product_id,user_phone,user_img,user_name,user_id,img_id;
+    Integer MainIMG = 1,IMG = 1,IMG2 = 2,IMG3 = 3,IMG4 = 4,REQUESTCAMERA=5,REQUESTCAMERA2=6,REQUESTCAMERA3=7,REQUESTCAMERA4=8,REQUESTCAMERA5=9;
+    Uri filepath,filepath2,filepath3,filepath4,filepath5;
     MySharedPreference mySharedPreference;
     LoginModel loginModel ;
     Dialog dialog3;
@@ -77,7 +80,10 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
     RecyclerView.LayoutManager menulayoutmanager;
     Integer user_type;
     List<MenuItem> menuItemList;
-   
+    String imageEncoded;
+    List<String> imagesEncodedList;
+    ArrayList<Uri> mArrayUri;
+    Data1 product3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,13 +91,71 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
         activityUpdateProductBinding = DataBindingUtil.setContentView(this,R.layout.activity_update_product);
         updateProductViewModel = new UpdateProductViewModel(this);
         activityUpdateProductBinding.setUpdateproductviewmodel(updateProductViewModel);
-        getSharedPreferenceData();
-        updateProductViewModel.getData(user_id);
-        getDataFromIntent();
+        try {
+            getSharedPreferenceData();
+            updateProductViewModel.getData(user_id);
+            getDataFromIntent();
+            updateProductViewModel.get_product_data(product_id);
+        }catch (Exception e){
+            Log.e("exc",e.getMessage());
+        }
         activityUpdateProductBinding.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 validation();
+            }
+        });
+        activityUpdateProductBinding.deleteImg1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*activityUpdateProductBinding.deleteImg1.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg.setVisibility(View.GONE);
+                activityUpdateProductBinding.cameraImg.setVisibility(View.VISIBLE);*/
+                if (flag != 2){
+                    updateProductViewModel.delete_img(product3.getSubImages().get(0),product_id);
+                }else {
+                    updateProductViewModel.delete_img(product3.getSubImages().get(0),product_id);
+                }
+
+            }
+        });
+        activityUpdateProductBinding.deleteImg2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*activityUpdateProductBinding.cameraImg2.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.deleteImg2.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg2.setVisibility(View.GONE);*/
+                if (flag != 2){
+                    updateProductViewModel.delete_img(product3.getSubImages().get(1),product_id);
+                }else {
+                    updateProductViewModel.delete_img(product3.getSubImages().get(1),product_id);
+                }
+            }
+        });
+        activityUpdateProductBinding.deleteImg3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*activityUpdateProductBinding.cameraImg3.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.deleteImg3.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg3.setVisibility(View.GONE);*/
+                if (flag != 2){
+                    updateProductViewModel.delete_img(product3.getSubImages().get(2),product_id);
+                }else {
+                    updateProductViewModel.delete_img(product3.getSubImages().get(2),product_id);
+                }
+            }
+        });
+        activityUpdateProductBinding.deleteImg4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*activityUpdateProductBinding.cameraImg4.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.deleteImg4.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg4.setVisibility(View.GONE);*/
+                if (flag != 2){
+                    updateProductViewModel.delete_img(product3.getSubImages().get(3),product_id);
+                }else {
+                    updateProductViewModel.delete_img(product3.getSubImages().get(3),product_id);
+                }
             }
         });
     }
@@ -161,30 +225,10 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
         flag = getIntent().getIntExtra("flag",0);
         if (flag != 2){
             product = (Product) getIntent().getSerializableExtra("product");
-            activityUpdateProductBinding.etProductName.setText(product.getTitle());
-            if (product.getPrice() != null){
-                activityUpdateProductBinding.etProductPrice.setText(product.getPrice()+"");
-            }else {
-                activityUpdateProductBinding.etProductPrice.setText("");
-            }
-            activityUpdateProductBinding.etDetails.setText(product.getDetails());
-            alboum_id = product.getAlboumIdFk()+"";
-            store_id = product.getStoreIdFk()+"";
             product_id = product.getId()+"";
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product.getImg()).into(activityUpdateProductBinding.productImg);
         }else {
             product2 = (com.alatheer.shebinbook.products.Product) getIntent().getSerializableExtra("product");
-            activityUpdateProductBinding.etProductName.setText(product2.getTitle());
-            if (product2.getPrice() != null){
-                activityUpdateProductBinding.etProductPrice.setText(product2.getPrice()+"");
-            }else {
-                activityUpdateProductBinding.etProductPrice.setText("");
-            }
-            activityUpdateProductBinding.etDetails.setText(product2.getDetails());
-            alboum_id = product2.getAlboumIdFk()+"";
-            store_id = product2.getStoreIdFk()+"";
-            product_id = product2.getId()+"";
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+product2.getImg()).into(activityUpdateProductBinding.productImg);
+            product_id = product.getId()+"";
         }
 
 
@@ -200,8 +244,8 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
         openDrawer();
     }
 
-    public void chooseimage(View view) {
-        Check_ReadPermission(IMG);
+    public void chooseimage5(View view) {
+        Check_ReadPermission(MainIMG);
     }
 
     private void Check_ReadPermission(Integer img) {
@@ -219,6 +263,74 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
             }, img);
         } else {
             select_photo(img);
+        }
+    }
+    private void Check_ReadPermission2(Integer img) {
+        if (ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            //Apply for multiple permissions together
+            ActivityCompat.requestPermissions(UpdateProductActivity.this, new String[]{
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            }, img);
+        } else {
+            select_photo2(img);
+        }
+    }
+    private void Check_ReadPermission3(Integer img) {
+        if (ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            //Apply for multiple permissions together
+            ActivityCompat.requestPermissions(UpdateProductActivity.this, new String[]{
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            }, img);
+        } else {
+            select_photo3(img);
+        }
+    }
+    private void Check_ReadPermission4(Integer img) {
+        if (ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            //Apply for multiple permissions together
+            ActivityCompat.requestPermissions(UpdateProductActivity.this, new String[]{
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            }, img);
+        } else {
+            select_photo4(img);
+        }
+    }
+    private void Check_ReadPermission5(Integer img) {
+        if (ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(UpdateProductActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            //Apply for multiple permissions together
+            ActivityCompat.requestPermissions(UpdateProductActivity.this, new String[]{
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            }, img);
+        } else {
+            select_photo5(img);
         }
     }
 
@@ -245,31 +357,123 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
         });
         builder.show();
     }
+    private void select_photo2(Integer img) {
+        final CharSequence[] items = {"كاميرا", "ملفات الصور", "الغاء"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProductActivity.this);
+        builder.setTitle("اضافة صورة للملف الشخصي");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (items[which].equals("كاميرا")) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, REQUESTCAMERA2);
+                } else if (items[which].equals("ملفات الصور")) {
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    //startActivityForResult(intent.createChooser(intent,"Select File"),img);
+                    startActivityForResult(intent, img);
+
+                } else if (items[which].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+    private void select_photo3(Integer img) {
+        final CharSequence[] items = {"كاميرا", "ملفات الصور", "الغاء"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProductActivity.this);
+        builder.setTitle("اضافة صورة للملف الشخصي");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (items[which].equals("كاميرا")) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, REQUESTCAMERA3);
+                } else if (items[which].equals("ملفات الصور")) {
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    //startActivityForResult(intent.createChooser(intent,"Select File"),img);
+                    startActivityForResult(intent, img);
+
+                } else if (items[which].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+    private void select_photo4(Integer img) {
+        final CharSequence[] items = {"كاميرا", "ملفات الصور", "الغاء"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProductActivity.this);
+        builder.setTitle("اضافة صورة للملف الشخصي");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (items[which].equals("كاميرا")) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, REQUESTCAMERA4);
+                } else if (items[which].equals("ملفات الصور")) {
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    //startActivityForResult(intent.createChooser(intent,"Select File"),img);
+                    startActivityForResult(intent, img);
+
+                } else if (items[which].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+    private void select_photo5(Integer img) {
+        final CharSequence[] items = {"كاميرا", "ملفات الصور", "الغاء"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(UpdateProductActivity.this);
+        builder.setTitle("اضافة صورة للملف الشخصي");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (items[which].equals("كاميرا")) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, REQUESTCAMERA5);
+                } else if (items[which].equals("ملفات الصور")) {
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.setType("image/*");
+                    //startActivityForResult(intent.createChooser(intent,"Select File"),img);
+                    startActivityForResult(intent, img);
+
+                } else if (items[which].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == IMG && resultCode == Activity.RESULT_OK
+        if (requestCode == MainIMG && resultCode == Activity.RESULT_OK
                 && data != null && data.getData() != null) {
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(),data.getData());
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-                String file_name= String.format("%d.jpg",System.currentTimeMillis());
-                File finalfile = new File(path,file_name);
+                String file_name = String.format("%d.jpg", System.currentTimeMillis());
+                File finalfile = new File(path, file_name);
                 FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
-                bitmap.compress(Bitmap.CompressFormat.JPEG,80,fileOutputStream);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fileOutputStream);
                 fileOutputStream.flush();
                 fileOutputStream.close();
                 filepath = Uri.fromFile(finalfile);
-                activityUpdateProductBinding.linearAdd.setVisibility(View.GONE);
-                activityUpdateProductBinding.productImg.setVisibility(View.VISIBLE);
-                activityUpdateProductBinding.productImg.setImageURI(filepath);
-            }catch (Exception e){
+                activityUpdateProductBinding.linearAdd5.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg5.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.productImg5.setImageURI(filepath);
+            } catch (Exception e) {
                 filepath = data.getData();
-                activityUpdateProductBinding.linearAdd.setVisibility(View.GONE);
-                activityUpdateProductBinding.productImg.setVisibility(View.VISIBLE);
-                Picasso.get().load(filepath).into(activityUpdateProductBinding.productImg);
+                activityUpdateProductBinding.linearAdd5.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg5.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath).into(activityUpdateProductBinding.productImg5);
             }
 
         } else if (requestCode == REQUESTCAMERA && resultCode == Activity.RESULT_OK) {
@@ -277,31 +481,509 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
                 Bundle bundle = data.getExtras();
                 Bitmap bitmap = (Bitmap) bundle.get("data");
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-                String file_name= String.format("%d.jpg",System.currentTimeMillis());
-                File finalfile = new File(path,file_name);
+                String file_name = String.format("%d.jpg", System.currentTimeMillis());
+                File finalfile = new File(path, file_name);
                 FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
-                bitmap.compress(Bitmap.CompressFormat.JPEG,50,fileOutputStream);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fileOutputStream);
                 fileOutputStream.flush();
                 fileOutputStream.close();
                 filepath = Uri.fromFile(finalfile);
-                activityUpdateProductBinding.linearAdd.setVisibility(View.GONE);
-                activityUpdateProductBinding.productImg.setVisibility(View.VISIBLE);
-                activityUpdateProductBinding.productImg.setImageURI(filepath);
+                activityUpdateProductBinding.linearAdd5.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg5.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.productImg5.setImageURI(filepath);
                 //Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
-            }catch (Exception e){
+            } catch (Exception e) {
                 Bundle bundle = data.getExtras();
                 final Bitmap bitmap = (Bitmap) bundle.get("data");
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                 String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
                 filepath = Utilities.compressImage(UpdateProductActivity.this, path);
-                activityUpdateProductBinding.linearAdd.setVisibility(View.GONE);
-                activityUpdateProductBinding.productImg.setVisibility(View.VISIBLE);
-                Picasso.get().load(filepath).into(activityUpdateProductBinding.productImg);
+                activityUpdateProductBinding.linearAdd5.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg5.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath).into(activityUpdateProductBinding.productImg5);
             }
 
         }
-    }
+        if (requestCode == IMG && resultCode == Activity.RESULT_OK
+                && data != null && data.getData() != null) {
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name = String.format("%d.jpg", System.currentTimeMillis());
+                File finalfile = new File(path, file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath2 = Uri.fromFile(finalfile);
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(0) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(0).getId(),product_id,filepath2);
+                        }
+                    }catch (Exception ll){
+                        updateProductViewModel.add_img(product_id,filepath2);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(0) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(0).getId(),product_id,filepath2);
+                        }
+                    }catch (Exception l2){
+                        updateProductViewModel.add_img(product_id,filepath2);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.productImg.setImageURI(filepath2);
+            } catch (Exception e) {
+                filepath2 = data.getData();
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(0) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(0).getId(),product_id,filepath2);
+                        }
+                    }catch (Exception l){
+                        updateProductViewModel.add_img(product_id,filepath2);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(0) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(0).getId(),product_id,filepath2);
+                        }
+                    }catch (Exception e9){
+                        updateProductViewModel.add_img(product_id,filepath2);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath2).into(activityUpdateProductBinding.productImg);
+            }
+
+        } else if (requestCode == REQUESTCAMERA2 && resultCode == Activity.RESULT_OK) {
+            try {
+                Bundle bundle = data.getExtras();
+                Bitmap bitmap = (Bitmap) bundle.get("data");
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name = String.format("%d.jpg", System.currentTimeMillis());
+                File finalfile = new File(path, file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath2 = Uri.fromFile(finalfile);
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(0) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(0).getId(),product_id,filepath2);
+                        }
+                    }catch (Exception m){
+                        updateProductViewModel.add_img(product_id,filepath2);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(0) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(0).getId(),product_id,filepath2);
+                        }
+                    }catch (Exception ll){
+                        updateProductViewModel.add_img(product_id,filepath2);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.productImg.setImageURI(filepath2);
+                //Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Bundle bundle = data.getExtras();
+                final Bitmap bitmap = (Bitmap) bundle.get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
+                filepath2 = Utilities.compressImage(UpdateProductActivity.this, path);
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(0) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(0).getId(),product_id,filepath2);
+                        }
+                    }catch (Exception e6){
+                        updateProductViewModel.add_img(product_id,filepath2);
+                    }
+
+                }else {
+                    try {
+                        if (product3.getSubImages().get(0) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(0).getId(),product_id,filepath2);
+                        }
+                    }catch (Exception e5){
+                        updateProductViewModel.add_img(product_id,filepath2);
+                    }
+
+                }
+                //activityUpdateProductBinding.linearAdd.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath2).into(activityUpdateProductBinding.productImg);
+            }
+
+        }
+        if (requestCode == IMG2 && resultCode == Activity.RESULT_OK
+                && data != null && data.getData() != null) {
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name = String.format("%d.jpg", System.currentTimeMillis());
+                File finalfile = new File(path, file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath3 = Uri.fromFile(finalfile);
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(1) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(1).getId(),product_id,filepath3);
+                        }
+                    }catch (Exception j){
+                        updateProductViewModel.add_img(product_id,filepath3);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(1) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(1).getId(),product_id,filepath3);
+                        }
+                    }catch (Exception e){
+                        updateProductViewModel.add_img(product_id,filepath3);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd2.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg2.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.productImg2.setImageURI(filepath3);
+            } catch (Exception e) {
+                filepath3= data.getData();
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(1) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(1).getId(),product_id,filepath3);
+                        }
+                    }catch (Exception e9){
+                        updateProductViewModel.add_img(product_id,filepath3);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(1) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(1).getId(),product_id,filepath3);
+                        }
+                    }catch (Exception e6){
+                        updateProductViewModel.add_img(product_id,filepath3);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd2.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg2.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath3).into(activityUpdateProductBinding.productImg2);
+            }
+
+        } else if (requestCode == REQUESTCAMERA3 && resultCode == Activity.RESULT_OK) {
+            try {
+                Bundle bundle = data.getExtras();
+                Bitmap bitmap = (Bitmap) bundle.get("data");
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name = String.format("%d.jpg", System.currentTimeMillis());
+                File finalfile = new File(path, file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath3 = Uri.fromFile(finalfile);
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(1) != null) {
+                            updateProductViewModel.update_img(product3.getSubImages().get(1).getId(), product_id, filepath3);
+                        }
+                    }catch (Exception e){
+                        updateProductViewModel.add_img(product_id,filepath3);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(1) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(1).getId(),product_id,filepath3);
+                        }
+                    }catch (Exception e){
+                        updateProductViewModel.add_img(product_id,filepath3);
+                    }
+
+                }
+                //activityUpdateProductBinding.linearAdd2.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg2.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.productImg2.setImageURI(filepath3);
+                //Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Bundle bundle = data.getExtras();
+                final Bitmap bitmap = (Bitmap) bundle.get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
+                filepath3 = Utilities.compressImage(UpdateProductActivity.this, path);
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(1) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(1).getId(),product_id,filepath3);
+                        }
+                    }catch (Exception n2){
+                        updateProductViewModel.add_img(product_id,filepath3);
+                    }
+
+                }else {
+                    try {
+                        if (product3.getSubImages().get(1) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(1).getId(),product_id,filepath3);
+                        }
+                    }catch (Exception e9){
+                        updateProductViewModel.add_img(product_id,filepath3);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd2.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg2.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath3).into(activityUpdateProductBinding.productImg3);
+            }
+
+        }
+        if (requestCode == IMG3 && resultCode == Activity.RESULT_OK
+                && data != null && data.getData() != null) {
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name = String.format("%d.jpg", System.currentTimeMillis());
+                File finalfile = new File(path, file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath4 = Uri.fromFile(finalfile);
+                if (flag != 2){
+                    Toast.makeText(this, filepath4.toString(), Toast.LENGTH_SHORT).show();
+                    try {
+                        if (product3.getSubImages().get(2) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(2).getId(),product_id,filepath4);
+                        }
+                    }catch (Exception e){
+                        Log.e("lllll",e.getMessage());
+                        updateProductViewModel.add_img(product_id,filepath4);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(2) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(2).getId(),product_id,filepath4);
+                        }
+                    }catch (Exception e){
+                        updateProductViewModel.add_img(product_id,filepath4);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd3.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg3.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.productImg3.setImageURI(filepath4);
+            } catch (Exception e) {
+                filepath4 = data.getData();
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(2) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(2).getId(),product_id,filepath4);
+                        }
+                    }catch (Exception e2){
+                        updateProductViewModel.add_img(product_id,filepath4);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(2) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(2).getId(),product_id,filepath4);
+                        }
+                    }catch (Exception e3){
+                        updateProductViewModel.add_img(product_id,filepath4);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd3.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg3.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath4).into(activityUpdateProductBinding.productImg3);
+            }
+
+        } else if (requestCode == REQUESTCAMERA4 && resultCode == Activity.RESULT_OK) {
+            try {
+                Bundle bundle = data.getExtras();
+                Bitmap bitmap = (Bitmap) bundle.get("data");
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name = String.format("%d.jpg", System.currentTimeMillis());
+                File finalfile = new File(path, file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath4 = Uri.fromFile(finalfile);
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(2) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(2).getId(),product_id,filepath4);
+                        }
+                    }catch (Exception e){
+                        updateProductViewModel.add_img(product_id,filepath4);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(2) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(2).getId(),product_id,filepath4);
+                        }
+                    }catch (Exception e){
+                        updateProductViewModel.add_img(product_id,filepath4);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd3.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg3.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.productImg3.setImageURI(filepath4);
+                //Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Bundle bundle = data.getExtras();
+                final Bitmap bitmap = (Bitmap) bundle.get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
+                filepath4 = Utilities.compressImage(UpdateProductActivity.this, path);
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(2) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(2).getId(),product_id,filepath4);
+                        }
+                    }catch (Exception e1){
+                        updateProductViewModel.add_img(product_id,filepath4);
+                    }
+                }else {
+                    if (product3.getSubImages().get(2) != null){
+                        updateProductViewModel.update_img(product3.getSubImages().get(2).getId(),product_id,filepath4);
+                    }else {
+                        updateProductViewModel.add_img(product_id,filepath4);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd3.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg3.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath4).into(activityUpdateProductBinding.productImg3);
+            }
+
+
+        }
+        if (requestCode == IMG4 && resultCode == Activity.RESULT_OK
+                && data != null && data.getData() != null) {
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), data.getData());
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name = String.format("%d.jpg", System.currentTimeMillis());
+                File finalfile = new File(path, file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath5 = Uri.fromFile(finalfile);
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(3) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(3).getId(),product_id,filepath5);
+                        }
+                    }catch (Exception e){
+                        updateProductViewModel.add_img(product_id,filepath5);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(3) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(3).getId(),product_id,filepath5);
+                        }
+                    }catch (Exception e){
+                        updateProductViewModel.add_img(product_id,filepath5);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd4.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg4.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.productImg4.setImageURI(filepath5);
+            } catch (Exception e) {
+                filepath5 = data.getData();
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(3) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(3).getId(),product_id,filepath5);
+                        }
+                    }catch (Exception e2){
+                        updateProductViewModel.add_img(product_id,filepath5);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(3) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(3).getId(),product_id,filepath5);
+                        }
+                    }catch (Exception e6){
+                        updateProductViewModel.add_img(product_id,filepath5);
+                    }
+                }
+                activityUpdateProductBinding.linearAdd5.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg5.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath5).into(activityUpdateProductBinding.productImg4);
+            }
+
+        } else if (requestCode == REQUESTCAMERA5 && resultCode == Activity.RESULT_OK) {
+            try {
+                Bundle bundle = data.getExtras();
+                Bitmap bitmap = (Bitmap) bundle.get("data");
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                String file_name = String.format("%d.jpg", System.currentTimeMillis());
+                File finalfile = new File(path, file_name);
+                FileOutputStream fileOutputStream = new FileOutputStream(finalfile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fileOutputStream);
+                fileOutputStream.flush();
+                fileOutputStream.close();
+                filepath5 = Uri.fromFile(finalfile);
+                if (flag != 2){
+                    try {
+                        if (product3.getSubImages().get(3) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(3).getId(),product_id,filepath5);
+                        }
+                    }catch (Exception e6){
+                        updateProductViewModel.add_img(product_id,filepath5);
+                    }
+                }else {
+                    try {
+                        if (product3.getSubImages().get(3) != null){
+                            updateProductViewModel.update_img(product3.getSubImages().get(3).getId(),product_id,filepath5);
+                        }
+                    }catch (Exception k){
+                        updateProductViewModel.add_img(product_id,filepath5);
+                    }
+                }
+                //activityUpdateProductBinding.linearAdd4.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg4.setVisibility(View.VISIBLE);
+                activityUpdateProductBinding.productImg4.setImageURI(filepath5);
+                //Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Bundle bundle = data.getExtras();
+                final Bitmap bitmap = (Bitmap) bundle.get("data");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
+                filepath5 = Utilities.compressImage(UpdateProductActivity.this, path);
+                //activityUpdateProductBinding.linearAdd4.setVisibility(View.GONE);
+                activityUpdateProductBinding.productImg4.setVisibility(View.VISIBLE);
+                Picasso.get().load(filepath5).into(activityUpdateProductBinding.productImg4);
+                if (flag != 2){
+                    if (product3.getSubImages().get(3) != null){
+                        updateProductViewModel.update_img(product3.getSubImages().get(3).getId(),product_id,filepath5);
+                    }else {
+                        updateProductViewModel.add_img(product_id,filepath5);
+                    }
+                }else {
+                    if (product3.getSubImages().get(3) != null){
+                        updateProductViewModel.update_img(product3.getSubImages().get(3).getId(),product_id,filepath5);
+                    }else {
+                        updateProductViewModel.add_img(product_id,filepath5);
+                    }
+                }
+            }
+
+        }
+
+}
 
     public void createsuccessDialog() {
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
@@ -362,5 +1044,129 @@ public class UpdateProductActivity extends AppCompatActivity implements Navigati
         }
         activityUpdateProductBinding.userName.setText(user_name);
         init_navigation_menu();
+    }
+    public void chooseimage(View view) {
+        /*Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);*/
+        Check_ReadPermission2(IMG);
+    }
+
+    public void chooseimage2(View view) {
+        /*Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);*/
+        Check_ReadPermission3(IMG2);
+    }
+
+    public void chooseimage3(View view) {
+        /*Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);*/
+        try {
+            Check_ReadPermission4(IMG3);
+        }catch (Exception e){
+            Log.e("llll",e.getMessage());
+        }
+    }
+
+    public void chooseimage4(View view) {
+        /*Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,"Select Picture"), PICK_IMAGE_MULTIPLE);*/
+        Check_ReadPermission5(IMG4);
+    }
+
+    public void set_product_data(Data1 data) {
+        activityUpdateProductBinding.cameraImg.setVisibility(View.VISIBLE);
+        activityUpdateProductBinding.cameraImg2.setVisibility(View.VISIBLE);
+        activityUpdateProductBinding.cameraImg3.setVisibility(View.VISIBLE);
+        activityUpdateProductBinding.cameraImg4.setVisibility(View.VISIBLE);
+        activityUpdateProductBinding.productImg.setVisibility(View.GONE);
+        activityUpdateProductBinding.deleteImg1.setVisibility(View.GONE);
+        activityUpdateProductBinding.productImg2.setVisibility(View.GONE);
+        activityUpdateProductBinding.deleteImg2.setVisibility(View.GONE);
+        activityUpdateProductBinding.productImg3.setVisibility(View.GONE);
+        activityUpdateProductBinding.deleteImg3.setVisibility(View.GONE);
+        activityUpdateProductBinding.productImg4.setVisibility(View.GONE);
+        activityUpdateProductBinding.deleteImg4.setVisibility(View.GONE);
+        product3 = data;
+        activityUpdateProductBinding.etProductName.setText(data.getTitle());
+        if (product.getPrice() != null){
+            activityUpdateProductBinding.etProductPrice.setText(data.getPrice()+"");
+        }else {
+            activityUpdateProductBinding.etProductPrice.setText("");
+        }
+        activityUpdateProductBinding.etDetails.setText(data.getDetails());
+        alboum_id = data.getAlboumIdFk()+"";
+        store_id = data.getStoreIdFk()+"";
+        product_id = product.getId()+"";
+        //Toast.makeText(this, data.getSubImages().size()+"", Toast.LENGTH_SHORT).show();
+        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+data.getImg()).into(activityUpdateProductBinding.productImg5);
+        try {
+            if (!data.getSubImages().isEmpty()){
+                try {
+                    if (data.getSubImages().get(0) != null){
+                        //Toast.makeText(this, product.getSubImages().get(0).getImage(), Toast.LENGTH_SHORT).show();
+                        activityUpdateProductBinding.productImg.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.deleteImg1.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.cameraImg.setVisibility(View.GONE);
+                        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+data.getSubImages().get(0).getImage()).into(activityUpdateProductBinding.productImg);
+                    }else {
+                        activityUpdateProductBinding.productImg.setVisibility(View.GONE);
+                        activityUpdateProductBinding.deleteImg1.setVisibility(View.GONE);
+                        activityUpdateProductBinding.linearAdd.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.cameraImg.setVisibility(View.VISIBLE);
+                    }
+                    if (data.getSubImages().get(1) != null){
+                        activityUpdateProductBinding.productImg2.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.deleteImg2.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.cameraImg2.setVisibility(View.GONE);
+                        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+data.getSubImages().get(1).getImage()).into(activityUpdateProductBinding.productImg2);
+                    }else {
+                        activityUpdateProductBinding.productImg2.setVisibility(View.GONE);
+                        activityUpdateProductBinding.deleteImg2.setVisibility(View.GONE);
+                        activityUpdateProductBinding.cameraImg2.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.linearAdd2.setVisibility(View.VISIBLE);
+                    }
+                    if (data.getSubImages().get(2) != null){
+                        activityUpdateProductBinding.productImg3.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.deleteImg3.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.cameraImg3.setVisibility(View.GONE);
+                        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+data.getSubImages().get(2).getImage()).into(activityUpdateProductBinding.productImg3);
+                    }else {
+                        activityUpdateProductBinding.productImg3.setVisibility(View.GONE);
+                        activityUpdateProductBinding.deleteImg3.setVisibility(View.GONE);
+                        activityUpdateProductBinding.cameraImg3.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.linearAdd3.setVisibility(View.VISIBLE);
+                    }
+                    if (data.getSubImages().get(3) != null){
+                        //Toast.makeText(this, "llll", Toast.LENGTH_SHORT).show();
+                        activityUpdateProductBinding.productImg4.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.deleteImg4.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.cameraImg4.setVisibility(View.GONE);
+                        Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+data.getSubImages().get(3).getImage()).into(activityUpdateProductBinding.productImg4);
+                    }else {
+                        activityUpdateProductBinding.productImg4.setVisibility(View.GONE);
+                        activityUpdateProductBinding.deleteImg4.setVisibility(View.GONE);
+                        activityUpdateProductBinding.cameraImg4.setVisibility(View.VISIBLE);
+                        activityUpdateProductBinding.linearAdd4.setVisibility(View.VISIBLE);
+                    }
+                }catch (Exception e){
+                    Log.e("lolo",e.getMessage());
+                }
+            }
+        }catch (Exception e){
+            Log.e("product_exception",e.getMessage());
+
+        }
     }
 }

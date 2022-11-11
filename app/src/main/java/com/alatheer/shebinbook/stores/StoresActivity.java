@@ -40,14 +40,14 @@ import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.databinding.ActivityStoresBinding;
 import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.home.slider.MenuItem;
-import com.alatheer.shebinbook.home.slider.Slider;
-import com.alatheer.shebinbook.home.slider.SliderAdapter;
 import com.alatheer.shebinbook.message.MessageAdapter;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.products.ProductsActivity;
 import com.alatheer.shebinbook.products.StoreDetails;
 import com.alatheer.shebinbook.search.SearchStoresAdapter;
 import com.alatheer.shebinbook.setting.ProfileData;
+import com.alatheer.shebinbook.subcategory.Slider;
+import com.alatheer.shebinbook.subcategory.SliderAdapter;
 import com.google.android.material.navigation.NavigationView;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
@@ -148,7 +148,7 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
             }
         });
 
-        storesViewModel.getAds();
+        storesViewModel.getAds(subcategory_id,1);
         storesViewModel.getStores(user_id,page);
     }
 
@@ -398,7 +398,7 @@ public class StoresActivity extends AppCompatActivity implements NavigationView.
                 totalitemcount = 0;
                 previous_total=0;
                 view_threshold = 10;
-                storesViewModel.getAds();
+                storesViewModel.getAds(subcategory_id,1);
                 storesViewModel.getStores(user_id,page);
                 activityStoresBinding.storesRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
                     @Override

@@ -67,7 +67,9 @@ public class MessageViewModel {
                 public void onResponse(Call<ReplayModel> call, Response<ReplayModel> response) {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
-                            messageActivity.init_replies(response.body().getData().getData());
+                            if (!response.body().getData().getData().isEmpty()){
+                                messageActivity.init_replies(response.body());
+                            }
                         }
                     }
                 }
@@ -214,6 +216,28 @@ public class MessageViewModel {
                 @Override
                 public void onFailure(Call<ProfileData> call, Throwable t) {
                     Log.e("getdata",t.getMessage());
+                }
+            });
+        }
+    }
+
+    public void get_message_details(String id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<MessageDetails> call = getDataService.get_message_details(id);
+            call.enqueue(new Callback<MessageDetails>() {
+                @Override
+                public void onResponse(Call<MessageDetails> call, Response<MessageDetails> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            messageActivity.setMessage(response.body().getData());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<MessageDetails> call, Throwable t) {
+
                 }
             });
         }

@@ -57,7 +57,7 @@
                                 android:layout_height="match_parent"
                                 android:scaleType="fitXY"
                                 android:background="@drawable/img_bg"
-                                android:src="@drawable/ic_baseline_person"/>
+                                android:src="@drawable/ic_male"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
                     <TextView
@@ -112,8 +112,9 @@
                                 android:layout_width="@dimen/_32sdp"
                                 android:layout_height="@dimen/_32sdp"
                                 android:layout_alignParentRight="true"
-                                android:background="@drawable/user2"
-                                app:riv_corner_radius="@dimen/_7sdp"/>
+                                android:background="@drawable/ic_male"
+                                app:riv_corner_radius="@dimen/_7sdp"
+                                android:scaleType="fitXY"/>
                             <EditText
                                 android:id="@+id/et_post"
                                 android:layout_width="wrap_content"

@@ -61,8 +61,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                         @Override
                         public void onResponse(Call<NewPassword> call, Response<NewPassword> response) {
                             if (response.isSuccessful()){
+
                                 Intent intent = new Intent(context, SubCategoryActivity.class);
-                                intent.putExtra("category",categoryList.get(position));
+                                intent.putExtra("flag",1);
+                                intent.putExtra("category_id",categoryList.get(position).getId());
                                 context.startActivity(intent);
                             }
                         }

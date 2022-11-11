@@ -24,7 +24,7 @@
                 android:layout_width="@dimen/_32sdp"
                 android:layout_height="@dimen/_32sdp"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/user2"
+                android:background="@drawable/ic_male"
                 app:riv_corner_radius="@dimen/_7sdp"/>
 
             <EditText

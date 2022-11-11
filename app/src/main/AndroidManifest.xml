@@ -17,7 +17,13 @@
         <activity android:name=".authentication.signup.VerificationCodeActivity" />
         <activity android:name=".start.StartActivity" />
         <activity android:name=".trader.images.addimages.AddImagesActivity" />
-        <activity android:name=".message.MessageActivity" />
+        <activity android:name=".message.MessageActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.alatheer.shebinbook_FCM-MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity android:name=".trader.updateoffer.UpdateOfferActivity" />
         <activity android:name=".trader.updateproduct.UpdateProductActivity" />
         <activity android:name=".trader.editalboum.UpdateAlboumActivity" />
@@ -27,10 +33,22 @@
         <activity android:name=".trader.profile.ProfileActivity" />
         <activity android:name=".allproducts.AllProductsActivity" />
         <activity android:name=".products.ProductsActivity" />
-        <activity android:name=".comments.CommentActivity" />
+        <activity android:name=".comments.CommentActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.alatheer.shebinbook_FCM-POST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity android:name=".posts.PostsActivity" />
         <activity android:name=".stores.StoresActivity" />
-        <activity android:name=".subcategory.SubCategoryActivity" />
+        <activity android:name=".subcategory.SubCategoryActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.alatheer.shebinbook_FCM-CATEGORY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity android:name=".authentication.favorite.FavoriteActivity" />
         <activity android:name=".setting.SettingActivity" />
         <activity android:name=".contactus.ContactUsActivity" />
@@ -38,7 +56,8 @@
         <activity android:name=".home.HomeActivity" />
         <activity android:name=".authentication.cities.CityActivity" />
         <activity android:name=".authentication.signup.SignupActivity" />
-        <activity android:name=".authentication.SplashActivity">
+        <activity android:name=".authentication.SplashActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

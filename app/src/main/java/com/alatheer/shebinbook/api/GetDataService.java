@@ -6,6 +6,7 @@ import com.alatheer.shebinbook.allproducts.ProductModel;
 import com.alatheer.shebinbook.authentication.cities.CityModel;
 import com.alatheer.shebinbook.authentication.favorite.FavoriteStoreModel;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
+import com.alatheer.shebinbook.authentication.signup.WelcomeNotifications;
 import com.alatheer.shebinbook.comments.Comment;
 import com.alatheer.shebinbook.comments.CommentModel;
 import com.alatheer.shebinbook.comments.ReplyModel;
@@ -13,6 +14,7 @@ import com.alatheer.shebinbook.forgetpassword.NewPassword;
 import com.alatheer.shebinbook.home.Token;
 import com.alatheer.shebinbook.home.category.CategoryModel;
 import com.alatheer.shebinbook.home.slider.SliderModel;
+import com.alatheer.shebinbook.message.MessageDetails;
 import com.alatheer.shebinbook.message.MessageModel;
 import com.alatheer.shebinbook.message.reply.ReplayModel;
 import com.alatheer.shebinbook.posts.PostData;
@@ -21,8 +23,11 @@ import com.alatheer.shebinbook.products.GalleryModel;
 import com.alatheer.shebinbook.products.rating.RatingModel;
 import com.alatheer.shebinbook.setting.ProfileData;
 import com.alatheer.shebinbook.stores.StoreModel;
+import com.alatheer.shebinbook.subcategory.CategorySliderModel;
+import com.alatheer.shebinbook.subcategory.SubCategoryModel;
 import com.alatheer.shebinbook.trader.images.ImagesData;
 import com.alatheer.shebinbook.trader.profile.DeleteAlboum;
+import com.alatheer.shebinbook.trader.updateproduct.UpdateImages;
 
 import java.security.MessageDigest;
 import java.util.List;
@@ -235,7 +240,8 @@ public interface GetDataService{
                                              @Part("title")RequestBody title,
                                              @Part("price")RequestBody price,
                                              @Part("details")RequestBody details,
-                                             @Part MultipartBody.Part product_img);
+                                             @Part MultipartBody.Part product_img,
+                                             @Part List<MultipartBody.Part> images);
 
     /*29*/
     @Multipart
@@ -337,7 +343,7 @@ public interface GetDataService{
                                  @Field("product_id_fk")Integer product_id_fk,
                                  @Field("trader_id_fk")Integer trader_id_fk,
                                  @Field("message_id_fk")Integer message_id_fk,
-                                              @Field("type")Integer type);
+                                 @Field("type")Integer type);
     //41
     @FormUrlEncoded
     @POST("api/member/get_replay_message")
@@ -461,6 +467,48 @@ public interface GetDataService{
     Call<NewPassword> visit_category(@Field("category_id_fk")Integer category_id_fk,
                                   @Field("type")String type,
                                   @Field("user_id_fk")Integer user_id_fk);
+    @FormUrlEncoded
+    @POST("api/member/delete_token")
+    Call<Token> delete_token(@Field("user_id")Integer user_id);
+    @FormUrlEncoded
+    @POST("api/member/send_welcome_notification")
+    Call<WelcomeNotifications> welcome_notify(@Field("token")String token);
 
+    @FormUrlEncoded
+    @POST("api/member/get_subs")
+    Call<SubCategoryModel> get_subcategories(@Field("category_id_fk")String category_id_fk);
+
+    @FormUrlEncoded
+    @POST("api/member/getcats_screenoffers")
+    Call<CategorySliderModel> get_Category_slider(@Field("screen")Integer screen,
+                                                  @Field("category_id_fk")String category_id_fk,
+                                                  @Field("page")Integer page);
+
+    @FormUrlEncoded
+    @POST("api/member/delete_insert_img")
+    Call<UpdateImages> delete_product_images(@Field("img_id")String img_id,
+                                             @Field("product_id_fk")String product_id_fk);
+
+    @Multipart
+    @POST("api/member/delete_insert_img")
+    Call<UpdateImages> insert_product_image(@Part("product_id_fk")RequestBody product_id_fk,
+                                            @Part MultipartBody.Part img);
+    @FormUrlEncoded
+    @POST("api/member/delete_insert_img")
+    Call<UpdateImages> delete_product_image(@Field("img_id") String img_id);
+
+    @Multipart
+    @POST("api/member/delete_insert_img")
+    Call<UpdateImages> update_product_image(@Part("img_id")RequestBody img_id,
+                                            @Part("product_id_fk")RequestBody product_id_fk,
+                                            @Part MultipartBody.Part img);
+
+    @FormUrlEncoded
+    @POST("api/member/get_product_details")
+    Call<com.alatheer.shebinbook.trader.updateproduct.ProductModel> get_product_data(@Field("product_id")String product_id);
+
+    @FormUrlEncoded
+    @POST("api/member/message_details")
+    Call<MessageDetails> get_message_details(@Field("message_id")String message_id);
 }
 

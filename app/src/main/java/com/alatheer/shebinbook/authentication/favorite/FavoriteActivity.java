@@ -260,6 +260,9 @@ public class FavoriteActivity extends AppCompatActivity implements SwipeRefreshL
         menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("الإعدادات",R.drawable.setting));
         menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("تواصل معنا",R.drawable.contactus));
         menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("تسجيل خروج",R.drawable.logout2));
+        if (user_role == 4){
+            menuItemList.add(new com.alatheer.shebinbook.home.slider.MenuItem("متجري",R.drawable.store));
+        }
         menuAdapter = new MenuAdapter(menuItemList,this);
         menulayoutmanager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         View headerLayout = activityFavoriteBinding.navView.getHeaderView(0);

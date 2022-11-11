@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.alatheer.shebinbook.Utilities.Utilities;
 import com.alatheer.shebinbook.api.GetDataService;
@@ -105,6 +106,102 @@ public class UpdateProductViewModel {
                 @Override
                 public void onFailure(Call<ProfileData> call, Throwable t) {
                     Log.e("getdata",t.getMessage());
+                }
+            });
+        }
+    }
+
+    public void add_img(String product_id, Uri filepath3) {
+        RequestBody rb_product_id = Utilities.getRequestBodyText(product_id);
+        MultipartBody.Part product_img = Utilities.getMultiPart(context, filepath3, "img");
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<UpdateImages> call = getDataService.insert_product_image(rb_product_id,product_img);
+            call.enqueue(new Callback<UpdateImages>() {
+                @Override
+                public void onResponse(Call<UpdateImages> call, Response<UpdateImages> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            get_product_data(product_id);
+                            Toast.makeText(context, response.body().getData().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UpdateImages> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void delete_img(SubImage subImage,String product_id) {
+        if (Utilities.isNetworkAvailable(context)) {
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<UpdateImages> call = getDataService.delete_product_image(subImage.getId()+"");
+            call.enqueue(new Callback<UpdateImages>() {
+                @Override
+                public void onResponse(Call<UpdateImages> call, Response<UpdateImages> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getData().getSuccess()==1){
+                            get_product_data(product_id);
+                            Toast.makeText(context, response.body().getData().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UpdateImages> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void update_img(Integer img_id, String product_id, Uri filepath2) {
+        RequestBody rb_img_id = Utilities.getRequestBodyText(img_id+"");
+        RequestBody rb_product_id = Utilities.getRequestBodyText(product_id);
+        MultipartBody.Part product_img = Utilities.getMultiPart(context, filepath2, "img");
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<UpdateImages> call = getDataService.update_product_image(rb_img_id,rb_product_id,product_img);
+            call.enqueue(new Callback<UpdateImages>() {
+                @Override
+                public void onResponse(Call<UpdateImages> call, Response<UpdateImages> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            get_product_data(product_id);
+                            Toast.makeText(context, response.body().getData().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UpdateImages> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    public void get_product_data(String product_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<ProductModel> call = getDataService.get_product_data(product_id);
+            call.enqueue(new Callback<ProductModel>() {
+                @Override
+                public void onResponse(Call<ProductModel> call, Response<ProductModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            updateProductActivity.set_product_data(response.body().getData());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ProductModel> call, Throwable t) {
+
                 }
             });
         }

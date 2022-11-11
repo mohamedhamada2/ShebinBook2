@@ -78,7 +78,9 @@ public class SettingViewModel {
                             Toast.makeText(settingActivity, "تم تعديل بياناتك بنجاح", Toast.LENGTH_SHORT).show();
                             //getData2(user_id);
                             pd.dismiss();
-                            context.startActivity(new Intent(settingActivity, HomeActivity.class));
+                            Intent intent = new Intent(settingActivity, HomeActivity.class);
+                            intent.putExtra("flag",1);
+                            context.startActivity(intent);
                             settingActivity.finish();
                         }
                     }
@@ -108,7 +110,9 @@ public class SettingViewModel {
                             Toast.makeText(settingActivity, "تم تعديل بياناتك بنجاح", Toast.LENGTH_SHORT).show();
                             //getData2(user_id);
                             pd.dismiss();
-                            context.startActivity(new Intent(settingActivity, HomeActivity.class));
+                            Intent intent = new Intent(settingActivity, HomeActivity.class);
+                            intent.putExtra("flag",1);
+                            context.startActivity(intent);
                             settingActivity.finish();
                         }
                     }
@@ -136,7 +140,9 @@ public class SettingViewModel {
                         if (response.body().getStatus()){
                             settingActivity.setData(response.body());
                             pd.dismiss();
-                            context.startActivity(new Intent(settingActivity, HomeActivity.class));
+                            Intent intent = new Intent(settingActivity, HomeActivity.class);
+                            intent.putExtra("flag",1);
+                            context.startActivity(intent);
                             settingActivity.finish();
                         }
                     }

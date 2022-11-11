@@ -39,7 +39,9 @@ public class LoginViewModel {
                             loginModel = response.body();
                             mprefs.Create_Update_UserData(context,loginModel);
                             Toast.makeText(context, "تم تسجيلك بنجاح", Toast.LENGTH_SHORT).show();
-                            context.startActivity(new Intent(context, HomeActivity.class));
+                            Intent intent = new Intent(context, HomeActivity.class);
+                            intent.putExtra("flag",1);
+                            context.startActivity(intent);
                             //Animatoo.animateFade(context);
                             loginActivity.finish();
                         }else {

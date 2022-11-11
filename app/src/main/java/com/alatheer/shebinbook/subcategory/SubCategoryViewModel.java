@@ -36,30 +36,34 @@ public class SubCategoryViewModel {
         subCategoryActivity = (SubCategoryActivity) context;
     }
 
-    public void getAds() {
-        mySharedPreference = MySharedPreference.getInstance();
-        loginModel = mySharedPreference.Get_UserData(context);
-        user_gender = loginModel.getData().getUser().getGender();
-        if (Utilities.isNetworkAvailable(context)){
-            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<SliderModel> call = getDataService.get_ads(user_gender+"",3);
-            call.enqueue(new Callback<SliderModel>() {
-                @Override
-                public void onResponse(Call<SliderModel> call, Response<SliderModel> response) {
-                    if (response.isSuccessful()){
-                        if (response.body().getStatus()){
-                            subCategoryActivity.init_sliders(response.body().getData().getData());
+    public void getAds(String category_id) {
+        try {
+            mySharedPreference = MySharedPreference.getInstance();
+            loginModel = mySharedPreference.Get_UserData(context);
+            user_gender = loginModel.getData().getUser().getGender();
+            if (Utilities.isNetworkAvailable(context)){
+                GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+                Call<CategorySliderModel> call = getDataService.get_Category_slider(3,category_id,1);
+                call.enqueue(new Callback<CategorySliderModel>() {
+                    @Override
+                    public void onResponse(Call<CategorySliderModel> call, Response<CategorySliderModel> response) {
+                        if (response.isSuccessful()){
+                            if (response.body().getStatus()){
+                                subCategoryActivity.init_sliders(response.body().getData().getData());
 
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onFailure(Call<SliderModel> call, Throwable t) {
-                    Log.d("bug1",t.getMessage());
-                    Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                    @Override
+                    public void onFailure(Call<CategorySliderModel> call, Throwable t) {
+                        Log.d("bug1",t.getMessage());
+                        Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }catch (Exception e){
+            Log.e("error6",e.getMessage());
         }
     }
 
@@ -199,6 +203,28 @@ public class SubCategoryViewModel {
                 @Override
                 public void onFailure(Call<ProfileData> call, Throwable t) {
                     Log.e("getdata",t.getMessage());
+                }
+            });
+        }
+    }
+
+    public void get_subcategories(String category_id) {
+        if (Utilities.isNetworkAvailable(context)){
+            GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<SubCategoryModel> call = getDataService.get_subcategories(category_id);
+            call.enqueue(new Callback<SubCategoryModel>() {
+                @Override
+                public void onResponse(Call<SubCategoryModel> call, Response<SubCategoryModel> response) {
+                    if (response.isSuccessful()){
+                        if (response.body().getStatus()){
+                            subCategoryActivity.initSubCategories(response.body());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<SubCategoryModel> call, Throwable t) {
+
                 }
             });
         }

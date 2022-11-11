@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -42,8 +43,6 @@ import com.alatheer.shebinbook.home.MenuAdapter;
 import com.alatheer.shebinbook.home.category.Category;
 import com.alatheer.shebinbook.home.category.SubCate;
 import com.alatheer.shebinbook.home.slider.MenuItem;
-import com.alatheer.shebinbook.home.slider.Slider;
-import com.alatheer.shebinbook.home.slider.SliderAdapter;
 import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter;
 import com.alatheer.shebinbook.message.MessageAdapter2;
@@ -55,6 +54,9 @@ import com.alatheer.shebinbook.stores.StoresAdapter;
 import com.google.android.material.navigation.NavigationView;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +79,7 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
     Integer user_type ;
     RecyclerView message_recycler;
     Dialog dialog;
-    String trader_id;
+    String trader_id,data;
     List<StoreDetails> messages_types_list;
     RecyclerView.LayoutManager storeDetailsManager;
     MessageAdapter messageAdapter;
@@ -87,6 +89,7 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
     private boolean isloading;
     private int pastvisibleitem,visibleitemcount,totalitemcount,previous_total=0;
     int view_threshold = 10, page = 1;
+    Integer category_id,flag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,15 +97,17 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
         setContentView(R.layout.activity_sub_category);
         activitySubCategoryBinding = DataBindingUtil.setContentView(this,R.layout.activity_sub_category);
         subCategoryViewModel = new SubCategoryViewModel(this);
+        viewPager2 = activitySubCategoryBinding.viewpager2;
         activitySubCategoryBinding.setSubcategoryviewmodel(subCategoryViewModel);
-        getData();
-        subCategoryViewModel.getAds();
-        getSharedPreferanceData();
-        subCategoryViewModel.getData(user_id);
-        activitySubCategoryBinding.categoryName.setText(category.getName());
-        initSubCategories(category.getSubCates());
-        activitySubCategoryBinding.swiperefresh.setOnRefreshListener(this);
-        init_navigation_menu();
+        try {
+            getData();
+            getSharedPreferanceData();
+            subCategoryViewModel.getData(user_id);
+            activitySubCategoryBinding.swiperefresh.setOnRefreshListener(this);
+            init_navigation_menu();
+        }catch (Exception e){
+            Log.e("error6",e.getMessage());
+        }
 
         activitySubCategoryBinding.imgSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -211,8 +216,9 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
         window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
     }
 
-    private void initSubCategories(List<SubCate> subCates) {
-        subCategoryAdapter = new SubCategoryAdapter(this,subCates);
+    public void initSubCategories(SubCategoryModel subCategoryModel) {
+        activitySubCategoryBinding.categoryName.setText(subCategoryModel.getData().getTitle());
+        subCategoryAdapter = new SubCategoryAdapter(this,subCategoryModel.getData().getSub());
         layoutManager = new GridLayoutManager(this,2);
         activitySubCategoryBinding.subcategoryRecycler.setHasFixedSize(true);
         activitySubCategoryBinding.subcategoryRecycler.setAdapter(subCategoryAdapter);
@@ -237,30 +243,54 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
     }
 
     private void getData() {
-        category = (Category) getIntent().getSerializableExtra("category");
+        flag = getIntent().getIntExtra("flag",0);
+        if (flag == 1){
+            category_id = getIntent().getIntExtra("category_id",0);
+            subCategoryViewModel.get_subcategories(category_id+"");
+            subCategoryViewModel.getAds(category_id+"");
+            //category = (Category) getIntent().getSerializableExtra("category");
+            //activitySubCategoryBinding.categoryName.setText(category.getName());
+        }else {
+            try {
+                data = getIntent().getStringExtra("moredata");
+                //Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
+                JSONObject json = new JSONObject(data);
+                String id = (String) json.get("id");
+                subCategoryViewModel.get_subcategories(id);
+                subCategoryViewModel.getAds(id);
+            } catch (JSONException e) {
+                Log.e("action",e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public void init_sliders(List<Slider> data) {
-        if (!data.isEmpty()){
-            viewPager2.setAdapter(new SliderAdapter(this,data));
-            viewPager2.setPadding(60,0,60,0);
-            viewPager2.setOffscreenPageLimit(3);
-            viewPager2.startAutoScroll();
-            viewPager2.setInterval(3000);
-            viewPager2.setCycle(true);
-            viewPager2.setStopScrollWhenTouch(true);
-            //viewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
-            CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
-            compositePageTransformer.addTransformer(new MarginPageTransformer(40));
-            compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
-                @Override
-                public void transformPage(@NonNull View page, float position) {
-                    float r = 1 - Math.abs(position);
-                    page.setScaleY(0.85f + r * 0.15f);
-                }
-            });
-        }else {
-            activitySubCategoryBinding.viewpager2.setVisibility(View.GONE);
+        try {
+            if (!data.isEmpty()){
+                viewPager2.setAdapter(new SliderAdapter(this,data));
+                viewPager2.setPadding(60,0,60,0);
+                viewPager2.setOffscreenPageLimit(3);
+                viewPager2.startAutoScroll();
+                viewPager2.setInterval(3000);
+                viewPager2.setCycle(true);
+                viewPager2.setStopScrollWhenTouch(true);
+                //viewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+                CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+                compositePageTransformer.addTransformer(new MarginPageTransformer(40));
+                compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
+                    @Override
+                    public void transformPage(@NonNull View page, float position) {
+                        float r = 1 - Math.abs(position);
+                        page.setScaleY(0.85f + r * 0.15f);
+                    }
+                });
+            }else {
+                activitySubCategoryBinding.viewpager2.setVisibility(View.GONE);
+            }
+        }catch (Exception e){
+            Log.e("llll",e.getMessage());
         }
         //viewPager2.setPageTransformer(compositePageTransformer);
     }
@@ -331,9 +361,9 @@ public class SubCategoryActivity extends AppCompatActivity implements Navigation
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                subCategoryViewModel.getAds();
+                subCategoryViewModel.getAds(category_id+"");
                 getData();
-                initSubCategories(category.getSubCates());
+                //initSubCategories(category.getSubCates());
                 activitySubCategoryBinding.swiperefresh.setRefreshing(false);
             }
         }, 2000);

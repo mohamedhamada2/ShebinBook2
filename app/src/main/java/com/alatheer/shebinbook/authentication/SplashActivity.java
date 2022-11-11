@@ -1,10 +1,12 @@
 package com.alatheer.shebinbook.authentication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.alatheer.shebinbook.R;
@@ -13,6 +15,9 @@ import com.alatheer.shebinbook.authentication.login.LoginActivity;
 import com.alatheer.shebinbook.authentication.login.LoginModel;
 import com.alatheer.shebinbook.home.HomeActivity;
 import com.alatheer.shebinbook.start.StartActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class SplashActivity extends AppCompatActivity {
     ImageView logo_img;

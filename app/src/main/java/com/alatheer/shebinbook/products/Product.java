@@ -1,9 +1,11 @@
 package com.alatheer.shebinbook.products;
 
+import com.alatheer.shebinbook.allproducts.SubImage;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Product implements Serializable {
     @SerializedName("id")
@@ -45,6 +47,18 @@ public class Product implements Serializable {
     @SerializedName("time")
     @Expose
     private String time;
+
+    public List<SubImage> getSubImages() {
+        return subImages;
+    }
+
+    public void setSubImages(List<SubImage> subImages) {
+        this.subImages = subImages;
+    }
+
+    @SerializedName("sub_images")
+    @Expose
+    private List<SubImage> subImages = null;
 
     public Integer getId() {
         return id;

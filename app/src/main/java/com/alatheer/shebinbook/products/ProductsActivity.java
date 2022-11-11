@@ -586,7 +586,7 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         viewPager2.setPadding(30,0,30,0);
         viewPager2.setOffscreenPageLimit(3);
         viewPager2.startAutoScroll();
-        viewPager2.setInterval(3000);
+        viewPager2.setInterval(8000);
         viewPager2.setCycle(true);
         viewPager2.setStopScrollWhenTouch(true);
             //viewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
@@ -722,7 +722,11 @@ public class ProductsActivity extends AppCompatActivity implements SwipeRefreshL
         store_what_app = this.store.getStoreWhats();
         store_facebook = this.store.getFacebook();
         activityProductsBinding.storeName.setText(store_name);
-        activityProductsBinding.txtDescription.setText(store.getMini_description());
+        if (store.getMini_description() != null){
+            activityProductsBinding.txtDescription.setText(store.getMini_description());
+        }else {
+            activityProductsBinding.txtDescription.setVisibility(View.GONE);
+        }
         getStoreDetails();
         Picasso.get().load(Constants.BASE_URL +"public/uploads/images/images/"+store_img).into(activityProductsBinding.storeLogo);
         selectedfragment = new DetailsFragment();

@@ -15,6 +15,7 @@ import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageAdapter2;
 import com.alatheer.shebinbook.message.MessageModel;
 import com.alatheer.shebinbook.setting.ProfileData;
+import com.alatheer.shebinbook.subcategory.CategorySliderModel;
 
 import java.util.List;
 
@@ -41,16 +42,16 @@ public class StoresViewModel {
     }
 
 
-    public void getAds() {
+    public void getAds(Integer sub_cat_id,Integer page) {
         mySharedPreference = MySharedPreference.getInstance();
         loginModel = mySharedPreference.Get_UserData(context);
         user_gender = loginModel.getData().getUser().getGender();
         if (Utilities.isNetworkAvailable(context)){
             GetDataService getDataService = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<SliderModel> call = getDataService.get_ads(user_gender+"",4);
-            call.enqueue(new Callback<SliderModel>() {
+            Call<CategorySliderModel> call = getDataService.get_Category_slider(4,sub_cat_id+"",1);
+            call.enqueue(new Callback<CategorySliderModel>() {
                 @Override
-                public void onResponse(Call<SliderModel> call, Response<SliderModel> response) {
+                public void onResponse(Call<CategorySliderModel> call, Response<CategorySliderModel> response) {
                     if (response.isSuccessful()){
                         if (response.body().getStatus()){
                             storesActivity.init_sliders(response.body().getData().getData());
@@ -60,7 +61,7 @@ public class StoresViewModel {
                 }
 
                 @Override
-                public void onFailure(Call<SliderModel> call, Throwable t) {
+                public void onFailure(Call<CategorySliderModel> call, Throwable t) {
                     Log.d("bug1",t.getMessage());
                     Toast.makeText(context, t.getMessage(), Toast.LENGTH_SHORT).show();
                 }

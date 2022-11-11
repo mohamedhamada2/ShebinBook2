@@ -7,6 +7,9 @@ public class Reply {
     @SerializedName("id")
     @Expose
     private Integer id;
+    @SerializedName("type")
+    @Expose
+    private Integer type;
     @SerializedName("message_id_fk")
     @Expose
     private Integer messageIdFk;
@@ -15,7 +18,7 @@ public class Reply {
     private Integer userIdFk;
     @SerializedName("trader_id_fk")
     @Expose
-    private Integer traderIdFk;
+    private Object traderIdFk;
     @SerializedName("store_id_fk")
     @Expose
     private Integer storeIdFk;
@@ -28,6 +31,9 @@ public class Reply {
     @SerializedName("date")
     @Expose
     private String date;
+    @SerializedName("message")
+    @Expose
+    private String message;
     @SerializedName("name")
     @Expose
     private String name;
@@ -39,16 +45,16 @@ public class Reply {
     private String userImg;
     @SerializedName("trader_img")
     @Expose
-    private String traderImg;
+    private Object traderImg;
     @SerializedName("trader_name")
     @Expose
-    private String traderName;
+    private Object traderName;
     @SerializedName("product_name")
     @Expose
-    private String productName;
+    private Object productName;
     @SerializedName("img")
     @Expose
-    private String img;
+    private Object img;
     @SerializedName("logo")
     @Expose
     private String logo;
@@ -56,24 +62,20 @@ public class Reply {
     @Expose
     private String storeName;
 
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    @SerializedName("type")
-    @Expose
-    private Integer type;
-
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public Integer getMessageIdFk() {
@@ -92,11 +94,11 @@ public class Reply {
         this.userIdFk = userIdFk;
     }
 
-    public Integer getTraderIdFk() {
+    public Object getTraderIdFk() {
         return traderIdFk;
     }
 
-    public void setTraderIdFk(Integer traderIdFk) {
+    public void setTraderIdFk(Object traderIdFk) {
         this.traderIdFk = traderIdFk;
     }
 
@@ -132,6 +134,14 @@ public class Reply {
         this.date = date;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public String getName() {
         return name;
     }
@@ -156,35 +166,35 @@ public class Reply {
         this.userImg = userImg;
     }
 
-    public String getTraderImg() {
+    public Object getTraderImg() {
         return traderImg;
     }
 
-    public void setTraderImg(String traderImg) {
+    public void setTraderImg(Object traderImg) {
         this.traderImg = traderImg;
     }
 
-    public String getTraderName() {
+    public Object getTraderName() {
         return traderName;
     }
 
-    public void setTraderName(String traderName) {
+    public void setTraderName(Object traderName) {
         this.traderName = traderName;
     }
 
-    public String getProductName() {
+    public Object getProductName() {
         return productName;
     }
 
-    public void setProductName(String productName) {
+    public void setProductName(Object productName) {
         this.productName = productName;
     }
 
-    public String getImg() {
+    public Object getImg() {
         return img;
     }
 
-    public void setImg(String img) {
+    public void setImg(Object img) {
         this.img = img;
     }
 

@@ -57,6 +57,7 @@ public class AskAdapter extends RecyclerView.Adapter<AskAdapter.AskHolder> {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, CommentActivity.class);
+                intent.putExtra("flag",1);
                 intent.putExtra("post",askModelList.get(position));
                 context.startActivity(intent);
             }
@@ -132,9 +133,11 @@ public class AskAdapter extends RecyclerView.Adapter<AskAdapter.AskHolder> {
             loginModel = mySharedPreference.Get_UserData(context);
             user_id = loginModel.getData().getUser().getId();
             txt_comment.setText(askModel.getPost());
-            txt_name.setText(askModel.getName());
+            txt_name.setText(askModel.getName()+"  "+askModel.getLastName());
             msg_num.setText(askModel.getCountComments()+"");
             fav_num.setText(askModel.getLike()+"");
+            user_img.setImageResource(R.drawable.ic_male);
+            user_img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.img_bg));
             long dt1 = Long.parseLong(askModel.getDate());
             final DateFormat f = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
             final Date dt = new Date((long) (dt1 * 1000));
@@ -145,7 +148,9 @@ public class AskAdapter extends RecyclerView.Adapter<AskAdapter.AskHolder> {
             }else{
                 Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+askModel.getImg()).into(post_img);
             }
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+askModel.getUserImg()).into(user_img);
+            if (askModel.getUserImg() != null){
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+askModel.getUserImg()).into(user_img);
+            }
             if (askModel.getLike() == 0){
                 fav_img.setImageResource(R.drawable.fav2);
             }else {

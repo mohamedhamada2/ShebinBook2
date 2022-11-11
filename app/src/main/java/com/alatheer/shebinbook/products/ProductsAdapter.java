@@ -89,8 +89,8 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
                         createAlertDialog(productList.get(position));
                     }
                 }catch (Exception e){
-                    Log.e("error5",e.getMessage());
-                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    //Log.e("error5",e.getMessage());
+                    //Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     createAlertDialog(productList.get(position));
                 }
 
@@ -162,6 +162,7 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Catego
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, UpdateProductActivity.class);
+                Log.e("images",product.getSubImages().size()+"");
                 intent.putExtra("product", product);
                 intent.putExtra("flag",2);
                 context.startActivity(intent);

@@ -78,7 +78,12 @@ public class RepliesAdapter extends RecyclerView.Adapter<RepliesAdapter.RepliesH
             txt_name.setText(replyData.getName()+"  "+replyData.getLastName());
             comment_img2.setVisibility(View.GONE);
             msg_num2.setVisibility(View.GONE);
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+replyData.getUserImg()).into(userimg2);
+            userimg2.setImageResource(R.drawable.ic_male);
+            userimg2.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.img_bg));
+            if (replyData.getUserImg() != null){
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+replyData.getUserImg()).into(userimg2);
+            }
         }
+
     }
 }

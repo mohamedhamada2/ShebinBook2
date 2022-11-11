@@ -22,6 +22,7 @@ import com.alatheer.shebinbook.comments.CommentActivity;
 import com.alatheer.shebinbook.message.Datum;
 import com.alatheer.shebinbook.message.MessageActivity;
 import com.alatheer.shebinbook.posts.Post;
+import com.alatheer.shebinbook.posts.PostsActivity;
 import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
@@ -89,9 +90,11 @@ public class AskAdapter extends RecyclerView.Adapter<AskAdapter.AskHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, CommentActivity.class);
+                context.startActivity(new Intent(homeActivity, PostsActivity.class));
+                /*Intent intent = new Intent(context, CommentActivity.class);
+                intent.putExtra("flag",1);
                 intent.putExtra("post",askModelList.get(position));
-                context.startActivity(intent);
+                context.startActivity(intent);*/
             }
         });
     }
@@ -99,7 +102,7 @@ public class AskAdapter extends RecyclerView.Adapter<AskAdapter.AskHolder> {
     private void CreateImageDialog(Post post) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View view = inflater.inflate(R.layout.image_item2, null);
+        final View view = inflater.inflate(R.layout.image_item, null);
         ImageView img = view.findViewById(R.id.img);
         Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/"+post.getImg()).into(img);
         builder.setView(view);
@@ -141,7 +144,6 @@ public class AskAdapter extends RecyclerView.Adapter<AskAdapter.AskHolder> {
             user_id = loginModel.getData().getUser().getId();
             txt_comment.setText(askModel.getPost());
             txt_name.setText(askModel.getName());
-            user_img.setImageResource(R.drawable.user2);
             msg_num.setText(askModel.getCountComments()+"");
             fav_num.setText(askModel.getLike()+"");
             long dt1 = Long.parseLong(askModel.getDate());
@@ -156,7 +158,10 @@ public class AskAdapter extends RecyclerView.Adapter<AskAdapter.AskHolder> {
             if (askModel.getUserIdFk().equals(user_id)){
                 bin_img.setVisibility(View.VISIBLE);
             }
-            Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+askModel.getUserImg()).into(user_img);
+            if (askModel.getUserImg() != null){
+                Picasso.get().load("https://mymissing.online/shebin_book/public/uploads/images/images/"+askModel.getUserImg()).into(user_img);
+            }
+
             if (askModel.getLike() == 0){
                 fav_img.setImageResource(R.drawable.fav2);
             }else {

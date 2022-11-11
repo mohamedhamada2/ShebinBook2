@@ -37,6 +37,18 @@ public class Comment {
     @SerializedName("user_img")
     @Expose
     private Object userImg;
+    @SerializedName("post_user_name")
+    @Expose
+    private String postUserName;
+    @SerializedName("post_last_name")
+    @Expose
+    private String postLastName;
+    @SerializedName("post_user_image")
+    @Expose
+    private Object postUserImage;
+    @SerializedName("post")
+    @Expose
+    private String post;
     @SerializedName("replies")
     @Expose
     private Replies replies;
@@ -146,5 +158,37 @@ public class Comment {
 
     public void setReplies(Replies replies) {
         this.replies = replies;
+    }
+
+    public String getPostUserName() {
+        return postUserName;
+    }
+
+    public void setPostUserName(String postUserName) {
+        this.postUserName = postUserName;
+    }
+
+    public String getPostLastName() {
+        return postLastName;
+    }
+
+    public void setPostLastName(String postLastName) {
+        this.postLastName = postLastName;
+    }
+
+    public Object getPostUserImage() {
+        return postUserImage;
+    }
+
+    public void setPostUserImage(Object postUserImage) {
+        this.postUserImage = postUserImage;
+    }
+
+    public String getPost() {
+        return post;
+    }
+
+    public void setPost(String post) {
+        this.post = post;
     }
 }

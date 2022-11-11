@@ -53,7 +53,7 @@
                             android:layout_height="match_parent"
                             android:scaleType="fitXY"
                             android:background="@drawable/img_bg"
-                            android:src="@drawable/ic_baseline_person"/>
+                            android:src="@drawable/ic_male"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
                 <TextView
@@ -101,7 +101,7 @@
                             android:layout_width="@dimen/_36sdp"
                             android:layout_height="@dimen/_36sdp"
                             app:riv_corner_radius="@dimen/_2sdp"
-                            android:background="@drawable/user2"
+                            android:background="@drawable/logo"
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
                             android:scaleType="fitXY"/>
@@ -112,7 +112,6 @@
                             android:background="@drawable/gradient_ask_user"
                             android:textSize="@dimen/_12ssp"
                             android:fontFamily="@font/tajawal_medium"
-                            android:text="Mohamed hamada"
                             android:layout_toLeftOf="@+id/store_logo"
                             android:layout_centerVertical="true"
                             android:paddingRight="@dimen/_5sdp"
@@ -190,29 +189,29 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_1sdp"
                         android:background="#001C36"
-                        android:layout_marginTop="@dimen/_10sdp"/>
+                        android:layout_marginTop="@dimen/_5sdp"/>
                     <pl.pzienowicz.autoscrollviewpager.AutoScrollViewPager
                         android:id="@+id/viewpager2"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_180sdp"
+                        android:layout_height="@dimen/_200sdp"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
-                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
                         android:overScrollMode="never"
                         android:clipToPadding="false"/>
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/store_details_recycler"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_5sdp"
+                        android:layout_margin="@dimen/_2sdp"
                         android:gravity="right"
                         android:layoutDirection="rtl"/>
                     <FrameLayout
                         android:id="@+id/fragment_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_5sdp"/>
+                        android:layout_margin="@dimen/_3sdp"/>
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </LinearLayout>
